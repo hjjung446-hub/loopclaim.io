@@ -6,7 +6,10 @@
 const http=require('http'), fs=require('fs'), path=require('path'), crypto=require('crypto');
 
 const PORT=+process.env.PORT||8080;
-const N=100, TICK=115, MAX_SLOTS=32, MAX_HUMANS=16, FILL_TO=12;   // map size, ms per step, room capacity, keep rooms lively with AI
+const TICK=115;   // ms per step
+// two kinds of rooms, like the offline game: a normal 100×100 map and a huge 200×200 one
+const SIZES={normal:{N:100,max:32,humans:16,fill:12},big:{N:200,max:64,humans:32,fill:32}};
+let N=100;   // the map size of the room being worked on right now (set at every entry point; Node runs one thing at a time)
 const DX=[0,1,0,-1], DY=[-1,0,1,0];
 const BOT_NAMES=['Mochi','Pebble','Biscuit','Nova','Comet','Pixel','Waffle','Sprout','Bubbles','Maple','Ziggy','Noodle','Tofu','Clover','Rocket','Peanut','Juniper','Ember','Dash','Pudding','Kiwi','Marble','Sunny','Bolt','Ginger','Luna','Taco','Echo','Fig','Sable'];
 const BOT_SKINS=['basic','cat','frog','bunny','bear','flower','phones','sprout','penguin','fox','bee','panda','ladybug','mushroom','octopus','shark','hero','dino','fire','dragon','jelly','snowman','owl','cookie','slime','ninja','cool','wizard','robot','pirate'];
@@ -63,13 +66,13 @@ const clean=s=>String(s||'').replace(/[<>&"'`\u0000-\u001f]/g,'').replace(/\s+/g
 const okCol=c=>/^#[0-9a-f]{6}$/i.test(c)?c:BOT_COLS[rnd(BOT_COLS.length)];
 const okSkin=s=>/^[a-z0-9]{1,16}$/i.test(s||'')?s:'basic';
 
-function makeRoom(){ const r={id:++roomSeq,owner:new Uint8Array(N*N),trail:new Uint8Array(N*N),slots:new Array(MAX_SLOTS+1).fill(null),
+function makeRoom(size){ const cfg=SIZES[size]; N=cfg.N; const r={id:++roomSeq,size,cfg,N,owner:new Uint8Array(N*N),trail:new Uint8Array(N*N),slots:new Array(cfg.max+1).fill(null),
   clients:new Set(),od:[],td:[],ev:[],tick:0,mark:new Int32Array(N*N),stamp:0,q:new Int32Array(N*N),mk:new Int32Array(N*N),bq:new Int32Array(N*N),dq:new Int32Array(N*N),st2:0};
   r.timer=setInterval(()=>step(r),TICK); rooms.push(r); fillBots(r); return r; }
 function humans(r){ let n=0; for(const p of r.slots) if(p&&!p.bot) n++; return n; }
 function count(r){ let n=0; for(const p of r.slots) if(p) n++; return n; }
-function pickRoom(){ let best=null; for(const r of rooms){ const h=humans(r); if(h<MAX_HUMANS&&(!best||h>humans(best))) best=r; } return best||makeRoom(); }
-function freeSlot(r){ for(let i=1;i<=MAX_SLOTS;i++) if(!r.slots[i]) return i; return 0; }
+function pickRoom(size){ let best=null; for(const r of rooms){ if(r.size!==size) continue; const h=humans(r); if(h<r.cfg.humans&&(!best||h>humans(best))) best=r; } return best||makeRoom(size); }
+function freeSlot(r){ for(let i=1;i<=r.cfg.max;i++) if(!r.slots[i]) return i; return 0; }
 function meta(p){ return {id:p.id,name:p.name,col:p.col,skin:p.skin,bot:!!p.bot}; }
 function addPlayer(r,o){ const id=freeSlot(r); if(!id) return null;
   const p={id,name:o.name,col:o.col,skin:o.skin,bot:!!o.bot,ws:o.ws||null,alive:false,x:0,y:0,dir:0,trail:[],exit:-1,kills:0,area:0,respawnAt:0,q:[],ai:{}};
@@ -77,8 +80,8 @@ function addPlayer(r,o){ const id=freeSlot(r); if(!id) return null;
 function removePlayer(r,p){ if(p.alive) die(r,p,{type:'left'},true); for(let c=0;c<N*N;c++) if(r.owner[c]===p.id) setO(r,c,0);
   r.slots[p.id]=null; r.ev.push({k:'leave',id:p.id}); }
 function fillBots(r){
-  const h=humans(r);
-  while(count(r)<FILL_TO&&count(r)<MAX_SLOTS){ const used=new Set(r.slots.filter(Boolean).map(p=>p.name)); let nm; do nm=BOT_NAMES[rnd(BOT_NAMES.length)]+(Math.random()<.4?rnd(99):''); while(used.has(nm));
+  N=r.N; const h=humans(r), FILL_TO=r.cfg.fill;
+  while(count(r)<FILL_TO&&count(r)<r.cfg.max){ const used=new Set(r.slots.filter(Boolean).map(p=>p.name)); let nm; do nm=BOT_NAMES[rnd(BOT_NAMES.length)]+(Math.random()<.4?rnd(99):''); while(used.has(nm));
     const b=addPlayer(r,{name:nm,col:BOT_COLS[rnd(BOT_COLS.length)],skin:BOT_SKINS[rnd(BOT_SKINS.length)],bot:true}); if(!b) break; b.respawnAt=Date.now()+rnd(1500); }
   // too crowded once people join: let a bot go
   while(count(r)>Math.max(FILL_TO,h)&&r.slots.some(p=>p&&p.bot)){ const b=r.slots.find(p=>p&&p.bot&&!p.alive)||r.slots.find(p=>p&&p.bot); removePlayer(r,b); } }
@@ -198,7 +201,7 @@ function humanTurn(p){
 
 /* ---------------- one tick ---------------- */
 function step(r){
-  r.tick++; const now=Date.now(); const ps=r.slots.filter(Boolean);
+  N=r.N; r.tick++; const now=Date.now(); const ps=r.slots.filter(Boolean);
   for(const p of ps) if(!p.alive&&p.bot&&p.respawnAt&&now>=p.respawnAt){ p.respawnAt=0; spawn(r,p); }
   const live=ps.filter(p=>p.alive);
   for(const p of live) if(p.trail.length) computeNav(r,p);
@@ -224,23 +227,23 @@ function step(r){
     const px=p.x,py=p.y; p.x=p.nx; p.y=p.ny; const c=p.x+p.y*N;
     if(r.owner[c]===p.id){ if(p.trail.length) capture(r,p); }
     else { if(!p.trail.length) p.exit=px+py*N; if(!r.trail[c]) setT(r,c,p.id); p.trail.push(c); } }
-  const cnt=new Int32Array(MAX_SLOTS+1); for(let c=0;c<N*N;c++) cnt[r.owner[c]]++;
+  const cnt=new Int32Array(r.cfg.max+1); for(let c=0;c<N*N;c++) cnt[r.owner[c]]++;
   for(const p of ps){ p.area=cnt[p.id]; if(p.alive&&p.area===0) die(r,p,{type:'lost'}); }
   const msg=JSON.stringify({t:'t',n:r.tick,p:ps.filter(p=>p.alive).map(p=>[p.id,p.x,p.y,p.dir]),a:ps.map(p=>[p.id,p.area,p.kills]),o:r.od,r:r.td,e:r.ev});
   r.od=[]; r.td=[]; r.ev=[];
   for(const ws of r.clients) ws.send(msg);
-  if(!humans(r)&&r.clients.size===0&&rooms.length>1){ clearInterval(r.timer); rooms.splice(rooms.indexOf(r),1); } }
+  if(!humans(r)&&r.clients.size===0&&rooms.filter(q=>q.size===r.size).length>1){ clearInterval(r.timer); rooms.splice(rooms.indexOf(r),1); } }
 
 /* ---------------- connections ---------------- */
 function onConnect(ws){
   let room=null, me=null, last=0, tokens=20;
   ws.onmsg=m=>{
-    const now=Date.now(); tokens=Math.min(20,tokens+(now-last)/50); last=now; if(tokens<1) return; tokens--;
+    const now=Date.now(); tokens=Math.min(20,tokens+(now-last)/50); last=now; if(tokens<1) return; tokens--; if(room) N=room.N;
     if(m.t==='join'&&!me){
-      room=pickRoom(); me=addPlayer(room,{name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),ws});
+      room=pickRoom(m.big?'big':'normal'); N=room.N; me=addPlayer(room,{name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),ws});
       if(!me){ ws.send({t:'full'}); ws.close(); return; }
       fillBots(room); room.clients.add(ws);
-      ws.send({t:'hello',you:me.id,N,tick:TICK,room:room.id,players:room.slots.filter(Boolean).map(p=>({...meta(p),alive:p.alive,x:p.x,y:p.y,dir:p.dir,area:p.area,kills:p.kills,trail:p.trail})),
+      ws.send({t:'hello',you:me.id,N,tick:TICK,room:room.id,slots:room.cfg.max,players:room.slots.filter(Boolean).map(p=>({...meta(p),alive:p.alive,x:p.x,y:p.y,dir:p.dir,area:p.area,kills:p.kills,trail:p.trail})),
         owner:Buffer.from(room.owner).toString('base64'),trail:Buffer.from(room.trail).toString('base64')});
       spawn(room,me); }
     else if(!me) return;
@@ -249,6 +252,6 @@ function onConnect(ws){
     else if(m.t==='respawn'){ if(!me.alive) spawn(room,me); }
     else if(m.t==='skin'){ me.skin=okSkin(m.skin); me.col=okCol(m.col); room.ev.push({k:'meta',...meta(me)}); }
   };
-  ws.onclose=()=>{ if(room&&me){ room.clients.delete(ws); removePlayer(room,me); fillBots(room); } };
+  ws.onclose=()=>{ if(room&&me){ N=room.N; room.clients.delete(ws); removePlayer(room,me); fillBots(room); } };
 }
 server.listen(PORT,()=>console.log('Loopclaim.io server on http://localhost:'+PORT));

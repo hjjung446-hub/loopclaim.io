@@ -3691,7 +3691,7 @@ function netBegin(){
   const url=netURL(); if(!url){ toast(L.netNoServer); return; }
   let ws; try{ ws=new WebSocket(url); }catch(e){ toast(L.netFail); return; }
   NET.ws=ws; NET.state='connecting'; NET.q=[]; toast(L.netConnecting);
-  ws.onopen=()=>ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId()}));
+  ws.onopen=()=>ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId(),big:!!bigMap}));
   ws.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(err){ return; }
     if(m.t==='hello'){ netHello(m); netEnterUI(); } else if(m.t==='t'){ if(NET.state==='on') NET.q.push(m); } else if(m.t==='pong'){ const r=performance.now()-m.c; NET.rtt=NET.rtt*.7+r*.3; NET.lead=Math.max(1,Math.min(5,Math.ceil((NET.rtt+TICK*.5)/TICK))); } else if(m.t==='full') toast(L.netFull); };
   ws.onclose=()=>{ if(NET.ws!==ws) return; const was=NET.state; NET.ws=null; NET.state='off'; NET.q=[];
@@ -3707,7 +3707,7 @@ function netHello(m){
   capT=new Float64Array(N*N); floats=[]; owner=b64u8(m.owner); trail=b64u8(m.trail); gold=new Uint8Array(N*N); goldN=0;
   snow=new Map(); piles=new Map(); sballs=[]; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
   off.width=off.height=N; img=ox2.createImageData(N,N); lo=0; hi=N-1; gt=0; ended=false; worldHasMe=true; paused=false;
-  players=[]; for(let i=1;i<=32;i++){ const p=mkPlayer(i,'',' #cccccc'.trim(),true); p.netOn=false; players.push(p); }
+  players=[]; for(let i=1;i<=(m.slots||32);i++){ const p=mkPlayer(i,'',' #cccccc'.trim(),true); p.netOn=false; players.push(p); }
   for(const q of m.players){ const p=netPlayer(q); players[q.id-1]=p; if(q.alive) Object.assign(p,{alive:true,x:q.x,y:q.y,px:q.x,py:q.y,dir:q.dir,area:q.area,kills:q.kills,trailCells:q.trail.slice(),exitCell:q.trail.length?q.trail[0]:-1}); }
   lands=players; teams=[]; me=players[NET.you-1]; me.isBot=false; applySkin(skin);
   particles=[]; rings=[]; camInit=false; lastTick=performance.now(); }
@@ -4903,7 +4903,7 @@ let modeView='main';
 function buildModes(focusId){
   const box=$('modes'); box.innerHTML=''; box.classList.toggle('exView',modeView==='ex');
   const pick=k=>{ if(k!==modeKey) setup(k); try{localStorage.setItem('ttang-mode',k);}catch(e){}
-    buildModes('mode-'+k); $('modeDesc').textContent=descOf(k); $('teamRow').hidden=k!=='team'; $('sizeRow').hidden=k==='ranked'||k==='duel'||k==='online'||(k==='normal'&&!!netURL()); paintRankBox(); };
+    buildModes('mode-'+k); $('modeDesc').textContent=descOf(k); $('teamRow').hidden=k!=='team'; $('sizeRow').hidden=k==='ranked'||k==='duel'||k==='online'; paintRankBox(); };
   const mk=k=>{ if(!MODES[k]||MODES[k].hidden) return; const b=document.createElement('button'); b.type='button'; b.className='mode'; b.id='mode-'+k;
     if(k==='ranked') b.innerHTML=tierBadge(tierOf(rank.rp),20)+`<span>${MODES[k].name}</span>`;
     else b.textContent=MODES[k].name;
@@ -4922,7 +4922,7 @@ function buildModes(focusId){
   }
   if(focusId&&$(focusId)) $(focusId).focus();
   $('modeDesc').textContent=descOf(modeKey);
-  $('teamRow').hidden=modeKey!=='team'; $('sizeRow').hidden=modeKey==='ranked'||modeKey==='duel'||modeKey==='online'||(modeKey==='normal'&&!!netURL()); paintRankBox();
+  $('teamRow').hidden=modeKey!=='team'; $('sizeRow').hidden=modeKey==='ranked'||modeKey==='duel'||modeKey==='online'; paintRankBox();
   for(const v of [2,4]){ const b=$('teams-'+v); b.setAttribute('aria-pressed',String(teamCount===v));
     b.onclick=()=>{ if(teamCount!==v){ teamCount=v; if(modeKey==='team') setup('team'); } try{localStorage.setItem('ttang-teams',String(v));}catch(e){}
       for(const t of [2,4]) $('teams-'+t).setAttribute('aria-pressed',String(teamCount===t));
