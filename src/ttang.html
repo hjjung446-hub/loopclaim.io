@@ -2313,7 +2313,7 @@ function addCoins(n){ wallet.coins+=n; saveWallet(); paintCoins(); }
 let run=null;
 /* ---------- battle pass: one per season (calendar month, UTC). Every game earns XP; 30 levels, a free track and a
    Premium track (bought with coins). Unclaimed rewards are sent automatically when the season changes. ---------- */
-const BP_LEVELS=60, BP_XP=100, BP_PRICE=1000;
+const BP_LEVELS=60, BP_XP=100, BP_PRICE=3000;
 const BP=(()=>{ const free=[], prem=[];
   for(let lv=1;lv<=BP_LEVELS;lv++){ const k=Math.ceil(Math.min(lv,30)/2)+Math.floor(Math.max(0,lv-30)/10);   // rewards level off after 30
     free.push(lv%2?{t:'coins',n:40+k*15}:{t:'rp',n:25+k*10}); prem.push(lv%2?{t:'rp',n:60+k*15}:{t:'coins',n:120+k*20}); }
