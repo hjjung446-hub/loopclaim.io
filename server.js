@@ -46,6 +46,7 @@ const PUB=path.join(__dirname,'public');
 const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon','.json':'application/json'};
 const server=http.createServer((req,res)=>{
   let u=decodeURIComponent((req.url||'/').split('?')[0]); if(u==='/') u='/index.html';
+  if(u==='/healthz'){ res.writeHead(200,{'content-type':'text/plain','cache-control':'no-store'}); res.end('ok'); return; }
   if(u==='/health'){ res.writeHead(200,{'content-type':'text/plain'}); return res.end('ok '+rooms.length+' rooms'); }
   const f=path.normalize(path.join(PUB,u)); if(!f.startsWith(PUB)){ res.writeHead(403); return res.end(); }
   fs.readFile(f,(e,b)=>{ if(e){ res.writeHead(404); return res.end('not found'); }
@@ -478,3 +479,7 @@ function onConnect(ws){
   ws.onclose=()=>{ if(room&&me){ N=room.N; room.clients.delete(ws); removePlayer(room,me); fillBots(room); if(room.cfg.duel&&humans(room)&&!room.over) resetRound(room); } };
 }
 server.listen(PORT,()=>console.log('Loopclaim.io server on http://localhost:'+PORT));
+// Render's free plan puts the server to sleep after 15 minutes without visitors, and waking it takes up to a minute.
+// Knock on our own public address every 10 minutes so it stays awake (Render sets RENDER_EXTERNAL_URL).
+const SELF=process.env.KEEPALIVE_URL||process.env.RENDER_EXTERNAL_URL;
+if(SELF&&typeof fetch==='function') setInterval(()=>{ fetch(SELF.replace(/\/$/,'')+'/healthz').catch(()=>{}); },10*60*1000).unref();
