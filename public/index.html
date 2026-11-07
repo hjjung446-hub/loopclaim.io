@@ -101,7 +101,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .modes .exBtn{gap:6px;padding-left:6px;padding-right:6px}
 .modes .exBtn b{padding:1px 6px}
 .modes .exBtn em{font-style:normal;flex:none}
-@media (max-width:440px){.modes .exBtn{gap:4px}.modes .exBtn span{font-size:13px}.modes .exBtn:not([aria-pressed="true"]) span{display:none}.modes .exBtn:not([aria-pressed="true"]) b{font-size:1em;padding:2px 10px}}
+@media (max-width:440px){.modes .exBtn{flex-direction:column;gap:2px;padding-top:4px;padding-bottom:4px}.modes .exBtn span{font-size:14px}.modes .exBtn b{font-size:.62em;padding:1px 6px}}
 .modes .mode:not(.exBtn):not(#mode-ranked) span[aria-hidden]{margin-right:1px}
 .modes #mode-gold,.modes #mode-hill,.modes #mode-duel{font-size:16.5px;line-height:1.1}
 @media (max-width:440px){.modes #mode-gold,.modes #mode-hill,.modes #mode-duel{white-space:normal;line-height:1.05;font-size:14.5px;padding:8px 4px}}
@@ -705,7 +705,7 @@ const MODES={
     desc:m=>`A crown zone sits on a ${m.N}×${m.N} map. Every second you own part of it, you score, and it moves every minute. Highest score after 3 minutes wins.`},
   duel:{name:'1v1 Duel',N:44,bots:1,teams:0,duel:true,desc:m=>`One AI, one small ${m.N}×${m.N} map. First to win 2 rounds takes the duel, and every win makes the next opponent tougher.`},
   online:{name:'Online',hidden:true,N:100,bots:0,teams:0,online:true,desc:()=>'Play live with real people on one shared map. AI players fill the room when it is quiet.'},
-  snowball:{name:'Snowball Fight',N:100,bots:12,teams:0,time:180000,snowball:true,hidden:Date.now()>=Date.UTC(2027,0,16),desc:m=>`Snow piles are scattered across a ${m.N}×${m.N} map. Run over them to grab snowballs (up to 3) and press Space to throw. A hit freezes the target for a moment, so go cut their tail! Biggest land after 3 minutes wins.`},
+  snowball:{name:'Snowball Fight',N:100,bots:12,teams:0,time:180000,snowball:true,hidden:true,desc:m=>`Snow piles are scattered across a ${m.N}×${m.N} map. Run over them to grab snowballs (up to 3) and press Space to throw. A hit freezes the target for a moment, so go cut their tail! Biggest land after 3 minutes wins.`},
   boss:{name:'Boss Raid',N:100,bots:9,teams:0,time:180000,boss:true,desc:m=>`Everyone teams up against one giant boss. Cut its tail to land a hit, and every time it goes down it comes back stronger. Most boss points after 3 minutes wins.`},
   ranked:{name:'Ranked',N:100,bots:12,teams:0,time:180000,ranked:true,desc:()=>''},
   tutorial:{name:'Tutorial',N:40,bots:0,teams:0,tutorial:true,hidden:true,desc:()=>''}
@@ -835,7 +835,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   pSeason:"Ranked this season", pNoGamesOther:"No recent games to show.", profileOf:n=>`View ${n}'s profile`,
   duelRound:n=>`Round ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Round won!", duelRoundLose:"Round lost", duelDraw:"Draw!", duelTimeUp:"Time's up", duelWinT:"Duel won!", duelLoseT:"Duel lost", duelLede:(s,b,w)=>w?`Win streak ${s} · best ${b}. The next opponent will be tougher.`:`Streak over. Best streak: ${b}.`,
   duelRoundBy:n=>`${n} takes the round!`, duelWinner:n=>`${n} wins the duel!`,
-  exModes:"EX modes", exBack:"Main modes", exNote:"EX modes have special rules: Zombie, Gold Rush, King of the Hill, 1v1 Duel and Boss Raid.",
+  weeklyShort:"This week", weeklyTag:d=>`Weekly mode · ${d} day${d>1?"s":""} left`, exModes:"EX modes", exBack:"Main modes", exNote:"EX modes have special rules: Zombie, Gold Rush, King of the Hill, 1v1 Duel and Boss Raid.",
   exShort:"Modes",
   bossBoardN:n=>`Boss points · ${n} players`, bossHitsN:n=>`${n} hits`, bossWin:n=>`Top raider with ${n} points!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} took the boss down! 👹 Lv.${l} incoming`:`The boss fell! Lv.${l} incoming`, bossDownT:"BOSS DOWN!", bossBack:l=>`It comes back at Lv.${l}`, bossHitFeed:(k,h,m)=>`${k} hit the boss! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`back in ${s}s`,
   youZombie:"YOU'RE A ZOMBIE!", youZombieSub:"Catch the survivors before time runs out", youBoss:"YOU'RE THE BOSS!", youBossSub:"Everyone is after you. Catch raiders for points (+10 each)", youBossTag:"Boss",
@@ -954,7 +954,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   pSeason:"Clasificatorias esta temporada", pNoGamesOther:"No hay partidas recientes.", profileOf:n=>`Ver el perfil de ${n}`,
   duelRound:n=>`Ronda ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"¡Ronda ganada!", duelRoundLose:"Ronda perdida", duelDraw:"¡Empate!", duelTimeUp:"Se acabó el tiempo", duelWinT:"¡Duelo ganado!", duelLoseT:"Duelo perdido", duelLede:(s,b,w)=>w?`Racha de ${s} · mejor ${b}. El siguiente rival será más duro.`:`Se acabó la racha. Mejor racha: ${b}.`,
   duelRoundBy:n=>`¡${n} gana la ronda!`, duelWinner:n=>`¡${n} gana el duelo!`,
-  exModes:"Modos EX", exBack:"Modos principales", exNote:"Los modos EX tienen reglas especiales: Zombi, Fiebre del oro, Rey de la colina, Duelo 1v1 y Asalto al jefe.",
+  weeklyShort:"Semanal", weeklyTag:d=>`Modo de la semana · quedan ${d} día${d>1?"s":""}`, exModes:"Modos EX", exBack:"Modos principales", exNote:"Los modos EX tienen reglas especiales: Zombi, Fiebre del oro, Rey de la colina, Duelo 1v1 y Asalto al jefe.",
   exShort:"Modos",
   bossBoardN:n=>`Puntos de jefe · ${n} jugadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`¡Mejor asaltante con ${n} puntos!`, bossName:"JEFE", bossKO:"¡K.O.! +30", bossDownFeed:(k,l)=>k?`¡${k} derribó al jefe! 👹 Llega el nv. ${l}`:`¡El jefe cayó! Llega el nv. ${l}`, bossDownT:"¡JEFE DERROTADO!", bossBack:l=>`Vuelve en nv. ${l}`, bossHitFeed:(k,h,m)=>`¡${k} golpeó al jefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`vuelve en ${s} s`,
   youZombie:"¡ERES UN ZOMBI!", youZombieSub:"Atrapa a los supervivientes antes de que acabe el tiempo", youBoss:"¡ERES EL JEFE!", youBossSub:"Todos van a por ti. Atrapa asaltantes para sumar puntos (+10)", youBossTag:"Jefe",
@@ -1073,7 +1073,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   pSeason:"Ranqueadas nesta temporada", pNoGamesOther:"Sem partidas recentes.", profileOf:n=>`Ver o perfil de ${n}`,
   duelRound:n=>`Rodada ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Rodada vencida!", duelRoundLose:"Rodada perdida", duelDraw:"Empate!", duelTimeUp:"Acabou o tempo", duelWinT:"Duelo vencido!", duelLoseT:"Duelo perdido", duelLede:(s,b,w)=>w?`Sequência de ${s} · melhor ${b}. O próximo rival será mais forte.`:`Sequência encerrada. Melhor: ${b}.`,
   duelRoundBy:n=>`${n} vence a rodada!`, duelWinner:n=>`${n} vence o duelo!`,
-  exModes:"Modos EX", exBack:"Modos principais", exNote:"Os modos EX têm regras especiais: Zumbi, Corrida do ouro, Rei da colina, Duelo 1x1 e Ataque ao chefe.",
+  weeklyShort:"Semanal", weeklyTag:d=>`Modo da semana · faltam ${d} dia${d>1?"s":""}`, exModes:"Modos EX", exBack:"Modos principais", exNote:"Os modos EX têm regras especiais: Zumbi, Corrida do ouro, Rei da colina, Duelo 1x1 e Ataque ao chefe.",
   exShort:"Modos",
   bossBoardN:n=>`Pontos de chefe · ${n} jogadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`Melhor atacante com ${n} pontos!`, bossName:"CHEFE", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} derrubou o chefe! 👹 Vem aí o nv. ${l}`:`O chefe caiu! Vem aí o nv. ${l}`, bossDownT:"CHEFE DERROTADO!", bossBack:l=>`Ele volta no nv. ${l}`, bossHitFeed:(k,h,m)=>`${k} acertou o chefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`volta em ${s} s`,
   youZombie:"VOCÊ É UM ZUMBI!", youZombieSub:"Pegue os sobreviventes antes que o tempo acabe", youBoss:"VOCÊ É O CHEFE!", youBossSub:"Todos estão atrás de você. Pegue atacantes para ganhar pontos (+10)", youBossTag:"Chefe",
@@ -1192,7 +1192,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   pSeason:"Classées cette saison", pNoGamesOther:"Aucune partie récente.", profileOf:n=>`Voir le profil de ${n}`,
   duelRound:n=>`Manche ${n}`, duelVs:n=>`contre ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Manche gagnée !", duelRoundLose:"Manche perdue", duelDraw:"Égalité !", duelTimeUp:"Temps écoulé", duelWinT:"Duel gagné !", duelLoseT:"Duel perdu", duelLede:(s,b,w)=>w?`Série de ${s} · record ${b}. Le prochain adversaire sera plus coriace.`:`Série terminée. Record : ${b}.`,
   duelRoundBy:n=>`${n} remporte la manche !`, duelWinner:n=>`${n} remporte le duel !`,
-  exModes:"Modes EX", exBack:"Modes principaux", exNote:"Les modes EX ont des règles spéciales : Zombie, Ruée vers l'or, Roi de la colline, Duel 1v1 et Raid du boss.",
+  weeklyShort:"Semaine", weeklyTag:d=>`Mode de la semaine · encore ${d} jour${d>1?"s":""}`, exModes:"Modes EX", exBack:"Modes principaux", exNote:"Les modes EX ont des règles spéciales : Zombie, Ruée vers l'or, Roi de la colline, Duel 1v1 et Raid du boss.",
   exShort:"Modes",
   bossBoardN:n=>`Points boss · ${n} joueurs`, bossHitsN:n=>`${n} coups`, bossWin:n=>`Meilleur raider avec ${n} points !`, bossName:"BOSS", bossKO:"K.O. ! +30", bossDownFeed:(k,l)=>k?`${k} a terrassé le boss ! 👹 Niv. ${l} en approche`:`Le boss est tombé ! Niv. ${l} en approche`, bossDownT:"BOSS VAINCU !", bossBack:l=>`Il revient au niv. ${l}`, bossHitFeed:(k,h,m)=>`${k} a touché le boss ! ❤ ${h}/${m}`, bossLv:n=>`Niv. ${n}`, bossRespawn:s=>`revient dans ${s} s`,
   youZombie:"TU ES UN ZOMBIE !", youZombieSub:"Attrape les survivants avant la fin du temps", youBoss:"TU ES LE BOSS !", youBossSub:"Tout le monde te traque. Attrape des raiders pour marquer (+10)", youBossTag:"Boss",
@@ -1311,7 +1311,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   pSeason:"Ranglistenspiele diese Saison", pNoGamesOther:"Keine letzten Spiele.", profileOf:n=>`Profil von ${n} ansehen`,
   duelRound:n=>`Runde ${n}`, duelVs:n=>`gegen ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Runde gewonnen!", duelRoundLose:"Runde verloren", duelDraw:"Unentschieden!", duelTimeUp:"Zeit abgelaufen", duelWinT:"Duell gewonnen!", duelLoseT:"Duell verloren", duelLede:(s,b,w)=>w?`Serie ${s} · Bestwert ${b}. Der nächste Gegner wird härter.`:`Serie vorbei. Beste Serie: ${b}.`,
   duelRoundBy:n=>`${n} holt die Runde!`, duelWinner:n=>`${n} gewinnt das Duell!`,
-  exModes:"EX-Modi", exBack:"Hauptmodi", exNote:"EX-Modi haben besondere Regeln: Zombie, Goldrausch, König des Hügels, 1v1-Duell und Boss-Raid.",
+  weeklyShort:"Woche", weeklyTag:d=>`Wochenmodus · noch ${d} Tag${d>1?"e":""}`, exModes:"EX-Modi", exBack:"Hauptmodi", exNote:"EX-Modi haben besondere Regeln: Zombie, Goldrausch, König des Hügels, 1v1-Duell und Boss-Raid.",
   exShort:"Modi",
   bossBoardN:n=>`Bosspunkte · ${n} Spieler`, bossHitsN:n=>`${n} Treffer`, bossWin:n=>`Bester Raider mit ${n} Punkten!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} hat den Boss besiegt! 👹 St. ${l} kommt`:`Der Boss ist gefallen! St. ${l} kommt`, bossDownT:"BOSS BESIEGT!", bossBack:l=>`Er kommt auf St. ${l} zurück`, bossHitFeed:(k,h,m)=>`${k} hat den Boss getroffen! ❤ ${h}/${m}`, bossLv:n=>`St. ${n}`, bossRespawn:s=>`zurück in ${s} s`,
   youZombie:"DU BIST EIN ZOMBIE!", youZombieSub:"Fang die Überlebenden, bevor die Zeit abläuft", youBoss:"DU BIST DER BOSS!", youBossSub:"Alle jagen dich. Fang Raider für Punkte (+10)", youBossTag:"Boss",
@@ -1430,7 +1430,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   pSeason:"本赛季排位", pNoGamesOther:"暂无最近对局。", profileOf:n=>`查看 ${n} 的资料`,
   duelRound:n=>`第 ${n} 局`, duelVs:n=>`对手 ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"本局获胜！", duelRoundLose:"本局失利", duelDraw:"平局！", duelTimeUp:"时间到", duelWinT:"决斗胜利！", duelLoseT:"决斗失败", duelLede:(s,b,w)=>w?`${s} 连胜 · 最佳 ${b}。下一个对手会更强。`:`连胜中断。最佳连胜：${b}。`,
   duelRoundBy:n=>`${n} 赢下本局！`, duelWinner:n=>`${n} 赢得决斗！`,
-  exModes:"EX 模式", exBack:"基本模式", exNote:"EX 模式有特殊规则：僵尸、淘金热、山丘之王、1v1 决斗和首领讨伐。",
+  weeklyShort:"本周", weeklyTag:d=>`本周模式 · 还剩 ${d} 天`, exModes:"EX 模式", exBack:"基本模式", exNote:"EX 模式有特殊规则：僵尸、淘金热、山丘之王、1v1 决斗和首领讨伐。",
   exShort:"模式",
   bossBoardN:n=>`首领分 · ${n} 名玩家`, bossHitsN:n=>`命中 ${n} 次`, bossWin:n=>`以 ${n} 分成为最强讨伐者！`, bossName:"首领", bossKO:"击倒！+30", bossDownFeed:(k,l)=>k?`${k} 击倒了首领！👹 ${l} 级即将来袭`:`首领倒下了！${l} 级即将来袭`, bossDownT:"首领被击倒！", bossBack:l=>`将以 ${l} 级复活`, bossHitFeed:(k,h,m)=>`${k} 击中了首领！❤ ${h}/${m}`, bossLv:n=>`${n} 级`, bossRespawn:s=>`${s} 秒后复活`,
   youZombie:"你是僵尸！", youZombieSub:"在时间结束前抓住幸存者", youBoss:"你是首领！", youBossSub:"所有人都在追你。抓住讨伐者得分（每个 +10）", youBossTag:"首领",
@@ -1549,7 +1549,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   pSeason:"今シーズンのランク戦", pNoGamesOther:"最近の試合はありません。", profileOf:n=>`${n}のプロフィールを見る`,
   duelRound:n=>`ラウンド${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"ラウンド勝利！", duelRoundLose:"ラウンド敗北", duelDraw:"引き分け！", duelTimeUp:"時間切れ", duelWinT:"デュエル勝利！", duelLoseT:"デュエル敗北", duelLede:(s,b,w)=>w?`${s}連勝中 · 最高${b}連勝。次の相手はもっと強いよ。`:`連勝ストップ。最高記録：${b}連勝。`,
   duelRoundBy:n=>`${n}がラウンド獲得！`, duelWinner:n=>`${n}がデュエルに勝利！`,
-  exModes:"EXモード", exBack:"基本モード", exNote:"EXモードは特別ルールのモードです：ゾンビ、ゴールドラッシュ、キング・オブ・ザ・ヒル、1対1デュエル、ボスレイド。",
+  weeklyShort:"今週", weeklyTag:d=>`今週のモード · 残り${d}日`, exModes:"EXモード", exBack:"基本モード", exNote:"EXモードは特別ルールのモードです：ゾンビ、ゴールドラッシュ、キング・オブ・ザ・ヒル、1対1デュエル、ボスレイド。",
   exShort:"モード",
   bossBoardN:n=>`ボスポイント · ${n}人`, bossHitsN:n=>`${n}ヒット`, bossWin:n=>`${n}ポイントでトップレイダー！`, bossName:"ボス", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}がボスを倒した！👹 Lv.${l}が来る`:`ボスが倒れた！Lv.${l}が来る`, bossDownT:"ボス撃破！", bossBack:l=>`Lv.${l}で復活`, bossHitFeed:(k,h,m)=>`${k}がボスにヒット！❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}秒後に復活`,
   youZombie:"きみはゾンビ！", youZombieSub:"時間内に生存者をつかまえよう", youBoss:"きみがボス！", youBossSub:"全員がきみを狙ってる。レイダーを倒してポイント（+10）", youBossTag:"ボス",
@@ -1668,7 +1668,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   pSeason:"이번 시즌 랭크전", pNoGamesOther:"최근 게임 기록이 없어요.", profileOf:n=>`${n} 프로필 보기`,
   duelRound:n=>`${n}라운드`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"라운드 승리!", duelRoundLose:"라운드 패배", duelDraw:"무승부!", duelTimeUp:"시간 종료", duelWinT:"결투 승리!", duelLoseT:"결투 패배", duelLede:(s,b,w)=>w?`${s}연승 · 최고 ${b}연승. 다음 상대는 더 강해요.`:`연승이 끊겼어요. 최고 기록: ${b}연승.`,
   duelRoundBy:n=>`${n} 라운드 승리!`, duelWinner:n=>`${n} 결투 승리!`,
-  exModes:"EX 모드", exBack:"기본 모드", exNote:"EX 모드는 특별한 규칙이 있는 모드예요: 좀비, 골드러시, 킹 오브 더 힐, 1:1 결투, 보스전.",
+  weeklyShort:"주간", weeklyTag:d=>`이번 주 모드 · ${d}일 남음`, exModes:"EX 모드", exBack:"기본 모드", exNote:"EX 모드는 특별한 규칙이 있는 모드예요: 좀비, 골드러시, 킹 오브 더 힐, 1:1 결투, 보스전.",
   exShort:"모드",
   bossBoardN:n=>`보스 점수 · ${n}명`, bossHitsN:n=>`${n}번 공격`, bossWin:n=>`${n}점으로 최고의 공격대원!`, bossName:"보스", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}이(가) 보스를 쓰러뜨렸어요! 👹 Lv.${l} 등장 예정`:`보스가 쓰러졌어요! Lv.${l} 등장 예정`, bossDownT:"보스 처치!", bossBack:l=>`Lv.${l}로 돌아와요`, bossHitFeed:(k,h,m)=>`${k} 보스 공격! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}초 후 부활`,
   youZombie:"넌 좀비야!", youZombieSub:"시간 안에 생존자를 잡아요", youBoss:"넌 보스야!", youBossSub:"모두가 너를 노려요. 공격대를 잡으면 +10점", youBossTag:"보스",
@@ -3952,7 +3952,7 @@ try{ if(/[?&]debug=1/.test(location.search)){ window.__lc=()=>({me,players,owner
 function netSend(o){ if(NET.ws&&NET.ws.readyState===1) NET.ws.send(JSON.stringify(o)); }
 function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; if(ws) try{ ws.close(); }catch(e){} }
 function netSkinId(){ return skin===PHOTO_SKIN||!skin?'basic':skin.id; }
-const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie','gold','hill','duel','boss','snowball'];
+const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie','gold','hill','duel','boss'];
 let netWant=true; try{ netWant=localStorage.getItem('ttang-net')!=='off'; }catch(e){}
 const netCan=k=>netWant&&ONLINE_MODES.includes(k)&&!!netURL();
 // the Online / Offline switch on the menu (only where a server exists)
@@ -5309,22 +5309,26 @@ function buildSkins(){
   $('skinCount').innerHTML=`${L.unlockedN(open,SKINS.length)} · ${COIN_ICO}<b class="coinNum">${wallet.coins.toLocaleString()}</b>`;
 }
 // main modes up front; the special-rule ones live behind the EX button
-const EX_MODES=['zombie','gold','hill','duel','boss'].concat(MODES.snowball.hidden?[]:['snowball']);
+const EX_MODES=['zombie','gold','hill','duel','boss'];
+// one EX mode a week, the same for everyone, switching Monday 00:00 UTC
+const weeklyMode=()=>EX_MODES[((Math.floor((weekStart()-Date.UTC(2026,0,5))/(7*864e5))%EX_MODES.length)+EX_MODES.length)%EX_MODES.length];
+const weeklyDays=()=>Math.max(1,Math.ceil((weekStart()+7*864e5-Date.now())/864e5));
+const modeDescOf=k=>(k===weeklyMode()?L.weeklyTag(weeklyDays())+' · ':'')+descOf(k);
 let modeView='main';
 function buildModes(focusId){
   const box=$('modes'); box.innerHTML=''; box.classList.toggle('exView',modeView==='ex');
   const pick=k=>{ if(k!==modeKey) setup(k); try{localStorage.setItem('ttang-mode',k);}catch(e){}
-    buildModes('mode-'+k); $('modeDesc').textContent=descOf(k); $('teamRow').hidden=k!=='team'; $('sizeRow').hidden=k==='ranked'||k==='duel'||k==='online'; paintRankBox(); };
+    buildModes('mode-'+k); $('modeDesc').textContent=modeDescOf(k); $('teamRow').hidden=k!=='team'; $('sizeRow').hidden=k==='ranked'||k==='duel'||k==='online'; paintRankBox(); };
   const mk=k=>{ if(!MODES[k]||MODES[k].hidden) return; const b=document.createElement('button'); b.type='button'; b.className='mode'; b.id='mode-'+k;
     if(k==='ranked') b.innerHTML=tierBadge(tierOf(rank.rp),20)+`<span>${MODES[k].name}</span>`;
     else b.textContent=MODES[k].name;
     b.setAttribute('aria-pressed',k===modeKey?'true':'false'); b.onclick=()=>pick(k); box.append(b); };
   if(modeView==='main'){
     ['normal','team','survival','infect','timed'].forEach(mk);
-    const ex=document.createElement('button'), on=EX_MODES.includes(modeKey); ex.type='button'; ex.className='mode exBtn'; ex.id='mode-ex';
-    ex.innerHTML=`<b>EX</b><span>${on?esc(MODES[modeKey].name):esc(L.exShort)}</span>`;
-    ex.setAttribute('aria-pressed',String(on)); ex.setAttribute('aria-label',L.exModes+(on?' · '+MODES[modeKey].name:''));
-    ex.onclick=()=>{ modeView='ex'; buildModes(on?'mode-'+modeKey:'mode-'+EX_MODES[0]); $('modeDesc').textContent=on?descOf(modeKey):L.exNote; };
+    const wk=weeklyMode(), ex=document.createElement('button'), on=modeKey===wk; ex.type='button'; ex.className='mode exBtn'; ex.id='mode-'+wk;
+    ex.innerHTML=`<b>${esc(L.weeklyShort)}</b><span>${esc(MODES[wk].name)}</span>`;
+    ex.setAttribute('aria-pressed',String(on)); ex.setAttribute('aria-label',L.weeklyTag(weeklyDays())+' · '+MODES[wk].name);
+    ex.onclick=()=>pick(wk);
     box.append(ex); mk('ranked');
   } else {
     const back=document.createElement('button'); back.type='button'; back.className='mode exBack'; back.id='mode-back'; back.innerHTML=`<i aria-hidden="true">‹</i><span>${esc(L.exBack)}</span>`;
@@ -5332,7 +5336,7 @@ function buildModes(focusId){
     box.append(back); EX_MODES.forEach(mk);
   }
   if(focusId&&$(focusId)) $(focusId).focus();
-  $('modeDesc').textContent=descOf(modeKey);
+  $('modeDesc').textContent=modeDescOf(modeKey);
   $('teamRow').hidden=modeKey!=='team'; $('sizeRow').hidden=modeKey==='ranked'||modeKey==='duel'||modeKey==='online'; paintRankBox();
   for(const v of [2,4]){ const b=$('teams-'+v); b.setAttribute('aria-pressed',String(teamCount===v));
     b.onclick=()=>{ if(teamCount!==v){ teamCount=v; if(modeKey==='team') setup('team'); } try{localStorage.setItem('ttang-teams',String(v));}catch(e){}
@@ -5390,7 +5394,7 @@ try{
   const ph=localStorage.getItem('ttang-photo');
   if(ph){ const im=new Image(); im.onload=()=>{ setPhoto(im,false); if(localStorage.getItem('ttang-skin')==='photo'){ skin=PHOTO_SKIN; if(me) applySkin(skin); } paintSkinCur(); buildSkins(); }; im.src=ph; }
   const sid=localStorage.getItem('ttang-skin'); const f=SKINS.find(k=>k.id===sid); if(f&&f.price&&!wallet.owned.includes(f.id)){ wallet.owned.push(f.id); saveWallet(); } if(f&&skinOpen(f)) skin=f;
-  const m=localStorage.getItem('ttang-mode'); if(m==='big'){startMode='normal';bigMap=true;} else if(m&&MODES[m]) startMode=m;
+  const m=localStorage.getItem('ttang-mode'); if(m==='big'){startMode='normal';bigMap=true;} else if(m&&MODES[m]&&!MODES[m].hidden&&(!EX_MODES.includes(m)||m===weeklyMode())) startMode=m;
   if(localStorage.getItem('ttang-big')==='1') bigMap=true;
   if(localStorage.getItem('ttang-teams')==='2') teamCount=2;
 }catch(e){}
