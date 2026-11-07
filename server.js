@@ -462,7 +462,7 @@ function onConnect(ws){
       const cfg=makeCfg(String(m.mode||'normal'),!!m.big,m.teams|0);
       room=pickRoom(cfg); N=room.N;
       if(!freeSlot(room)){ const b=room.slots.find(p=>p&&p.bot&&!p.boss); if(b) removePlayer(room,b); }   // a person takes an AI's seat
-      me=addPlayer(room,{name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),frame:['gold','silver','bronze'].includes(m.frame)?m.frame:'',ws});
+      me=addPlayer(room,{name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),frame:['gold','silver','bronze','rainbow','flame','ice','neon','champ'].includes(m.frame)?m.frame:'',ws});
       if(!me){ ws.send({t:'full'}); ws.close(); return; }
       fillBots(room); room.clients.add(ws);
       ws.send({t:'hello',you:me.id,wait:!canJoinNow(room),...snapshot(room)});
