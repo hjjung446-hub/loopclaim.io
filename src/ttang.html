@@ -2277,7 +2277,13 @@ function rkSkinOf(d){ if(d._me||(d.id&&d.id===RK.uid)) return skin;
 // last week's top three AI wear their trophy frames too
 function botFrames(){ const ws=weekStart(); if(botFrames.c&&botFrames.c.ws===ws) return botFrames.c.m;
   const m=new Map(); rkBots(ws-1).slice().sort((a,b)=>(b.weekRp||0)-(a.weekRp||0)).slice(0,3).forEach((d,i)=>m.set(d.name,['gold','silver','bronze'][i])); botFrames.c={ws,m}; return m; }
-const rkFrame=d=>d._me||(d.id&&d.id===RK.uid)?myFrame():d.bot?botFrames().get(d.name)||null:FRAME_COL[d.frame]?d.frame:null;
+// AI rankers collect frames too: some buy one (seeded per name, so everyone sees the same), the season's #1 wears Champion
+function botFrame(d){ const t=botFrames().get(d.name); if(t) return t;
+  if(!botFrame.top||botFrame.top.at<Date.now()-60000){ const all=rkBots(); botFrame.top={at:Date.now(),name:all.reduce((a,b)=>(b.rp||0)>(a.rp||0)?b:a,all[0]).name}; }
+  if(d.name===botFrame.top.name) return 'champ';
+  const h=String(d.name).split('').reduce((a,c)=>a*31+c.charCodeAt(0)|0,97), r=((h>>>0)%1000)/1000;
+  if(r<.1) return 'neon'; if(r<.17) return 'ice'; if(r<.23) return 'rainbow'; if(r<.27) return 'flame'; return null; }
+const rkFrame=d=>d._me||(d.id&&d.id===RK.uid)?myFrame():d.bot?botFrame(d):FRAME_COL[d.frame]?d.frame:null;
 const rkAv=d=>{ const u=avatarURL(rkSkinOf(d)), f=rkFrame(d); return u?`<img class="rkAv${f?' fr-'+f:''}" src="${u}" alt="">`:'<i></i>'; };
 function rkRender(rows){
   RK.rows=rows.filter(d=>!d.bot); $('rkTour').hidden=RK.tab!=='week'; try{ paintTour(); }catch(e){}
