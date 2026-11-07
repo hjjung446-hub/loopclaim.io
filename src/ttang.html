@@ -3540,6 +3540,7 @@ function updateHud(){
     $('mePct').innerHTML=`${pct(me.area).toFixed(1)}<small>%</small>`;
     $('meSub').textContent=((mode.teams||mode.infect)&&lands[me.team-1]?`${lands[me.team-1].name} · `:'')+`${L.killsLine(me.kills)} · ${L.sec(Math.floor((gt-me.bornAt)/1000))}`;
   }
+  if(mode.online&&NET.state==='on') $('meSub').textContent='🌐 '+Math.round(NET.rtt)+'ms · '+$('meSub').textContent;   // shows you're really on the server
   const tm=$('timer'), showT=$('startOv').hidden;
   if(mode.time){ const sec=Math.ceil(Math.max(0,mode.time-gt)/1000); tm.hidden=!showT;
     tm.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`+(mode.hill&&hill&&hillMoveAt<mode.time?` · ${L.hillMoveIn(Math.max(0,Math.ceil((hillMoveAt-gt)/1000)))}`:''); tm.classList.toggle('hot',sec<=10); }
