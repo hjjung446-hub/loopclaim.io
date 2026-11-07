@@ -2768,6 +2768,8 @@ function botBrain(){
     return {phase:'home',agg:Math.min(1,.1+t*.55+Math.random()*(.5-t*.15)),margin:Math.max(1,Math.round(4-t*3+Math.random()*1.5)),range:Math.round(9+t*19)}; }
   if(mode&&mode.duel){ const k=Math.min(1,(duelRec.streak||0)/8);
     return {phase:'home',agg:Math.min(1,.45+k*.5+Math.random()*.1),margin:Math.max(1,Math.round(3-k*2)),range:14+Math.round(k*16)}; }
+  // a player's first few games: gentle AI that rarely hunts you
+  if(typeof isNewbie==='function'&&isNewbie()&&mode&&!mode.tutorial) return {phase:'home',agg:Math.random()*.25,margin:4+rnd(3),range:7};
   const d=settings.diff;
   if(d==='easy') return {phase:'home',agg:Math.random()*.5,margin:4+rnd(3),range:9};
   if(d==='hard') return {phase:'home',agg:.45+Math.random()*.55,margin:1+rnd(2),range:26};
@@ -3953,7 +3955,7 @@ function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; if
 function netSkinId(){ return skin===PHOTO_SKIN||!skin?'basic':skin.id; }
 const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie','gold','hill','duel','boss','snowball'];
 let netWant=true; try{ netWant=localStorage.getItem('ttang-net')!=='off'; }catch(e){}
-const netCan=k=>netWant&&ONLINE_MODES.includes(k)&&!!netURL();
+const netCan=k=>netWant&&ONLINE_MODES.includes(k)&&!!netURL()&&((achState.stats&&achState.stats.games)||0)>=3;   // first 3 games: offline practice with gentle AI
 // the Online / Offline switch on the menu (only where a server exists)
 function paintNetRow(){ const row=$('netRow'); if(!row) return; const has=!NET.noServer&&!!netURL(); row.hidden=!has;
   $('net-on').setAttribute('aria-pressed',String(netWant)); $('net-off').setAttribute('aria-pressed',String(!netWant)); }
@@ -4160,6 +4162,7 @@ let rulesOpen=false;
 // first-timers go straight into the tutorial when they press Start (once); after that it lives under "How to play"
 // brand-new players see just Classic + Play; the other modes, map size, Ranked and Watch open after a few games
 const NEWBIE_GAMES=3, gamesPlayed=()=>(achState.stats&&achState.stats.games)||0;
+function isNewbie(){ return gamesPlayed()<=NEWBIE_GAMES; }   // counted when a game starts, so this covers games 1–3
 let wasNewbie=null;
 function paintNewbie(){ const nb=gamesPlayed()<NEWBIE_GAMES, card=$('startOv'); if(!card) return;
   card.classList.toggle('newbie',nb);
