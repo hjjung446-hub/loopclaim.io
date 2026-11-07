@@ -4059,7 +4059,7 @@ function netHello(m){
     if(q.alive) Object.assign(p,{alive:true,x:q.x,y:q.y,px:q.x,py:q.y,dir:q.dir,area:q.area,kills:q.kills,trailCells:q.trail.slice(),exitCell:q.trail.length?q.trail[0]:-1});
     netStat(p,q.s,q.bossHits); }
   for(const p of players) netTint(p);
-  me=NET.byId[NET.you]; me.isBot=false; applySkin(skin); NET.pend=[]; NET.playing=false; me.sx=null; me.predX=null; me.zStart=mode.zombie&&me.team===2;
+  me=NET.byId[NET.you]; me.isBot=false; applySkin(skin); NET.pend=[]; NET.playing=false; NET.predCap=null; me.sx=null; me.predX=null; me.zStart=mode.zombie&&me.team===2;
   netHill(m.h); netBoss(m.b); netSnow(m);
   if(mode.duel){ const opp=players.find(p=>p!==me)||null; duel={score:[0,0],round:(m.duel&&m.duel.round)||1,over:false,busy:false,elapsed:0,dead:[],a:me,b:opp,look:[duelLook(me),duelLook(opp)],opp:duelLook(opp),watch:false}; netDuelScore(m.duel&&m.duel.s); } else duel=null;
   particles=[]; rings=[]; camInit=false; lastTick=performance.now(); netAreas(); }
@@ -4086,11 +4086,34 @@ function netPredict(stepped){ if(!me||!me.alive||me.sx==null){ return; }
   for(let i=0;i<k;i++){ turnAt(x+y*N); const nx=x+DX[d], ny=y+DY[d]; if(!inb(nx,ny)) break; x=nx; y=ny; path.push(x+y*N); }
   turnAt(x+y*N);
   if(stepped){ me.px=me.predX!=null?me.predX:x; me.py=me.predY!=null?me.predY:y; } me.x=x; me.y=y; me.dir=d; me.predX=x; me.predY=y;
-  const tail=me.srvTrail||[], extra=[]; let out=tail.length>0;
-  for(const c of path){ if(owner[c]===me.id){ if(out){ extra.length=0; out=false; } continue; } out=true; extra.push(c); }
-  me.trailCells=tail.concat(extra); if(me.trailCells.length&&me.exitCell<0) me.exitCell=me.sx+me.sy*N; }
+  const T=me.team, tail=me.srvTrail||[], extra=[]; let out=tail.length>0, back=false, loop=null;
+  for(const c of path){ if(owner[c]===T){ if(out){ if(!back&&!NET.predCap) loop=tail.concat(extra); back=true; extra.length=0; out=false; } continue; } out=true; extra.push(c); }
+  // our head is already back home ahead of the server: fill the loop now instead of waiting a round trip
+  if(loop&&loop.length) netPredFill(T,loop);
+  me.trailCells=NET.predCap?extra.slice():tail.concat(extra); if(me.trailCells.length&&me.exitCell<0) me.exitCell=me.sx+me.sy*N; }
+function netPredFill(T,loop){
+  const wall=new Uint8Array(N*N); let x0=N,y0=N,x1=-1,y1=-1;
+  const grow=c=>{ const x=c%N,y=(c/N)|0; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; };
+  for(let c=0;c<N*N;c++) if(owner[c]===T){ wall[c]=1; grow(c); }
+  for(const c of loop){ wall[c]=1; grow(c); }
+  if(x1<0) return; x0=Math.max(0,x0-1); y0=Math.max(0,y0-1); x1=Math.min(N-1,x1+1); y1=Math.min(N-1,y1+1);
+  const seen=new Uint8Array(N*N), q=[]; const seed=c=>{ if(!wall[c]&&!seen[c]){ seen[c]=1; q.push(c); } };
+  for(let x=x0;x<=x1;x++){ seed(x+y0*N); seed(x+y1*N); } for(let y=y0;y<=y1;y++){ seed(x0+y*N); seed(x1+y*N); }
+  for(let h=0;h<q.length;h++){ const c=q[h],x=c%N,y=(c/N)|0; if(x>x0)seed(c-1); if(x<x1)seed(c+1); if(y>y0)seed(c-N); if(y<y1)seed(c+N); }
+  const cells=[], t0=performance.now();
+  const take=c=>{ cells.push([c,owner[c],trail[c]]); owner[c]=T; if(trail[c]===me.id) trail[c]=0;
+    if(!REDUCED){ const d=Math.abs(c%N-me.x)+Math.abs(((c/N)|0)-me.y); capT[c]=t0+Math.min(520,d*16); } };
+  for(const c of loop) if(owner[c]!==T) take(c);
+  for(let y=y0;y<=y1;y++) for(let x=x0;x<=x1;x++){ const c=x+y*N; if(!wall[c]&&!seen[c]&&owner[c]!==T) take(c); }
+  NET.predCap={cells,tick:NET.tick}; const got=cells.length; if(!got) return;
+  floats.push({x:me.x+.5,y:me.y,text:'+'+(got/N/N*100).toFixed(got/N/N<.001?2:1)+'%',t0,col:me.dark}); SFX.capture(got);
+  const el=$('mePct'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  if(me.skin&&me.skin.spark) passBurst(me,me.x+.5,me.y+.5,Math.min(9,2.5+Math.sqrt(got)/2),null); }
 function netApply(m){
   gt=m.g!=null?m.g:gt+TICK; NET.tick++; const t0=performance.now(), dirty=new Set();
+  // a predicted capture the server never confirmed (we died first, say): put those cells back
+  if(NET.predCap&&NET.tick-NET.predCap.tick>NET.lead+6){ const T=me&&me.team; for(const [c,o,t] of NET.predCap.cells){ if(owner[c]===T) owner[c]=o; if(!trail[c]&&t) trail[c]=t; } NET.predCap=null; }
+  const predDone=NET.predCap&&m.e.some(e=>e.k==='cap'&&e.id===NET.you);
   if(me&&me.sx!=null){ me.x=me.sx; me.y=me.sy; me.dir=me.sdir; me.trailCells=me.srvTrail||me.trailCells; }
   for(const e of m.e){
     if(e.k==='join'||e.k==='meta'){ const old=NET.byId[e.id];
@@ -4122,9 +4145,10 @@ function netApply(m){
     else if(was) dirty.add(was); }
   for(const id of dirty){ const p=NET.byId[id]; if(!p) continue; p.trailCells=p.trailCells.filter(c=>trail[c]===id); if(!p.trailCells.length) p.exitCell=-1; }
   for(const e of m.e) if(e.k==='cap'){ const p=NET.byId[e.id], got=e.n; if(!p||!got) continue;
-    if(p===me){ floats.push({x:p.x+.5,y:p.y,text:'+'+(got/N/N*100).toFixed(got/N/N<.001?2:1)+'%',t0,col:p.dark}); const el=$('mePct'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
-      if(run) run.cells=(run.cells||0)+got; mission('cells',got); mission('big',got); SFX.capture(got); if(got>=100) unlock('bite'); if(got>=N*N*.05) unlock('feast'); }
-    if(p.skin&&p.skin.spark) passBurst(p,p.x+.5,p.y+.5,Math.min(9,2.5+Math.sqrt(got)/2),null); }
+    if(p===me){ if(!predDone){ floats.push({x:p.x+.5,y:p.y,text:'+'+(got/N/N*100).toFixed(got/N/N<.001?2:1)+'%',t0,col:p.dark}); const el=$('mePct'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); SFX.capture(got); }
+      if(run) run.cells=(run.cells||0)+got; mission('cells',got); mission('big',got); if(got>=100) unlock('bite'); if(got>=N*N*.05) unlock('feast'); }
+    if(p.skin&&p.skin.spark&&!(p===me&&predDone)) passBurst(p,p.x+.5,p.y+.5,Math.min(9,2.5+Math.sqrt(got)/2),null); }
+  if(predDone) NET.predCap=null;
   for(const [id,area,k,team,st,bh] of m.a){ const p=NET.byId[id]; if(!p) continue; if(team&&p.team!==team){ p.team=team; netTint(p); if(p===me) paintAccent(); } p.area=area; p.kills=k; netStat(p,st,bh); if(p.alive) p.best=Math.max(p.best||0,area); }
   if(m.z){ lo=m.z[0]; hi=m.z[1]; } netAreas();
   if(m.gd){ const g=m.gd; for(let i=0;i<g.length;i+=2){ const c=g[i], v=g[i+1]; if(gold[c]&&!v) goldN--; else if(!gold[c]&&v) goldN++; gold[c]=v; } }

@@ -138,7 +138,7 @@ function addPlayer(r,o){ const id=freeSlot(r); if(!id) return null;
 function removePlayer(r,p){ if(p.alive) die(r,p,{type:'left'},true);
   if(!r.cfg.teams&&!r.slots.some(q=>q&&q!==p&&q.team===p.team)) for(let c=0;c<N*N;c++) if(r.owner[c]===p.team) setO(r,c,0);
   r.slots[p.id]=null; r.ev.push({k:'leave',id:p.id}); }
-function fillBots(r){
+function fillBots(r){ if(process.env.NOBOTS) return;   // testing only
   N=r.N; const h=humans(r), FILL_TO=r.cfg.fill;
   while(count(r)<FILL_TO&&count(r)<r.cfg.max){ const used=new Set(r.slots.filter(Boolean).map(p=>p.name)); let nm; do nm=BOT_NAMES[rnd(BOT_NAMES.length)]+(Math.random()<.5?rnd(99):''); while(used.has(nm));
     const b=addPlayer(r,{name:nm,col:BOT_COLS[rnd(BOT_COLS.length)],skin:BOT_SKINS[rnd(BOT_SKINS.length)],bot:true}); if(!b) break;
@@ -367,6 +367,7 @@ function botThink(r,b,players){
 // a turn carries the cell it was pressed on (the player sees their head a little ahead of the server),
 // so it lands on exactly that cell; if that cell is already behind us, it's applied right away
 function humanTurn(p){
+  if(process.env.DBG) console.log('H',p.id,p.x,p.y,p.dir,JSON.stringify(p.q.map(e=>[e.d,e.at%N,(e.at/N)|0])),p.trail.map(c=>c%N+','+((c/N)|0)).join(' '));
   while(p.q.length){ const e=p.q[0], here=p.x+p.y*N;
     if(e.at>=0&&e.at!==here){ const ax=e.at%N, ay=(e.at/N)|0, dx=ax-p.x, dy=ay-p.y, k=DX[p.dir]?dx*DX[p.dir]:dy*DY[p.dir], side=DX[p.dir]?dy:dx;
       if(side===0&&k>0&&k<=8) return; }
