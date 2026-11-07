@@ -46,7 +46,10 @@ server.on('upgrade',(req,sock)=>{
       if(op===1&&ws.onmsg){ let m=null; try{ m=JSON.parse(p.toString('utf8')); }catch(e){} if(m) ws.onmsg(m); } } });
   sock.on('close',()=>{ if(ws.open){ ws.open=false; if(ws.onclose) ws.onclose(); } });
   sock.on('error',()=>{ if(ws.open){ ws.open=false; if(ws.onclose) ws.onclose(); } });
+  const LAG=+process.env.LAG||0;   // testing only: simulate a slow connection (ms each way)
+  if(LAG){ const snd=ws.send.bind(ws); ws.send=o=>setTimeout(()=>snd(o),LAG); }
   onConnect(ws);
+  if(LAG){ const on=ws.onmsg; ws.onmsg=m=>setTimeout(()=>on(m),LAG); }
 });
 function frame(op,data){ const n=data.length; let h;
   if(n<126){ h=Buffer.from([128|op,n]); } else if(n<65536){ h=Buffer.alloc(4); h[0]=128|op; h[1]=126; h.writeUInt16BE(n,2); }
@@ -140,6 +143,14 @@ function botThink(r,p){
     if(ok1.length){ let bd=1e9; for(const d of ok1){ const h=p.trail.length?homeDist(r,p,p.x+DX[d],p.y+DY[d]):rnd(9); if(h<bd){bd=h;want=d;} } } a.plan=[]; }
   p.dir=want; if(a.plan.length) a.plan.shift(); }
 
+// a turn carries the cell it was pressed on (the player sees their head a little ahead of the server),
+// so it lands on exactly that cell; if that cell is already behind us, it's applied right away
+function humanTurn(p){
+  while(p.q.length){ const e=p.q[0], here=p.x+p.y*N;
+    if(e.at>=0&&e.at!==here){ const ax=e.at%N, ay=(e.at/N)|0, dx=ax-p.x, dy=ay-p.y, k=DX[p.dir]?dx*DX[p.dir]:dy*DY[p.dir], side=DX[p.dir]?dy:dx;
+      if(side===0&&k>0&&k<=8) return; }
+    p.q.shift(); if(e.d!==p.dir&&e.d!==(p.dir+2)%4){ p.dir=e.d; return; } } }
+
 /* ---------------- one tick ---------------- */
 function step(r){
   r.tick++; const now=Date.now(); const ps=r.slots.filter(Boolean);
@@ -147,7 +158,7 @@ function step(r){
   const live=ps.filter(p=>p.alive);
   for(const p of live){
     if(p.bot) botThink(r,p);
-    else while(p.q.length){ const d=p.q.shift(); if(d!==p.dir&&d!==(p.dir+2)%4){ p.dir=d; break; } }
+    else humanTurn(p);
     p.nx=p.x+DX[p.dir]; p.ny=p.y+DY[p.dir]; }
   const dead=new Map();
   for(const p of live){
@@ -187,7 +198,8 @@ function onConnect(ws){
         owner:Buffer.from(room.owner).toString('base64'),trail:Buffer.from(room.trail).toString('base64')});
       spawn(room,me); }
     else if(!me) return;
-    else if(m.t==='d'){ const d=m.d|0; if(d>=0&&d<4&&me.q.length<3) me.q.push(d); }
+    else if(m.t==='d'){ const d=m.d|0, at=Number.isInteger(m.at)&&m.at>=0&&m.at<N*N?m.at:-1; if(d>=0&&d<4&&me.q.length<4) me.q.push({d,at}); }
+    else if(m.t==='ping'){ ws.send({t:'pong',c:m.c}); }
     else if(m.t==='respawn'){ if(!me.alive) spawn(room,me); }
     else if(m.t==='skin'){ me.skin=okSkin(m.skin); me.col=okCol(m.col); room.ev.push({k:'meta',...meta(me)}); }
   };

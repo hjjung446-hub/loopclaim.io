@@ -629,7 +629,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
 (()=>{
 let TICK=115; const DX=[0,1,0,-1], DY=[-1,0,1,0], INF=1e9;
 const C={ground:'#eef1f7',grid:'#dfe4ef',void:'#262b42',ink:'#1b2033',nameStroke:'rgba(255,255,255,.9)',emptyRgb:[226,231,241]};
-const NET={ws:null,state:'off',q:[],you:0,room:0,noServer:false};
+const NET={ws:null,state:'off',q:[],you:0,room:0,noServer:false,rtt:120,lead:2,pend:[],tick:0,pingT:0};
 const THEMES={light:{ground:'#eef1f7',grid:'#dfe4ef',void:'#262b42',ink:'#1b2033',nameStroke:'rgba(255,255,255,.9)',emptyRgb:[226,231,241]},dark:{ground:'#1d2232',grid:'#282e43',void:'#0b0e16',ink:'#e7ebf6',nameStroke:'rgba(11,14,22,.9)',emptyRgb:[40,46,66]}};
 function applyTheme(){ const t=settings.theme==='dark'?'dark':'light'; document.documentElement.dataset.theme=t; Object.assign(C,THEMES[t]); try{ if(owner) updateImg(); }catch(e){} }
 const MODES={
@@ -3692,7 +3692,7 @@ function netBegin(){
   NET.ws=ws; NET.state='connecting'; NET.q=[]; toast(L.netConnecting);
   ws.onopen=()=>ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId()}));
   ws.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(err){ return; }
-    if(m.t==='hello'){ netHello(m); netEnterUI(); } else if(m.t==='t'){ if(NET.state==='on') NET.q.push(m); } else if(m.t==='full') toast(L.netFull); };
+    if(m.t==='hello'){ netHello(m); netEnterUI(); } else if(m.t==='t'){ if(NET.state==='on') NET.q.push(m); } else if(m.t==='pong'){ const r=performance.now()-m.c; NET.rtt=NET.rtt*.7+r*.3; NET.lead=Math.max(1,Math.min(5,Math.ceil((NET.rtt+TICK*.5)/TICK))); } else if(m.t==='full') toast(L.netFull); };
   ws.onclose=()=>{ if(NET.ws!==ws) return; const was=NET.state; NET.ws=null; NET.state='off'; NET.q=[];
     if(was==='connecting'){ toast(L.netOffline); NET.noServer=true; setup('normal'); begin(); } else if(mode.online){ toast(L.netLost); toMenu(); } };
 }
@@ -3710,8 +3710,26 @@ function netHello(m){
   for(const q of m.players){ const p=netPlayer(q); players[q.id-1]=p; if(q.alive) Object.assign(p,{alive:true,x:q.x,y:q.y,px:q.x,py:q.y,dir:q.dir,area:q.area,kills:q.kills,trailCells:q.trail.slice(),exitCell:q.trail.length?q.trail[0]:-1}); }
   lands=players; teams=[]; me=players[NET.you-1]; me.isBot=false; applySkin(skin);
   particles=[]; rings=[]; camInit=false; lastTick=performance.now(); }
+// my own head is drawn a few cells ahead of the server (as far as the ping), so turns feel instant;
+// each turn tells the server which cell it was pressed on, and the server turns on that exact cell
+function netTurn(d){ if(!me||!me.alive) return;
+  let at=me.x+me.y*N, cur=me.dir; const last=NET.pend[NET.pend.length-1];
+  if(last&&last.at===at){ cur=last.d; at=(me.x+DX[cur])+(me.y+DY[cur])*N; if(!inb(me.x+DX[cur],me.y+DY[cur])) return; }
+  if(d===cur||d===(cur+2)%4) return;
+  NET.pend.push({d,at,tick:NET.tick}); netSend({t:'d',d,at}); netPredict(false); }
+function netPredict(stepped){ if(!me||!me.alive||me.sx==null){ return; }
+  NET.pend=NET.pend.filter(t=>NET.tick-t.tick<=NET.lead+4);
+  let x=me.sx,y=me.sy,d=me.sdir; const path=[], k=NET.lead;
+  const turnAt=c=>{ for(const t of NET.pend) if(t.at===c&&t.d!==(d+2)%4) d=t.d; };
+  for(let i=0;i<k;i++){ turnAt(x+y*N); const nx=x+DX[d], ny=y+DY[d]; if(!inb(nx,ny)) break; x=nx; y=ny; path.push(x+y*N); }
+  turnAt(x+y*N);
+  if(stepped){ me.px=me.predX!=null?me.predX:x; me.py=me.predY!=null?me.predY:y; } me.x=x; me.y=y; me.dir=d; me.predX=x; me.predY=y;
+  const tail=me.srvTrail||[], extra=[]; let out=tail.length>0;
+  for(const c of path){ if(owner[c]===me.id){ if(out){ extra.length=0; out=false; } continue; } out=true; extra.push(c); }
+  me.trailCells=tail.concat(extra); if(me.trailCells.length&&me.exitCell<0) me.exitCell=me.sx+me.sy*N; }
 function netApply(m){
-  gt+=TICK; const t0=performance.now(), dirty=new Set();
+  gt+=TICK; NET.tick++; const t0=performance.now(), dirty=new Set();
+  if(me&&me.sx!=null){ me.x=me.sx; me.y=me.sy; me.dir=me.sdir; me.trailCells=me.srvTrail||me.trailCells; }
   for(const e of m.e){
     if(e.k==='join'||e.k==='meta'){ const old=players[e.id-1], p=netPlayer(e);
       if(e.k==='meta'&&old&&old.netOn){ old.skin=p.skin; setColor(old,p.col); } else players[e.id-1]=p;
@@ -3722,9 +3740,9 @@ function netApply(m){
       if(k&&cause.killer&&k!==p) k.kills=(k.kills||0);
       kill(p,cause); }
     else if(e.k==='spawn'){ const p=players[e.id-1]; if(!p) continue;
-      Object.assign(p,{alive:true,x:e.x,y:e.y,px:e.x,py:e.y,dir:e.dir,trailCells:[],exitCell:-1,kills:0,lifeKills:0,best:0,bornAt:gt,ghost:null});
+      Object.assign(p,{alive:true,x:e.x,y:e.y,px:e.x,py:e.y,dir:e.dir,trailCells:[],exitCell:-1,kills:0,lifeKills:0,best:0,bornAt:gt,ghost:null,sx:null,srvTrail:[]}); if(p===me){ NET.pend=[]; me.px=e.x; me.py=e.y; me.predX=null; me.predY=null; }
       if(p.skin&&p.skin.spark) setTimeout(()=>{ if(p.alive) passBurst(p,p.x+.5,p.y+.5,5,null); },30); } }
-  for(const [id,x,y,d] of m.p){ const p=players[id-1]; if(!p) continue; p.px=p.x; p.py=p.y; p.x=x; p.y=y; p.dir=d; if(!p.alive) p.alive=true; }
+  for(const [id,x,y,d] of m.p){ const p=players[id-1]; if(!p) continue; if(p!==me){ p.px=p.x; p.py=p.y; } p.x=x; p.y=y; p.dir=d; if(!p.alive) p.alive=true; }
   const o=m.o; for(let i=0;i<o.length;i+=2){ const c=o[i], v=o[i+1], was=owner[c]; owner[c]=v;
     if(v&&v!==was&&!REDUCED){ const p=players[v-1]; const dd=p?Math.abs(c%N-p.x)+Math.abs(((c/N)|0)-p.y):0; capT[c]=t0+Math.min(520,dd*16); } }
   const r=m.r; for(let i=0;i<r.length;i+=2){ const c=r[i], v=r[i+1], was=trail[c]; trail[c]=v;
@@ -3737,6 +3755,8 @@ function netApply(m){
     if(p.skin&&p.skin.spark) passBurst(p,p.x+.5,p.y+.5,Math.min(9,2.5+Math.sqrt(got)/2),null); }
   for(const [id,area,k] of m.a){ const p=players[id-1]; if(!p) continue; p.area=area; p.kills=k; if(p.alive) p.best=Math.max(p.best||0,area); }
   if(me&&me.alive&&run) run.best=Math.max(run.best||0,me.area);
+  if(me&&me.alive){ me.sx=me.x; me.sy=me.y; me.sdir=me.dir; me.srvTrail=me.trailCells; netPredict(true); } else if(me){ me.sx=null; NET.pend=[]; }
+  if(t0-NET.pingT>2000){ NET.pingT=t0; netSend({t:'ping',c:t0}); }
   updateHud(); }
 function toMenu(){ paintWinter(); cardSeq++; feedMute=false;
   leaveTutorial();
@@ -3849,7 +3869,7 @@ function paintAccent(){ if(!me) return; const r=document.documentElement.style, 
 const KEY={ArrowUp:0,KeyW:0,ArrowRight:1,KeyD:1,ArrowDown:2,KeyS:2,ArrowLeft:3,KeyA:3};
 function push(d){
   if(!me.alive) return;
-  if(mode.online){ netSend({t:'d',d}); return; }
+  if(mode.online){ netTurn(d); return; }
   const last=queue.length?queue[queue.length-1]:me.dir;
   if(d===last||d===(last+2)%4) return;
   if(queue.length<3) queue.push(d);
