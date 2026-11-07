@@ -2228,7 +2228,7 @@ function rkBots(at){
 const TOUR_PRIZE=[[1,1000,'gold'],[2,600,'silver'],[3,300,'bronze'],[10,150,null],[50,50,null],[1e9,20,null]];
 const FRAME_COL={gold:['#ffd23f','#fff3b0'],silver:['#dfe6f2','#ffffff'],bronze:['#d9894a','#ffd0a8'],rainbow:['#ff5fa2','#ffffff'],flame:['#ff6a1f','#ffd23f'],ice:['#9fe6ff','#ffffff'],neon:['#ff4fd8','#4ff0ff'],champ:['#a54be0','#ffd23f']};
 // collectable frames: the three trophies come only from the Weekly Tournament
-const FRAMES=[{id:'gold',tour:1},{id:'silver',tour:2},{id:'bronze',tour:3},{id:'neon',coins:1500},{id:'ice',coins:2500},{id:'rainbow',rp:2000},{id:'flame',rp:3500},{id:'champ',ach:'rank1'}];
+const FRAMES=[{id:'gold',tour:1},{id:'silver',tour:2},{id:'bronze',tour:3},{id:'neon',rp:1200},{id:'ice',rp:1500},{id:'rainbow',rp:2000},{id:'flame',rp:3500},{id:'champ',ach:'rank1'}];
 const frameOwned=id=>{ const f=FRAMES.find(x=>x.id===id); if(!f) return false; return f.ach?!!achState.done[f.ach]:(rank.frames||[]).includes(id); };
 function frameGive(id,wear){ rank.frames=rank.frames||[]; if(!rank.frames.includes(id)) rank.frames.push(id); if(wear) rank.frameOn=id; saveRank(); }
 const FRAME_MEDAL={gold:'🥇',silver:'🥈',bronze:'🥉',champ:'👑'};
