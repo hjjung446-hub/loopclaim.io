@@ -2846,8 +2846,11 @@ function burst(p){
     particles.push({x:p.x+.5,y:p.y+.5,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,col:p.col});}
 }
 
+const CHEAT={god:false,freeze:false};   // dev switches for offline games, driven from ?debug=1
+const cheatOn=k=>CHEAT[k]&&!mode.online&&!spectating;
 function kill(p,cause){
   if(!p.alive) return;
+  if(p===me&&cheatOn('god')&&!(cause&&cause.type==='quit')) return;
   p.alive=false; burst(p);
   if(!spectating&&worldHasMe){
     if(p===me){ SFX.die(); if(cause&&cause.type==='self') unlock('oops'); }
@@ -3372,7 +3375,7 @@ function step(){
   snowTick();
   if(!mode.tron) for(const p of live) if(p.trailCells.length) computeNav(p);
   for(const p of live){
-    if(p.dummy){ p.nx=p.x; p.ny=p.y; continue; }
+    if(p.dummy||(p!==me&&cheatOn('freeze'))){ p.nx=p.x; p.ny=p.y; continue; }
     if(p.frozenUntil>gt){ p.nx=p.x; p.ny=p.y; if(p===me) queue=[]; continue; }
     if(p.isBot){ if(mode.tron) tronThink(p); else botThink(p); }
     else while(queue.length){const d=queue.shift(); if(d!==p.dir&&d!==(p.dir+2)%4){p.dir=d; if(tut) tut.turns++; break;}}
@@ -3380,7 +3383,8 @@ function step(){
   }
   const dead=new Map();
   for(const p of live){
-    if(p.dummy||p.frozenUntil>gt) continue;
+    if(p.dummy||p.frozenUntil>gt||(p!==me&&cheatOn('freeze'))) continue;
+    if(p===me&&cheatOn('god')&&!inb(p.nx,p.ny)){ let ok=false; for(const t of [(p.dir+1)%4,(p.dir+3)%4]){ const nx=p.x+DX[t], ny=p.y+DY[t]; if(inb(nx,ny)){ p.dir=t; p.nx=nx; p.ny=ny; ok=true; break; } } if(!ok){ p.nx=p.x; p.ny=p.y; } }
     if(!inb(p.nx,p.ny)){dead.set(p,{type:'wall'});continue;}
     const t=trail[p.nx+p.ny*N];
     if(mode.tron){ if(t){ const q=players[t-1];
@@ -3406,7 +3410,7 @@ function step(){
   for(const [p,c] of dead) kill(p,c);
   for(const p of live){
     if(!p.alive||p.dummy) continue;
-    if(p.frozenUntil>gt){ p.px=p.x; p.py=p.y; continue; }
+    if(p.frozenUntil>gt||(p!==me&&cheatOn('freeze'))||(p.nx===p.x&&p.ny===p.y)){ p.px=p.x; p.py=p.y; continue; }
     p.px=p.x;p.py=p.y;p.x=p.nx;p.y=p.ny;
     const c=p.x+p.y*N;
     if(owner[c]===p.team){ p.lastHome=c; if(p.trailCells.length) capture(p); }
@@ -3715,7 +3719,16 @@ function exitSpectate(){
 function netURL(){ if(NET.noServer) return ''; try{ const q=new URLSearchParams(location.search).get('server'); if(q) return q; const s=localStorage.getItem('ttang-server'); if(s) return s; }catch(e){}
   if(!/^https?:$/.test(location.protocol)||/claude\.ai|claudeusercontent|anthropic|ttang\.test/.test(location.host)) return '';
   return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws'; }
-try{ if(/[?&]debug=1/.test(location.search)) window.__lc=()=>({me,players,owner,trail,N,NET,lands,mode}); }catch(e){}
+try{ if(/[?&]debug=1/.test(location.search)){ window.__lc=()=>({me,players,owner,trail,N,NET,lands,mode});
+  window.__cheat=CHEAT;
+  window.__cheatDo={
+    grab(R){ if(!me||!me.alive||mode.online) return false; const T=me.team; let n=0;
+      for(let y=Math.max(0,me.y-R);y<=Math.min(N-1,me.y+R);y++) for(let x=Math.max(0,me.x-R);x<=Math.min(N-1,me.x+R);x++){ const c=x+y*N; if(owner[c]!==T){ owner[c]=T; n++; } }
+      bbGrow(T,Math.max(0,me.x-R),Math.max(0,me.y-R),Math.min(N-1,me.x+R),Math.min(N-1,me.y+R)); if(me.trailCells.length) capture(me);
+      floats.push({x:me.x+.5,y:me.y,text:'+'+n,t0:performance.now(),col:me.dark}); SFX.capture(n); return true; },
+    killAll(){ if(!me||mode.online) return false; for(const p of players) if(p!==me&&p.alive&&p.team!==me.team) kill(p,{type:'cut',by:me.name,killer:me}); return true; },
+    online:()=>!!mode.online };
+} }catch(e){}
 function netSend(o){ if(NET.ws&&NET.ws.readyState===1) NET.ws.send(JSON.stringify(o)); }
 function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; if(ws) try{ ws.close(); }catch(e){} }
 function netSkinId(){ return skin===PHOTO_SKIN||!skin?'basic':skin.id; }
