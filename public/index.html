@@ -226,6 +226,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 @keyframes streakPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}22%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-62%) scale(1)}}
 @media (prefers-reduced-motion:reduce){.streak{animation:none}.feed div{animation:none}}
 body.padOn .hint{display:none}
+body.noFx *,body.noFx *::before,body.noFx *::after{animation-duration:0s!important;animation-iteration-count:1!important;transition:none!important}
 body.padOn .achToast{bottom:auto;top:calc(160px + env(safe-area-inset-top,0px))}
 .winterBanner{display:flex;align-items:center;gap:10px;width:100%;margin:6px 0 4px;padding:10px 14px;border:0;border-radius:14px;cursor:pointer;text-align:left;color:#fff;
   background:linear-gradient(120deg,#2a6fd6,#5ab4f0 60%,#9fdcff);box-shadow:0 3px 0 #1d4f9c;font:inherit;position:relative;overflow:hidden}
@@ -604,6 +605,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     <div class="field"><label id="lTheme">Theme</label><div class="sizes" id="optTheme" role="group" aria-labelledby="lTheme"></div></div>
     <div class="field"><label id="lMini">Minimap</label><div class="sizes" id="optMini" role="group" aria-labelledby="lMini"></div></div>
     <div class="field"><label id="lPad">Arrow buttons</label><div class="sizes" id="optPad" role="group" aria-labelledby="lPad"></div></div>
+    <div class="field"><label id="lFx">Effects & animation</label><div class="sizes" id="optFx" role="group" aria-labelledby="lFx"></div></div>
     <div class="field"><label for="optLang" id="lLang">Language</label><select id="optLang"></select><p class="modeDesc" id="langNote"></p></div>
     <button class="btn" id="setDone" type="button">Done</button>
   </div>
@@ -787,7 +789,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   zWiped:"The zombies' land was wiped off the map!", hWiped:"The survivors' land was wiped off the map!",
   dLand:b=>`You ran into ${b} head-first on their land.`,
   secretDesc:"Hidden badge — find it yourself", secretSkin:"Hidden skin", secretLine:"<b>???</b> · a hidden skin. Its unlock condition is a secret!",
-  arrowPad:"Arrow buttons", winterTitle:"Winter Festival", winterSub:d=>`Grab ❄️ on the map → limited skins · ${d} days left`, flakeGain:(n,t)=>`❄️ +${n} snowflakes · ${t} total`, flakeBuyLine:(n,p)=>`<b>${n}</b> skin · ❄️${p}`, flakeNeed:(n,p,k)=>`The <b>${n}</b> skin costs ❄️${p}. You need ${k} more snowflakes.`, winterHint:"❄️ Winter Festival skins! Collect snowflakes on the map to trade for them.",
+  fxLbl:"Effects & animation", arrowPad:"Arrow buttons", winterTitle:"Winter Festival", winterSub:d=>`Grab ❄️ on the map → limited skins · ${d} days left`, flakeGain:(n,t)=>`❄️ +${n} snowflakes · ${t} total`, flakeBuyLine:(n,p)=>`<b>${n}</b> skin · ❄️${p}`, flakeNeed:(n,p,k)=>`The <b>${n}</b> skin costs ❄️${p}. You need ${k} more snowflakes.`, winterHint:"❄️ Winter Festival skins! Collect snowflakes on the map to trade for them.",
   sbThrow:"Throw (Space)", sbFrozenHud:"Frozen!", sbHit:"Hit! ❄️", sbFrozen:"Frozen! 🥶",
   rulesBtn:"How to play", tutShort:"Tutorial →", theme:"Theme", themeLight:"Light", themeDark:"Dark", netConnecting:"Connecting…", netFail:"Couldn't reach the server.", netLost:"Lost the connection to the server.", netNoServer:"Online play needs the game server. Open the game from your server's address.", netFull:"The server is full. Try again in a moment.",
   playOnline:"Online", playOffline:"Offline (vs AI)", playWhere:"Where to play",
@@ -902,7 +904,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   zWiped:"¡El territorio zombi fue borrado del mapa!", hWiped:"¡El territorio de los supervivientes fue borrado del mapa!",
   dLand:b=>`Chocaste de frente con ${b} en su territorio.`,
   secretDesc:"Logro oculto: descúbrelo tú", secretSkin:"Aspecto oculto", secretLine:"<b>???</b> · un aspecto oculto. ¡Su condición es secreta!",
-  arrowPad:"Botones de flecha", winterTitle:"Festival de Invierno", winterSub:d=>`Atrapa ❄️ en el mapa → aspectos limitados · quedan ${d} días`, flakeGain:(n,t)=>`❄️ +${n} copos · ${t} en total`, flakeBuyLine:(n,p)=>`Aspecto <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> cuesta ❄️${p}. Te faltan ${k} copos.`, winterHint:"❄️ ¡Aspectos del Festival de Invierno! Junta copos en el mapa para canjearlos.",
+  fxLbl:"Efectos y animación", arrowPad:"Botones de flecha", winterTitle:"Festival de Invierno", winterSub:d=>`Atrapa ❄️ en el mapa → aspectos limitados · quedan ${d} días`, flakeGain:(n,t)=>`❄️ +${n} copos · ${t} en total`, flakeBuyLine:(n,p)=>`Aspecto <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> cuesta ❄️${p}. Te faltan ${k} copos.`, winterHint:"❄️ ¡Aspectos del Festival de Invierno! Junta copos en el mapa para canjearlos.",
   sbThrow:"Lanzar (Espacio)", sbFrozenHud:"¡Congelado!", sbHit:"¡Impacto! ❄️", sbFrozen:"¡Congelado! 🥶",
   rulesBtn:"Cómo jugar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Oscuro", netConnecting:"Conectando…", netFail:"No se pudo conectar al servidor.", netLost:"Se perdió la conexión con el servidor.", netNoServer:"El modo en línea necesita el servidor del juego. Abre el juego desde la dirección de tu servidor.", netFull:"El servidor está lleno. Inténtalo de nuevo en un momento.",
   playOnline:"En línea", playOffline:"Sin conexión (vs IA)", playWhere:"Dónde jugar",
@@ -1017,7 +1019,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   zWiped:"O território zumbi foi apagado do mapa!", hWiped:"O território dos sobreviventes foi apagado do mapa!",
   dLand:b=>`Você bateu de frente com ${b} no território dele.`,
   secretDesc:"Conquista oculta — descubra sozinho", secretSkin:"Visual oculto", secretLine:"<b>???</b> · um visual oculto. A condição é segredo!",
-  arrowPad:"Botões de seta", winterTitle:"Festival de Inverno", winterSub:d=>`Pegue ❄️ no mapa → visuais limitados · faltam ${d} dias`, flakeGain:(n,t)=>`❄️ +${n} flocos · ${t} no total`, flakeBuyLine:(n,p)=>`Visual <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> custa ❄️${p}. Faltam ${k} flocos.`, winterHint:"❄️ Visuais do Festival de Inverno! Junte flocos no mapa para trocar.",
+  fxLbl:"Efeitos e animação", arrowPad:"Botões de seta", winterTitle:"Festival de Inverno", winterSub:d=>`Pegue ❄️ no mapa → visuais limitados · faltam ${d} dias`, flakeGain:(n,t)=>`❄️ +${n} flocos · ${t} no total`, flakeBuyLine:(n,p)=>`Visual <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> custa ❄️${p}. Faltam ${k} flocos.`, winterHint:"❄️ Visuais do Festival de Inverno! Junte flocos no mapa para trocar.",
   sbThrow:"Jogar (Espaço)", sbFrozenHud:"Congelado!", sbHit:"Acertou! ❄️", sbFrozen:"Congelado! 🥶",
   rulesBtn:"Como jogar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Escuro", netConnecting:"Conectando…", netFail:"Não foi possível conectar ao servidor.", netLost:"A conexão com o servidor caiu.", netNoServer:"O modo online precisa do servidor do jogo. Abra o jogo pelo endereço do seu servidor.", netFull:"O servidor está cheio. Tente de novo daqui a pouco.",
   playOnline:"Online", playOffline:"Offline (vs IA)", playWhere:"Onde jogar",
@@ -1132,7 +1134,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   zWiped:"Le territoire zombie a été rayé de la carte !", hWiped:"Le territoire des survivants a été rayé de la carte !",
   dLand:b=>`Tu as percuté ${b} de face sur son territoire.`,
   secretDesc:"Badge caché — à toi de le trouver", secretSkin:"Apparence cachée", secretLine:"<b>???</b> · une apparence cachée. Sa condition est secrète !",
-  arrowPad:"Boutons fléchés", winterTitle:"Festival d'hiver", winterSub:d=>`Attrape les ❄️ sur la carte → apparences limitées · encore ${d} j`, flakeGain:(n,t)=>`❄️ +${n} flocons · ${t} au total`, flakeBuyLine:(n,p)=>`Apparence <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> coûte ❄️${p}. Il te manque ${k} flocons.`, winterHint:"❄️ Apparences du Festival d'hiver ! Ramasse des flocons sur la carte pour les échanger.",
+  fxLbl:"Effets et animations", arrowPad:"Boutons fléchés", winterTitle:"Festival d'hiver", winterSub:d=>`Attrape les ❄️ sur la carte → apparences limitées · encore ${d} j`, flakeGain:(n,t)=>`❄️ +${n} flocons · ${t} au total`, flakeBuyLine:(n,p)=>`Apparence <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> coûte ❄️${p}. Il te manque ${k} flocons.`, winterHint:"❄️ Apparences du Festival d'hiver ! Ramasse des flocons sur la carte pour les échanger.",
   sbThrow:"Lancer (Espace)", sbFrozenHud:"Gelé !", sbHit:"Touché ! ❄️", sbFrozen:"Gelé ! 🥶",
   rulesBtn:"Comment jouer", tutShort:"Tutoriel →", theme:"Thème", themeLight:"Clair", themeDark:"Sombre", netConnecting:"Connexion…", netFail:"Impossible de joindre le serveur.", netLost:"Connexion au serveur perdue.", netNoServer:"Le mode en ligne a besoin du serveur du jeu. Ouvre le jeu depuis l'adresse de ton serveur.", netFull:"Le serveur est plein. Réessaie dans un instant.",
   playOnline:"En ligne", playOffline:"Hors ligne (vs IA)", playWhere:"Où jouer",
@@ -1247,7 +1249,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   zWiped:"Das Zombie-Land wurde von der Karte gefegt!", hWiped:"Das Land der Überlebenden wurde von der Karte gefegt!",
   dLand:b=>`Du bist ${b} auf seinem Land frontal reingefahren.`,
   secretDesc:"Verstecktes Abzeichen – finde es selbst", secretSkin:"Versteckter Skin", secretLine:"<b>???</b> · ein versteckter Skin. Die Bedingung ist geheim!",
-  arrowPad:"Pfeiltasten", winterTitle:"Winterfest", winterSub:d=>`Sammle ❄️ auf der Karte → limitierte Skins · noch ${d} Tage`, flakeGain:(n,t)=>`❄️ +${n} Schneeflocken · ${t} insgesamt`, flakeBuyLine:(n,p)=>`Skin <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> kostet ❄️${p}. Dir fehlen ${k} Schneeflocken.`, winterHint:"❄️ Winterfest-Skins! Sammle Schneeflocken auf der Karte und tausche sie ein.",
+  fxLbl:"Effekte & Animation", arrowPad:"Pfeiltasten", winterTitle:"Winterfest", winterSub:d=>`Sammle ❄️ auf der Karte → limitierte Skins · noch ${d} Tage`, flakeGain:(n,t)=>`❄️ +${n} Schneeflocken · ${t} insgesamt`, flakeBuyLine:(n,p)=>`Skin <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> kostet ❄️${p}. Dir fehlen ${k} Schneeflocken.`, winterHint:"❄️ Winterfest-Skins! Sammle Schneeflocken auf der Karte und tausche sie ein.",
   sbThrow:"Werfen (Leertaste)", sbFrozenHud:"Eingefroren!", sbHit:"Treffer! ❄️", sbFrozen:"Eingefroren! 🥶",
   rulesBtn:"Spielregeln", tutShort:"Tutorial →", theme:"Design", themeLight:"Hell", themeDark:"Dunkel", netConnecting:"Verbinde…", netFail:"Server nicht erreichbar.", netLost:"Verbindung zum Server verloren.", netNoServer:"Online-Spiel braucht den Spielserver. Öffne das Spiel über die Adresse deines Servers.", netFull:"Der Server ist voll. Versuch es gleich noch mal.",
   playOnline:"Online", playOffline:"Offline (gegen KI)", playWhere:"Wo spielen",
@@ -1362,7 +1364,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   zWiped:"僵尸的领地被彻底清除了！", hWiped:"幸存者的领地被彻底清除了！",
   dLand:b=>`你在 ${b} 的领地上和他迎头相撞。`,
   secretDesc:"隐藏徽章——自己去发现吧", secretSkin:"隐藏皮肤", secretLine:"<b>???</b> · 隐藏皮肤。解锁条件是秘密！",
-  arrowPad:"方向按钮", winterTitle:"冬日庆典", winterSub:d=>`在地图上收集❄️ → 兑换限定皮肤 · 剩余${d}天`, flakeGain:(n,t)=>`❄️ +${n} 雪花 · 共${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>皮肤 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>需要❄️${p}，还差${k}片雪花。`, winterHint:"❄️ 冬日庆典限定皮肤！在地图上收集雪花来兑换。",
+  fxLbl:"特效与动画", arrowPad:"方向按钮", winterTitle:"冬日庆典", winterSub:d=>`在地图上收集❄️ → 兑换限定皮肤 · 剩余${d}天`, flakeGain:(n,t)=>`❄️ +${n} 雪花 · 共${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>皮肤 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>需要❄️${p}，还差${k}片雪花。`, winterHint:"❄️ 冬日庆典限定皮肤！在地图上收集雪花来兑换。",
   sbThrow:"投掷（空格）", sbFrozenHud:"冻住了！", sbHit:"命中！❄️", sbFrozen:"冻住了！🥶",
   rulesBtn:"玩法", tutShort:"教程 →", theme:"主题", themeLight:"浅色", themeDark:"深色", netConnecting:"连接中…", netFail:"无法连接服务器。", netLost:"与服务器的连接已断开。", netNoServer:"在线模式需要游戏服务器。请从你的服务器地址打开游戏。", netFull:"服务器已满，请稍后再试。",
   playOnline:"在线", playOffline:"离线（对战 AI）", playWhere:"游戏方式",
@@ -1477,7 +1479,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   zWiped:"ゾンビの陣地がマップから消えた！", hWiped:"生存者の陣地がマップから消えた！",
   dLand:b=>`${b}の陣地で正面衝突した。`,
   secretDesc:"隠しバッジ — 自分で見つけよう", secretSkin:"隠しスキン", secretLine:"<b>???</b> · 隠しスキン。解放条件はヒミツ！",
-  arrowPad:"矢印ボタン", winterTitle:"ウィンターフェス", winterSub:d=>`マップの❄️を集めて限定スキンと交換 · 残り${d}日`, flakeGain:(n,t)=>`❄️ +${n} 雪の結晶 · 合計${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>スキン · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>は❄️${p}。あと${k}個必要です。`, winterHint:"❄️ ウィンターフェス限定スキン！マップで雪の結晶を集めて交換しよう。",
+  fxLbl:"エフェクトとアニメ", arrowPad:"矢印ボタン", winterTitle:"ウィンターフェス", winterSub:d=>`マップの❄️を集めて限定スキンと交換 · 残り${d}日`, flakeGain:(n,t)=>`❄️ +${n} 雪の結晶 · 合計${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>スキン · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>は❄️${p}。あと${k}個必要です。`, winterHint:"❄️ ウィンターフェス限定スキン！マップで雪の結晶を集めて交換しよう。",
   sbThrow:"投げる（スペース）", sbFrozenHud:"凍った！", sbHit:"命中！❄️", sbFrozen:"凍った！🥶",
   rulesBtn:"遊び方", tutShort:"チュートリアル →", theme:"テーマ", themeLight:"ライト", themeDark:"ダーク", netConnecting:"接続中…", netFail:"サーバーに接続できません。", netLost:"サーバーとの接続が切れました。", netNoServer:"オンライン対戦にはゲームサーバーが必要です。サーバーのアドレスからゲームを開いてください。", netFull:"サーバーが満員です。少し待ってからもう一度どうぞ。",
   playOnline:"オンライン", playOffline:"オフライン（AIと対戦）", playWhere:"プレイ方法",
@@ -1592,7 +1594,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   zWiped:"좀비 땅이 맵에서 전멸했어요!", hWiped:"생존자 땅이 맵에서 전멸했어요!",
   dLand:b=>`${b}의 땅에서 머리끼리 부딪혔어요.`,
   secretDesc:"숨겨진 배지 — 직접 찾아보세요", secretSkin:"숨겨진 스킨", secretLine:"<b>???</b> · 숨겨진 스킨이에요. 얻는 방법은 비밀!",
-  arrowPad:"화살표 버튼", winterTitle:"겨울 축제", winterSub:d=>`맵의 ❄️를 모아 한정 스킨과 교환 · ${d}일 남음`, flakeGain:(n,t)=>`❄️ 눈송이 +${n} · 보유 ${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b> 스킨 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> 스킨은 ❄️${p}이에요. 눈송이 ${k}개가 더 필요해요.`, winterHint:"❄️ 겨울 축제 한정 스킨! 맵에 떨어진 눈송이를 모아서 교환하세요.",
+  fxLbl:"이펙트·애니메이션", arrowPad:"화살표 버튼", winterTitle:"겨울 축제", winterSub:d=>`맵의 ❄️를 모아 한정 스킨과 교환 · ${d}일 남음`, flakeGain:(n,t)=>`❄️ 눈송이 +${n} · 보유 ${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b> 스킨 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> 스킨은 ❄️${p}이에요. 눈송이 ${k}개가 더 필요해요.`, winterHint:"❄️ 겨울 축제 한정 스킨! 맵에 떨어진 눈송이를 모아서 교환하세요.",
   sbThrow:"던지기 (스페이스)", sbFrozenHud:"얼었어요!", sbHit:"명중! ❄️", sbFrozen:"얼었다! 🥶",
   rulesBtn:"게임 방법", tutShort:"튜토리얼 →", theme:"테마", themeLight:"화이트", themeDark:"블랙", netConnecting:"서버에 연결하는 중…", netFail:"서버에 연결할 수 없어요.", netLost:"서버 연결이 끊겼어요.", netNoServer:"온라인 모드는 게임 서버가 필요해요. 서버 주소로 게임을 열어주세요.", netFull:"서버가 가득 찼어요. 잠시 후 다시 시도해주세요.",
   playOnline:"온라인", playOffline:"오프라인 (AI와)", playWhere:"플레이 방식",
@@ -1693,10 +1695,10 @@ const SKINS=[
   {fx:'matrix',id:'hacker',ach:'hacker',elite:true,name:'Hacker',col:'#173322',deco:'hacker',pat:'circuit',aura:'#39ff7a',spark:'hacker'},
   // ranked-only: unlocked by reaching a tier, never sold and never worn by the AI
   // sold only in the RP shop
-  {fx:'neon',id:'neon',rpPrice:300,name:'Neon',col:'#1d2240',deco:'neon',pat:'neongrid'},
-  {fx:'ghost',id:'ghost',rpPrice:250,name:'Ghost',col:'#b9c2e6',deco:'ghost',pat:'boo'},
-  {fx:'petal',id:'samurai',rpPrice:400,name:'Samurai',col:'#c8323c',deco:'samurai',pat:'seigaiha'},
-  {fx:'bolt',id:'thunder',rpPrice:500,name:'Thunder',col:'#f2c200',deco:'thunder',pat:'bolt'},
+  {fx:'neon',id:'neon',rpPrice:1000,name:'Neon',col:'#1d2240',deco:'neon',pat:'neongrid'},
+  {fx:'ghost',id:'ghost',rpPrice:750,name:'Ghost',col:'#b9c2e6',deco:'ghost',pat:'boo'},
+  {fx:'petal',id:'samurai',rpPrice:1000,name:'Samurai',col:'#c8323c',deco:'samurai',pat:'seigaiha'},
+  {fx:'bolt',id:'thunder',rpPrice:1500,name:'Thunder',col:'#f2c200',deco:'thunder',pat:'bolt'},
   {fx:'lava',id:'lava',rpPrice:900,name:'Lava',col:'#3b1d17',deco:'lava',pat:'magma',aura:'#ff7a2f',spark:'lava'},
   {fx:'glitch',id:'glitch',rpPrice:8000,name:'Glitch',col:'#101018',deco:'glitch',pat:'scan',aura:'#00f0ff',spark:'glitch'},
   {fx:'galaxy',id:'galaxy',rpPrice:5000,name:'Galaxy',col:'#231a52',deco:'galaxy',pat:'stardust',aura:'#b58cff',spark:'galaxy'},
@@ -1868,7 +1870,10 @@ const GUEST=(()=>{ let g=null; try{ g=localStorage.getItem('ttang-guest'); }catc
   if(!g||!/^Guest\d{3}$/.test(g)){ g='Guest'+(100+Math.floor(Math.random()*900)); try{ localStorage.setItem('ttang-guest',g); }catch(e){} } return g; })();
 let skin=SKINS[0], myName=GUEST;
 let queue=[],particles=[],floats=[],rings=[],capT=new Float64Array(1);
-const CAP_DUR=380, REDUCED=matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CAP_DUR=380, REDUCED_OS=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+let REDUCED=REDUCED_OS||settings.fx===false;   // Settings → Effects & animation off: no particles, glows or moving patterns
+function applyFx(){ REDUCED=REDUCED_OS||settings.fx===false; document.body.classList.toggle('noFx',settings.fx===false); }
+applyFx();
 let spectating=false,worldHasMe=true,speed=1,overview=false,follow=null,gt=0,paused=false,ended=false,lo=0,hi=99,nextShrink=0,againAction='play',toastT=0;
 let lastTick=performance.now(),camX=0,camY=0,camInit=false,deathCam=null;
 const inb=(x,y)=>x>=lo&&y>=lo&&x<=hi&&y<=hi;
@@ -4596,10 +4601,11 @@ function landFx(g,fx,X,Y,S,x,y,t){
       { const sc=(((y-t*18)%46)+46)%46; if(sc<1){ g.globalAlpha=.35; g.fillStyle='#00f0ff'; g.fillRect(X,Y,S+1,S*.18); g.globalAlpha=1; } }
       break; }
     case 'lava': { const ck=fxHash(x,y,7);
-      if(ck<.42){ const p=.5+.5*Math.sin(t*2.4+ck*40+x*.3); g.save(); g.globalAlpha=.35+.55*p; g.strokeStyle=p>.7?'#ffd23f':'#ff6a1f'; g.shadowColor='#ff5a1f'; g.shadowBlur=S*.5; g.lineWidth=Math.max(1,S*.1); g.lineCap='round';
+      if(ck<.42){ const p=.5+.5*Math.sin(t*2.4+ck*40+x*.3); g.save(); g.lineCap='round'; g.lineJoin='round';
         g.beginPath(); if(ck<.14){ g.moveTo(X,Y+S*.3); g.lineTo(X+S*.45,Y+S*.55); g.lineTo(X+S,Y+S*.4); } else if(ck<.28){ g.moveTo(X+S*.4,Y); g.lineTo(X+S*.6,Y+S*.5); g.lineTo(X+S*.35,Y+S); } else { g.moveTo(X,Y+S*.7); g.lineTo(X+S*.5,Y+S*.35); g.lineTo(X+S*.8,Y); }
-        g.stroke(); g.restore(); }
-      if(h<.035){ const k=fxHash(x,y,8), u=(t*.7+k)%1; if(u<.5){ const r=S*.18*Math.sin(u/.5*Math.PI); g.save(); g.globalAlpha=.85; g.fillStyle='#ffb13b'; g.shadowColor='#ff5a1f'; g.shadowBlur=S*.6; g.beginPath(); g.arc(X+S*.5,Y+S*.5,r,0,7); g.fill(); g.restore(); } } break; }
+        g.globalAlpha=(.35+.55*p)*.35; g.strokeStyle='#ff5a1f'; g.lineWidth=Math.max(2,S*.3); g.stroke();   // a soft glow, without the costly blur
+        g.globalAlpha=.35+.55*p; g.strokeStyle=p>.7?'#ffd23f':'#ff6a1f'; g.lineWidth=Math.max(1,S*.1); g.stroke(); g.restore(); }
+      if(h<.035){ const k=fxHash(x,y,8), u=(t*.7+k)%1; if(u<.5){ const r=S*.18*Math.sin(u/.5*Math.PI); g.save(); g.fillStyle='#ff5a1f'; g.globalAlpha=.3; g.beginPath(); g.arc(X+S*.5,Y+S*.5,r*2,0,7); g.fill(); g.globalAlpha=.85; g.fillStyle='#ffb13b'; g.beginPath(); g.arc(X+S*.5,Y+S*.5,r,0,7); g.fill(); g.restore(); } } break; }
     case 'galaxy': {
       if(h<.18){ const a=Math.pow(.5+.5*Math.sin(t*(1.5+h*8)+h*90),4); if(a>.03) star4(g,X+S*(.2+.6*fxHash(x,y,2)),Y+S*(.2+.6*fxHash(x,y,3)),S*(h<.04?.42:.24),h<.06?'#ffffff':'#d9c6ff',a); }
       { const neb=Math.sin(x*.18+t*.4)+Math.sin(y*.21-t*.3); g.globalAlpha=.07+.07*(.5+.5*Math.sin(neb*1.4)); g.fillStyle=neb>0?'#b58cff':'#5ac8ff'; g.fillRect(X,Y,S+1,S+1); g.globalAlpha=1; }
@@ -5092,6 +5098,7 @@ const segPaints=[
   segInit('optSpeed',['slow','normal','fast'],[L.slow,L.normal,L.fast],()=>settings.speed,v=>{ settings.speed=v; TICK=SPEED_MS[v]; lastTick=performance.now(); }),
   segInit('optMini',[true,false],[L.show,L.hide],()=>settings.minimap,v=>{ settings.minimap=v; }),
   segInit('optPad',[true,false],[L.on,L.off],()=>settings.pad===true,v=>{ settings.pad=v; }),
+  segInit('optFx',[true,false],[L.on,L.off],()=>settings.fx!==false,v=>{ settings.fx=v; applyFx(); if(!v){ particles.length=0; rings.length=0; } }),
   segInit('optTheme',['light','dark'],[L.themeLight,L.themeDark],()=>settings.theme==='dark'?'dark':'light',v=>{ settings.theme=v; applyTheme(); }),
   segInit('optEmo',[true,false],[L.on,L.off],()=>settings.emotes!==false,v=>{ settings.emotes=v; paintEmoUI(); })
 ];
@@ -5157,7 +5164,7 @@ for(const b of document.querySelectorAll('.sndBtn')) b.onclick=toggleSound;
   tx('#achOv h2',L.badges); tx('#achDone',L.done); tx('#achToastLbl',L.badgeEarned);
   tx('#skinOv h2',L.skins); at('#skins','aria-label',L.skins); tx('#skinHint',L.skinsHint); tx('#skinDone',L.done);
   tx('#setOv h2',L.settings); tx('#lSound',L.sound); tx('#lVol',L.volume); tx('#lSndTypes',L.sndTypes); tx('#lSpeed',L.gameSpeed); tx('label[for=optAi]',L.aiPlayers); tx('#optAiReset',L.reset);
-  tx('label[for=optMap]',L.mapSize); tx('#optMapReset',L.reset); tx('#lMini',L.minimap); tx('#lPad',L.arrowPad); tx('#lTheme',L.theme); tx('#lLang',L.language); tx('#langNote',L.langNote); tx('#setDone',L.done);
+  tx('label[for=optMap]',L.mapSize); tx('#optMapReset',L.reset); tx('#lMini',L.minimap); tx('#lPad',L.arrowPad); tx('#lFx',L.fxLbl); tx('#lTheme',L.theme); tx('#lLang',L.language); tx('#langNote',L.langNote); tx('#setDone',L.done);
   tx('#overTitle',L.outTitle); tx('#stBestLbl',L.bestShare);
   const ss=document.querySelectorAll('#stats > div > span'); if(ss[1]) ss[1].textContent=L.kills; if(ss[2]) ss[2].textContent=L.survived;
   tx('#againBtn',L.playAgain); tx('#skinBtn',L.changeModeSkin);
