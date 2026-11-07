@@ -383,14 +383,14 @@ body.xmas .xmasHat{display:block}
 .rkList{max-height:min(52vh,460px);overflow-y:auto;padding:2px}
 .rkList li{grid-template-columns:28px 18px 36px minmax(0,1fr) auto}
 .rkAv{width:36px;height:36px;display:block;border-radius:10px;background:var(--card);box-shadow:0 1px 3px rgba(27,32,51,.12),0 0 0 1px var(--line)}
-.rkAv.fr-gold{box-shadow:0 0 0 2.5px #ffd23f,0 0 10px 1px rgba(255,210,63,.75)}
-.rkAv.fr-silver{box-shadow:0 0 0 2.5px #a3afc4,0 0 10px 1px rgba(163,175,196,.8)}
-.rkAv.fr-bronze{box-shadow:0 0 0 2.5px #d9894a,0 0 10px 1px rgba(217,137,74,.7)}
-.rkAv.fr-rainbow{box-shadow:0 0 0 2px #ffd23f,0 0 0 4px #ff5fa2,0 0 0 6px #7ee8fa}
-.rkAv.fr-flame{box-shadow:0 0 0 2.5px #ff6a1f,0 0 12px 2px rgba(255,90,31,.85)}
-.rkAv.fr-ice{box-shadow:0 0 0 2.5px #7fd4ff,0 0 10px 2px rgba(190,240,255,.95)}
-.rkAv.fr-neon{box-shadow:0 0 0 2px #ff4fd8,0 0 0 4.5px #4ff0ff,0 0 10px 1px rgba(79,240,255,.8)}
-.rkAv.fr-champ{box-shadow:0 0 0 2.5px #a54be0,0 0 0 4.5px #ffd23f,0 0 10px 1px rgba(255,210,63,.7)}
+.rkAv.fr-gold,.profHead canvas.fr-gold{box-shadow:0 0 0 2.5px #ffd23f,0 0 10px 1px rgba(255,210,63,.75)}
+.rkAv.fr-silver,.profHead canvas.fr-silver{box-shadow:0 0 0 2.5px #a3afc4,0 0 10px 1px rgba(163,175,196,.8)}
+.rkAv.fr-bronze,.profHead canvas.fr-bronze{box-shadow:0 0 0 2.5px #d9894a,0 0 10px 1px rgba(217,137,74,.7)}
+.rkAv.fr-rainbow,.profHead canvas.fr-rainbow{box-shadow:0 0 0 2px #ffd23f,0 0 0 4px #ff5fa2,0 0 0 6px #7ee8fa}
+.rkAv.fr-flame,.profHead canvas.fr-flame{box-shadow:0 0 0 2.5px #ff6a1f,0 0 12px 2px rgba(255,90,31,.85)}
+.rkAv.fr-ice,.profHead canvas.fr-ice{box-shadow:0 0 0 2.5px #7fd4ff,0 0 10px 2px rgba(190,240,255,.95)}
+.rkAv.fr-neon,.profHead canvas.fr-neon{box-shadow:0 0 0 2px #ff4fd8,0 0 0 4.5px #4ff0ff,0 0 10px 1px rgba(79,240,255,.8)}
+.rkAv.fr-champ,.profHead canvas.fr-champ{box-shadow:0 0 0 2.5px #a54be0,0 0 0 4.5px #ffd23f,0 0 10px 1px rgba(255,210,63,.7)}
 .frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:6px}
 .frames .skin .rkAv{width:46px;height:46px;margin:6px 0 4px}
 .frH{margin:12px 0 6px;font-size:15px}
@@ -2593,6 +2593,7 @@ function buildProf(P){
   const extra=P.own?`<span>${COIN_ICO}${wallet.coins.toLocaleString(LANG)}</span><span>${L.bpLvShort(bpLevel())}</span>`:'';
   $('profHead').innerHTML=`<canvas id="profCv" width="128" height="128"></canvas><div><b>${esc(P.name)}</b><small><span>${tierBadge(P.ti,18)} ${tierName(P.ti)} · ${P.rp} RP</span>${extra}</small></div>`;
   drawSkinPreview($('profCv'),P.skin);
+  { const fr=P.own?myFrame():P.frame; $('profCv').className=fr?'fr-'+fr:''; }
   const tile=(v,lbl,hl)=>`<div${hl?' class="hl"':''}><em>${v}</em><span>${lbl}</span></div>`, num=v=>Math.round(v).toLocaleString(LANG);
   $('profGrid').innerHTML=[
     tile(num(P.games),L.pGames), tile(num(P.wins)+(P.rated?` <small>${Math.round(P.wins/P.rated*100)}%</small>`:''),L.pWins,true),
@@ -2663,7 +2664,7 @@ $('achOpen').onclick=openAch; $('achDone').onclick=closeAch;
 $('rkOpen').onclick=openRk; $('rkDone').onclick=closeRk;
 function rkPick(el){ const id=el&&el.dataset.rk; if(!id) return; SFX.click();
   if(id==='_me'||id===RK.uid) return openProf(null,'rkOv',id);
-  const d=RK.map&&RK.map.get(id); if(!d) return; openProf(d.bot?botProf(d):lbProf(d),'rkOv',id); }
+  const d=RK.map&&RK.map.get(id); if(!d) return; const P=d.bot?botProf(d):lbProf(d); P.frame=rkFrame(d); openProf(P,'rkOv',id); }
 $('rkList').addEventListener('click',e=>rkPick(e.target.closest('.rkRow')));
 $('rkList').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ const r=e.target.closest('.rkRow'); if(r){ e.preventDefault(); rkPick(r); } } });
 $('bpOpen').onclick=()=>openBp('startOv'); $('bpDone').onclick=closeBp;
