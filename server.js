@@ -64,7 +64,7 @@ const okCol=c=>/^#[0-9a-f]{6}$/i.test(c)?c:BOT_COLS[rnd(BOT_COLS.length)];
 const okSkin=s=>/^[a-z0-9]{1,16}$/i.test(s||'')?s:'basic';
 
 function makeRoom(){ const r={id:++roomSeq,owner:new Uint8Array(N*N),trail:new Uint8Array(N*N),slots:new Array(MAX_SLOTS+1).fill(null),
-  clients:new Set(),od:[],td:[],ev:[],tick:0,mark:new Int32Array(N*N),stamp:0,q:new Int32Array(N*N)};
+  clients:new Set(),od:[],td:[],ev:[],tick:0,mark:new Int32Array(N*N),stamp:0,q:new Int32Array(N*N),mk:new Int32Array(N*N),bq:new Int32Array(N*N),dq:new Int32Array(N*N),st2:0};
   r.timer=setInterval(()=>step(r),TICK); rooms.push(r); fillBots(r); return r; }
 function humans(r){ let n=0; for(const p of r.slots) if(p&&!p.bot) n++; return n; }
 function count(r){ let n=0; for(const p of r.slots) if(p) n++; return n; }
@@ -98,7 +98,7 @@ function spawn(r,p){
   for(const c of p.trail) if(r.trail[c]===p.id) setT(r,c,0);
   const [sx,sy]=spawnSpot(r);
   for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){ const c=(sx+dx)+(sy+dy)*N; setO(r,c,p.id); if(r.trail[c]) killTrailAt(r,c); }
-  Object.assign(p,{x:sx,y:sy,dir:rnd(4),alive:true,trail:[],exit:-1,kills:0,q:[],ai:{plan:[]},bornAt:Date.now()});
+  Object.assign(p,{x:sx,y:sy,dir:rnd(4),alive:true,trail:[],exit:-1,kills:0,q:[],ai:brain(),nd:null,bornAt:Date.now()});
   r.ev.push({k:'spawn',id:p.id,x:sx,y:sy,dir:p.dir}); }
 function killTrailAt(r,c){ const q=r.slots[r.trail[c]]; if(q&&q.alive) die(r,q,{type:'cut',by:0}); }
 function die(r,p,cause,silent){
@@ -122,26 +122,71 @@ function capture(r,p){
     setO(r,c,T); got++; }
   r.ev.push({k:'cap',id:T,n:got}); }
 
-/* ---------------- AI ---------------- */
-function safe(r,p,d,look){ let x=p.x,y=p.y; for(let i=0;i<look;i++){ x+=DX[d]; y+=DY[d]; if(!inb(x,y)) return false; if(r.trail[x+y*N]===p.id) return false; } return true; }
-function homeDist(r,p,x,y){ let best=1e9; for(let d=0;d<4;d++){ let cx=x,cy=y; for(let k=1;k<=N;k++){ cx+=DX[d]; cy+=DY[d]; if(!inb(cx,cy)) break; if(r.owner[cx+cy*N]===p.id){ best=Math.min(best,k); break; } } } return best; }
-function botThink(r,p){
-  const a=p.ai, onHome=r.owner[p.x+p.y*N]===p.id, rev=(p.dir+2)%4;
-  const dirs=[0,1,2,3].filter(d=>d!==rev);
-  // grab an enemy tail right next to us
-  for(const d of dirs){ const x=p.x+DX[d], y=p.y+DY[d]; if(!inb(x,y)) continue; const t=r.trail[x+y*N]; if(t&&t!==p.id&&Math.random()<.85){ p.dir=d; return; } }
-  if(onHome&&!p.trail.length){
-    if(!a.plan.length||Math.random()<.04){ const d=dirs[rnd(dirs.length)], turn=Math.random()<.5?1:3, la=3+rnd(8), lb=3+rnd(8);
-      a.plan=[]; for(let i=0;i<la+2;i++) a.plan.push(d); for(let i=0;i<lb;i++) a.plan.push((d+turn)%4); for(let i=0;i<la+3;i++) a.plan.push((d+2)%4); }
-  }
-  let want=a.plan.length?a.plan[0]:p.dir;
-  // tail getting long or an enemy head is close: go home
-  const danger=r.slots.some(q=>q&&q.alive&&q!==p&&Math.abs(q.x-p.x)+Math.abs(q.y-p.y)<Math.max(4,p.trail.length/3));
-  if(p.trail.length>28||(danger&&p.trail.length>3)){ a.plan=[]; let bd=1e9; for(const d of dirs){ const x=p.x+DX[d],y=p.y+DY[d]; if(!inb(x,y)||r.trail[x+y*N]===p.id) continue; const h=homeDist(r,p,x,y); if(h<bd){bd=h;want=d;} } }
-  if(want===rev) want=p.dir;
-  if(!safe(r,p,want,2)){ const ok=dirs.filter(d=>safe(r,p,d,3)); const ok1=ok.length?ok:dirs.filter(d=>safe(r,p,d,1));
-    if(ok1.length){ let bd=1e9; for(const d of ok1){ const h=p.trail.length?homeDist(r,p,p.x+DX[d],p.y+DY[d]):rnd(9); if(h<bd){bd=h;want=d;} } } a.plan=[]; }
-  p.dir=want; if(a.plan.length) a.plan.shift(); }
+/* ---------------- AI (same brain as the offline game) ---------------- */
+const INF=1e9, man=(ax,ay,c)=>Math.abs(c%N-ax)+Math.abs(((c/N)|0)-ay);
+const brain=()=>({phase:'home',agg:Math.random(),margin:2+rnd(3),range:18});
+function bfsHome(r,p,start){
+  if(r.owner[start]===p.id) return 0; if(r.trail[start]===p.id) return INF;
+  const M=r.mk, Q=r.bq, D=r.dq; const st=++r.st2; let qh=0,qt=0; Q[qt]=start; D[qt++]=0; M[start]=st;
+  while(qh<qt&&qt<9000){ const c=Q[qh], d=D[qh++], x=c%N, y=(c/N)|0;
+    for(let k=0;k<4;k++){ const nx=x+DX[k], ny=y+DY[k]; if(!inb(nx,ny)) continue; const n=nx+ny*N; if(M[n]===st) continue; M[n]=st;
+      if(r.trail[n]===p.id) continue; if(r.owner[n]===p.id) return d+1; Q[qt]=n; D[qt++]=d+1; } }
+  return INF; }
+function computeNav(r,p){ p.nd=[INF,INF,INF,INF]; for(let d=0;d<4;d++){ const x=p.x+DX[d],y=p.y+DY[d]; if(inb(x,y)) p.nd[d]=bfsHome(r,p,x+y*N); } }
+function homeDist(r,p){ if(r.owner[p.x+p.y*N]===p.id) return 0; if(!p.nd) return INF; let m=INF;
+  for(let d=0;d<4;d++){ if(d===(p.dir+2)%4) continue; if(p.nd[d]+1<m) m=p.nd[d]+1; } return m; }
+function pickExit(r,b){
+  const M=r.mk, Q=r.bq, D=r.dq, start=b.x+b.y*N, st=++r.st2; let qh=0,qt=0; Q[qt]=start; D[qt++]=0; M[start]=st; const cands=[];
+  while(qh<qt&&qt<40000&&cands.length<50){ const c=Q[qh], d=D[qh++], x=c%N, y=(c/N)|0;
+    for(let k=0;k<4;k++){ const nx=x+DX[k], ny=y+DY[k]; if(!inb(nx,ny)) continue; const n=nx+ny*N; if(M[n]===st) continue; M[n]=st;
+      if(r.trail[n]===b.id) continue;
+      if(r.owner[n]!==b.id){ cands.push([n,d+1,inb(nx+DX[k]*4,ny+DY[k]*4)]); continue; }
+      Q[qt]=n; D[qt++]=d+1; } }
+  if(!cands.length) return -1; let best=-1,bv=INF;
+  for(const [n,d,room] of cands){ const v=d+Math.random()*10+(room?0:25); if(v<bv){bv=v;best=n;} } return best; }
+function botThink(r,b,players){
+  const gt=r.tick*TICK, ai=b.ai, out=b.trail.length>0, home=r.owner[b.x+b.y*N]===b.id, rev=(b.dir+2)%4;
+  const enemies=players.filter(e=>e.alive&&e!==b&&Math.abs(e.x-b.x)+Math.abs(e.y-b.y)<45);
+  const nb=d=>{const x=b.x+DX[d],y=b.y+DY[d];return inb(x,y)?x+y*N:-1;};
+  const legal=d=>{ if(d===rev) return false; const c=nb(d); return c>=0&&r.trail[c]!==b.id&&(!out||b.nd[d]<INF); };
+  const headRisk=c=>{ if(r.owner[c]===b.id) return false; const x=c%N,y=(c/N)|0; for(const e of enemies) if(Math.abs(e.x-x)+Math.abs(e.y-y)<=1) return true; return false; };
+  const safe=d=>legal(d)&&!headRisk(nb(d));
+  const pick=(ok,score)=>{let bd=-1,bv=INF; for(let d=0;d<4;d++){ if(!ok(d)) continue; const v=score(d)+(d===b.dir?-.25:0); if(v<bv){bv=v;bd=d;}} return bd;};
+  const toHome=ok=>out?pick(ok,d=>b.nd[d]):pick(ok,()=>Math.random());
+  const myHome=homeDist(r,b); let reach=INF;
+  if(out) for(const e of enemies){ let m=man(e.x,e.y,b.x+b.y*N); for(const c of b.trail){const v=man(e.x,e.y,c); if(v<m)m=v;} if(m<reach) reach=m; }
+  const slack=reach-myHome;
+  let prey=-1;
+  if(slack>ai.margin+2||home){ let best=INF;
+    for(const e of enemies){ if(!e.trail.length) continue; const eh=homeDist(r,e);
+      for(const c of e.trail){ const md=man(b.x,b.y,c); if(md>(ai.range||18)||md>=eh) continue;
+        const sc=md-(!e.bot?ai.agg*5:0)-Math.min(6,e.trail.length/5); if(sc<best){best=sc;prey=c;} } } }
+  let want=-1;
+  if(prey>=0&&ai.agg>.2){ const px=prey%N,py=(prey/N)|0; want=pick(d=>legal(d)&&(nb(d)===prey||!headRisk(nb(d))),d=>man(px,py,nb(d))); ai.phase='home'; }
+  else if(home){
+    if(ai.wasOut){ ai.wasOut=false; ai.planned=false; ai.goal=null; }
+    if(!ai.planned){ let calm=INF; for(const e of enemies) calm=Math.min(calm,Math.abs(e.x-b.x)+Math.abs(e.y-b.y));
+      const big=calm>25?6:0, q=Math.random(), shape=q<.45?'rect':q<.75?'stairs':'dart';
+      Object.assign(ai,{planned:true,shape,l1:4+rnd(9)+big+(shape==='dart'?3:0),l2:shape==='dart'?2+rnd(3):(3+rnd(9)+big)*(shape==='stairs'?2:1),turn:Math.random()<.5?1:3,max:20+rnd(30)+big*2}); }
+    ai.phase='out'; ai.steps=0;
+    if(ai.goal==null||gt>ai.goalT||(ai.goal>=0&&r.owner[ai.goal]===b.id)){ ai.goal=pickExit(r,b); ai.goalT=gt+TICK*30; }
+    if(ai.goal>=0){ const gx=ai.goal%N, gy=(ai.goal/N)|0; want=pick(safe,d=>man(gx,gy,nb(d))+Math.random()*.7); }
+    else want=pick(safe,()=>Math.random());
+  } else {
+    ai.wasOut=true; ai.steps=(ai.steps||0)+1; if(ai.steps===1) ai.outDir=b.dir;
+    if(slack<=ai.margin||b.trail.length>ai.max) ai.phase='home';
+    if(ai.phase==='out'){ if(ai.steps>=ai.l1){ai.phase='side';ai.s2=0;want=(ai.outDir+ai.turn)%4;} else want=b.dir; }
+    else if(ai.phase==='side'){ ai.s2++; const side=(ai.outDir+ai.turn)%4;
+      if(ai.s2>=ai.l2){ if(ai.shape==='rect'){ai.phase='back';want=(ai.outDir+2)%4;} else ai.phase='home'; }
+      else if(ai.shape==='stairs') want=b.dir===side?(Math.random()<.5?ai.outDir:side):side; else want=b.dir; }
+    else if(ai.phase==='back') want=(ai.outDir+2)%4; else ai.phase='home';
+    if(ai.phase==='home') want=toHome(safe);
+    if(want>=0&&ai.phase!=='home'){ const x=b.x+DX[want]*3,y=b.y+DY[want]*3; if(!inb(x,y)){ai.phase='home';want=toHome(safe);} } }
+  if(want<0||!legal(want)||(headRisk(nb(want))&&nb(want)!==prey)){
+    want=toHome(safe); if(want<0) want=toHome(legal);
+    if(want<0) want=pick(d=>d!==rev&&nb(d)>=0&&r.trail[nb(d)]!==b.id,()=>0);
+    if(want<0) want=b.dir; }
+  b.dir=want; }
 
 // a turn carries the cell it was pressed on (the player sees their head a little ahead of the server),
 // so it lands on exactly that cell; if that cell is already behind us, it's applied right away
@@ -156,8 +201,9 @@ function step(r){
   r.tick++; const now=Date.now(); const ps=r.slots.filter(Boolean);
   for(const p of ps) if(!p.alive&&p.bot&&p.respawnAt&&now>=p.respawnAt){ p.respawnAt=0; spawn(r,p); }
   const live=ps.filter(p=>p.alive);
+  for(const p of live) if(p.trail.length) computeNav(r,p);
   for(const p of live){
-    if(p.bot) botThink(r,p);
+    if(p.bot) botThink(r,p,live);
     else humanTurn(p);
     p.nx=p.x+DX[p.dir]; p.ny=p.y+DY[p.dir]; }
   const dead=new Map();
