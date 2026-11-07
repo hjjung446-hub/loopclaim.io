@@ -411,9 +411,11 @@ body.xmas .xmasHat{display:block}
 .tiChip[aria-pressed="true"]{border-color:var(--ink);background:var(--card)}
 .tiChip.sp{background:linear-gradient(135deg,rgba(185,103,255,.18),rgba(255,210,63,.18))}
 .tiChip.locked{opacity:.55}
-.frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:6px}
+.frames{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;margin-bottom:2px}
+.frames .skin{flex:0 0 84px}
+#frHint,#tiHint{background:none;padding:2px 2px 6px;margin:0;font-size:12.5px;text-align:left;min-height:0}
 .frames .skin .rkAv{width:46px;height:46px;margin:6px 0 4px}
-.frH{margin:12px 0 6px;font-size:15px}
+
 .rkList li.gap{background:none;justify-content:center;display:block;text-align:center;color:var(--muted);padding:0}
 .rkList .badge{display:block}
 .rkList .v{font-weight:700}
@@ -588,7 +590,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
   <div class="card wide">
     <div class="cardTop"><h2 id="profH">Profile</h2><span class="skinNote" id="profSub"></span></div>
     <div class="profHead" id="profHead"></div>
-    <div class="profSec" id="tiSec" hidden><h3 id="tiH">Titles</h3><div class="tiList" id="tiList" role="group" aria-labelledby="tiH"></div><p class="profEmpty" id="tiHint"></p></div>
+    <div class="profSec" id="tiSec" hidden><h3 id="frH">Frames</h3><div class="frames" id="frames" role="group" aria-labelledby="frH"></div><p class="profEmpty" id="frHint"></p><h3 id="tiH">Titles</h3><div class="tiList" id="tiList" role="group" aria-labelledby="tiH"></div><p class="profEmpty" id="tiHint"></p></div>
     <div class="profGrid" id="profGrid"></div>
     <div class="profSec"><h3 id="profHistH">Recent games</h3><div class="profHist" id="profHist"></div><p class="profEmpty" id="profEmpty" hidden></p></div>
     <div class="profSec"><h3 id="profModesH">By mode</h3><ul class="profModes" id="profModes"></ul></div>
@@ -609,8 +611,6 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
   <div class="card wide">
     <div class="cardTop"><h2>Skins</h2><span class="skinNote" id="skinCount"></span><button class="setOpen" id="skinRpShop" type="button">RP Shop</button></div>
     <div class="skins" id="skins" role="group" aria-label="Skins"></div>
-    <h3 class="frH" id="frH">Frames</h3>
-    <div class="frames" id="frames" role="group" aria-labelledby="frH"></div>
     <input type="file" id="photoIn" accept="image/*" hidden>
     <p class="skinHint" id="skinHint" aria-live="polite">Skins with a coin price can be bought. Locked skins open when you earn a badge.</p>
     <button class="btn" id="skinDone" type="button">Done</button>
@@ -692,7 +692,7 @@ const MODES={
   hill:{name:'King of the Hill',N:100,bots:12,teams:0,time:180000,hill:true,
     desc:m=>`A crown zone sits on a ${m.N}×${m.N} map. Every second you own part of it, you score, and it moves every minute. Highest score after 3 minutes wins.`},
   duel:{name:'1v1 Duel',N:44,bots:1,teams:0,duel:true,desc:m=>`One AI, one small ${m.N}×${m.N} map. First to win 2 rounds takes the duel, and every win makes the next opponent tougher.`},
-  online:{name:'Online',N:100,bots:0,teams:0,online:true,desc:()=>'Play live with real people on one shared map. AI players fill the room when it is quiet.'},
+  online:{name:'Online',hidden:true,N:100,bots:0,teams:0,online:true,desc:()=>'Play live with real people on one shared map. AI players fill the room when it is quiet.'},
   snowball:{name:'Snowball Fight',N:100,bots:12,teams:0,time:180000,snowball:true,hidden:Date.now()>=Date.UTC(2027,0,16),desc:m=>`Snow piles are scattered across a ${m.N}×${m.N} map. Run over them to grab snowballs (up to 3) and press Space to throw. A hit freezes the target for a moment, so go cut their tail! Biggest land after 3 minutes wins.`},
   boss:{name:'Boss Raid',N:100,bots:9,teams:0,time:180000,boss:true,desc:m=>`Everyone teams up against one giant boss. Cut its tail to land a hit, and every time it goes down it comes back stronger. Most boss points after 3 minutes wins.`},
   ranked:{name:'Ranked',N:100,bots:12,teams:0,time:180000,ranked:true,desc:()=>''},
@@ -2645,7 +2645,7 @@ function botProf(d){
   const plain=pool.filter(k=>!special.includes(k)), from=special.length&&R()<.15+d.tier*.08?special:plain, skn=from[Math.floor(R()*from.length)]||SKINS[1];
   return {name:d.name,rp:d.rp,ti:d.tier,skin:skn,games:life,wins,rated:life,kills:Math.round(life*(.6+sk*2.2)*(.8+R()*.4)),best:Math.round((10+sk*35+R()*6)*10)/10,
     bestKills:2+Math.floor(sk*9+R()*3),longest:90+Math.floor(sk*360+R()*120),time:Math.round(life*(130+R()*60)),season:d.games||0,hist,modes}; }
-function buildTitles(P){ const sec=$('tiSec'); sec.hidden=!P.own; if(!P.own) return; $('tiH').textContent=L.tiTitle;
+function buildTitles(P){ const sec=$('tiSec'); sec.hidden=!P.own; if(!P.own) return; $('tiH').textContent=L.tiTitle; buildFrames(); { const on=$('frames').querySelector('[aria-pressed="true"]'); if(on) requestAnimationFrame(()=>{ const bx=$('frames'); bx.scrollLeft=Math.max(0,on.offsetLeft-bx.clientWidth/2+on.offsetWidth/2); }); } if(!$('frHint').textContent) $('frHint').textContent=L.frNote;
   const box=$('tiList'), cur=myTitle(); box.innerHTML='';
   const chip=(id,txt,ok,sp)=>{ const b=document.createElement('button'); b.type='button'; b.className='tiChip'+(ok?'':' locked')+(sp?' sp':''); b.setAttribute('aria-pressed',String(cur===id)); b.textContent=txt; box.append(b); return b; };
   const wear=id=>{ rank.title=id; saveRank(); SFX.click(); buildProf(myProf()); $('tiHint').textContent=L.tiNote; };
@@ -4143,7 +4143,7 @@ function finishTutorial(){
     again:'play',againLabel:L.startGame,sfx:'win'},200);
 }
 let rulesOpen=false;
-function paintTutBtn(){ const done=!!achState.done.tutorial, b=$('tutOpen');
+function paintTutBtn(){ const done=!!achState.done.tutorial||((achState.stats&&achState.stats.games)||0)>=3, b=$('tutOpen');
   b.classList.toggle('done',done); b.innerHTML=done?L.tutAgain:L.tutNew;
   // returning players get one compact row instead of the full how-to block
   $('howRow').hidden=!done; b.hidden=done; $('startLede').hidden=done&&!rulesOpen; $('startRules').hidden=done&&!rulesOpen;
@@ -5197,26 +5197,25 @@ function buildFrames(){ const box=$('frames'); if(!box) return; box.innerHTML=''
   const av=avatarURL(skin), cur=myFrame();
   const tile=(id,name,ok)=>{ const b=document.createElement('button'); b.type='button'; b.className='skin'+(ok?'':' locked'); b.id='frame-'+(id||'none'); b.setAttribute('aria-pressed',String((cur||'')===(id||'')));
     b.innerHTML=`<img class="rkAv${id?' fr-'+id:''}" src="${av}" alt=""><span>${esc(name)}</span>`; box.append(b); return b; };
-  tile('',L.frNone,true).onclick=()=>{ rank.frameOn=''; saveRank(); buildFrames(); $('skinHint').textContent=L.frNote; SFX.click(); };
+  tile('',L.frNone,true).onclick=()=>{ rank.frameOn=''; saveRank(); buildProf(myProf()); $('frHint').textContent=L.frNote; SFX.click(); };
   for(const f of FRAMES){ const ok=frameOwned(f.id), nm=(L.frNames||{})[f.id]||f.id, b=tile(f.id,nm,ok); if(f.sp) b.classList.add('spFrame');
-    if(ok){ b.onclick=()=>{ rank.frameOn=f.id; saveRank(); buildFrames(); $('skinHint').textContent=L.frNote; SFX.click(); }; continue; }
+    if(ok){ b.onclick=()=>{ rank.frameOn=f.id; saveRank(); buildProf(myProf()); $('frHint').textContent=L.frNote; SFX.click(); }; continue; }
     const tag=document.createElement('i');
     if(f.coins){ tag.className='priceTag'; tag.innerHTML=COIN_ICO+f.coins;
-      b.onclick=()=>{ const h=$('skinHint'); if(wallet.coins>=f.coins){ h.innerHTML=`${L.buyLine(nm,COIN_ICO+f.coins)} <button type="button" class="buyBtn" id="buyBtn">${L.buy}</button>`;
-        $('buyBtn').onclick=()=>{ if(wallet.coins<f.coins) return; wallet.coins-=f.coins; saveWallet(); paintCoins(); frameGive(f.id,true); SFX.ach(); buildFrames(); $('skinHint').textContent=L.frGot(nm); }; $('buyBtn').focus(); }
+      b.onclick=()=>{ const h=$('frHint'); if(wallet.coins>=f.coins){ h.innerHTML=`${L.buyLine(nm,COIN_ICO+f.coins)} <button type="button" class="buyBtn" id="buyBtn">${L.buy}</button>`;
+        $('buyBtn').onclick=()=>{ if(wallet.coins<f.coins) return; wallet.coins-=f.coins; saveWallet(); paintCoins(); frameGive(f.id,true); SFX.ach(); buildProf(myProf()); $('frHint').textContent=L.frGot(nm); }; $('buyBtn').focus(); }
         else h.innerHTML=L.costsNeed(nm,COIN_ICO+f.coins,f.coins-wallet.coins); }; }
     else if(f.rp){ tag.className='rpTag'; tag.innerHTML=tierBadge(0,12)+f.rp;
-      b.onclick=()=>{ const h=$('skinHint'); if((rank.bank||0)>=f.rp){ h.innerHTML=`${L.rpBuyLine(nm,f.rp)} <button type="button" class="buyBtn" id="buyBtn">${L.buy}</button>`;
-        $('buyBtn').onclick=()=>{ if((rank.bank||0)<f.rp) return; rank.bank-=f.rp; frameGive(f.id,true); SFX.ach(); try{ paintRpBank(); }catch(e){} buildFrames(); $('skinHint').textContent=L.frGot(nm); }; $('buyBtn').focus(); }
+      b.onclick=()=>{ const h=$('frHint'); if((rank.bank||0)>=f.rp){ h.innerHTML=`${L.rpBuyLine(nm,f.rp)} <button type="button" class="buyBtn" id="buyBtn">${L.buy}</button>`;
+        $('buyBtn').onclick=()=>{ if((rank.bank||0)<f.rp) return; rank.bank-=f.rp; frameGive(f.id,true); SFX.ach(); try{ paintRpBank(); }catch(e){} buildProf(myProf()); $('frHint').textContent=L.frGot(nm); }; $('buyBtn').focus(); }
         else h.textContent=L.rpNeed(f.rp-(rank.bank||0)); }; }
-    else if(f.tour){ tag.className='rpTag'; tag.textContent=FRAME_MEDAL[f.id]; b.onclick=()=>{ $('skinHint').textContent=`${nm} · ${L.frTour(f.tour)}`; }; }
+    else if(f.tour){ tag.className='rpTag'; tag.textContent=FRAME_MEDAL[f.id]; b.onclick=()=>{ $('frHint').textContent=`${nm} · ${L.frTour(f.tour)}`; }; }
     else if(f.cond){ tag.className='rpTag spTag'; tag.textContent='✦';
       const hint=f.id==='diamond'?L.frDiamond(tierName(TIERS.length-1)):f.id==='immortal'?L.frImmortal(rank.tourWins||0):L.frCosmos(ACH.filter(a=>achState.done[a.id]).length,ACH.length);
-      b.onclick=()=>{ $('skinHint').textContent=`${L.frSpecial} · ${nm} · ${hint}`; }; }
-    else if(f.ach){ tag.className='rpTag'; tag.textContent='🏅'; b.onclick=()=>{ $('skinHint').textContent=`${nm} · ${L.frAch((L.ach[f.ach]||[f.ach])[0])}`; }; }
+      b.onclick=()=>{ $('frHint').textContent=`${L.frSpecial} · ${nm} · ${hint}`; }; }
+    else if(f.ach){ tag.className='rpTag'; tag.textContent='🏅'; b.onclick=()=>{ $('frHint').textContent=`${nm} · ${L.frAch((L.ach[f.ach]||[f.ach])[0])}`; }; }
     b.append(tag); } }
 function buildSkins(){
-  try{ buildFrames(); }catch(e){}
   const box=$('skins'); box.innerHTML='';
   let open=0;
   { const b=document.createElement('button'); b.type='button'; b.className='skin'+(PHOTO?'':' photoAdd'); b.id='skin-photo';
