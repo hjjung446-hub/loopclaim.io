@@ -404,6 +404,13 @@ body.xmas .xmasHat{display:block}
 @keyframes frBurn{to{box-shadow:0 0 0 2.5px #ff5a3d,0 0 0 5px #ffe27a,0 0 20px 5px rgba(255,90,61,.9)}}
 .frames .spFrame{background:linear-gradient(160deg,rgba(185,103,255,.16),rgba(255,210,63,.14));border-color:rgba(185,103,255,.35)}
 .frames .spFrame span{font-weight:800}
+.profHead .ttl{display:inline-block;margin-top:3px;font-style:normal;font-size:12.5px;font-weight:800;color:#8a4fd8;background:rgba(165,75,224,.12);padding:2px 8px;border-radius:999px}
+.rkList .nm .ttl{display:block;font-size:11px;font-weight:700;color:#8a4fd8;line-height:1.2;overflow:hidden;text-overflow:ellipsis}
+.tiList{display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow-y:auto;padding:2px}
+.tiChip{font:inherit;font-size:12.5px;font-weight:700;border:2px solid transparent;border-radius:999px;padding:5px 10px;background:var(--ground);color:var(--ink);cursor:pointer}
+.tiChip[aria-pressed="true"]{border-color:var(--ink);background:var(--card)}
+.tiChip.sp{background:linear-gradient(135deg,rgba(185,103,255,.18),rgba(255,210,63,.18))}
+.tiChip.locked{opacity:.55}
 .frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:6px}
 .frames .skin .rkAv{width:46px;height:46px;margin:6px 0 4px}
 .frH{margin:12px 0 6px;font-size:15px}
@@ -581,6 +588,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
   <div class="card wide">
     <div class="cardTop"><h2 id="profH">Profile</h2><span class="skinNote" id="profSub"></span></div>
     <div class="profHead" id="profHead"></div>
+    <div class="profSec" id="tiSec" hidden><h3 id="tiH">Titles</h3><div class="tiList" id="tiList" role="group" aria-labelledby="tiH"></div><p class="profEmpty" id="tiHint"></p></div>
     <div class="profGrid" id="profGrid"></div>
     <div class="profSec"><h3 id="profHistH">Recent games</h3><div class="profHist" id="profHist"></div><p class="profEmpty" id="profEmpty" hidden></p></div>
     <div class="profSec"><h3 id="profModesH">By mode</h3><ul class="profModes" id="profModes"></ul></div>
@@ -796,6 +804,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   teamsOf:(t,n)=>`${t} teams of ${n}`, optNote:(m,big)=>`AI players and map size only apply to ${m} on the ${big?"huge":"normal"} map.`,
   tiers:["Bronze","Silver","Gold","Platinum","Diamond","Master"], rpToNext:(n,t)=>`${n} RP to ${t}`, topTier:"Top tier", rankRecord:(g,w)=>`${g} games · ${w} wins`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Promoted to ${t}!`, demoted:t=>`Dropped to ${t}`, promoReward:c=>`+${c} coins`, rankQuit:d=>`You left a ranked match, so it counts as last place (${d}).`,
   tierLockAria:(n,t)=>`${n} (locked: reach ${t} in Ranked)`, tierLockLine:(n,t)=>`<b>${n}</b> skin · reach <b>${t}</b> in Ranked to unlock it`,
+  tiTitle:"Titles", tiNone:"No title", tiNames:{weekly:"Weekly Champion",immortal:"Immortal",perfect:"Perfectionist",vip:"VIP",bhunter:"Black Hole Hunter"}, tiNote:"Tap a title to wear it. It shows under your name on your profile and in the rankings.", tiHow:{weekly:"Win the Weekly Tournament",immortal:"Win the Weekly Tournament 3 times",perfect:"Earn every badge",bhunter:"Own the Black Hole skin"},
   frDiamond:t=>`Reach ${t} tier in Ranked`, frImmortal:n=>`Win the Weekly Tournament 3 times (${n}/3)`, frCosmos:(n,t)=>`Earn every badge (${n}/${t})`, frSpecial:"Special",
   frGot:n=>`Got the ${n} frame! It's on now.`, frTitle:"Frames", frNone:"None", frNames:{legend:"Legend",diamond:"Diamond",immortal:"Immortal",cosmos:"Cosmos",gold:"Gold Trophy",silver:"Silver Trophy",bronze:"Bronze Trophy",rainbow:"Rainbow",flame:"Flame",ice:"Ice",neon:"Neon",champ:"Champion"}, frTour:p=>`Weekly Tournament #${p}`, frAch:n=>`Badge: ${n}`, frNote:"Your frame shows on your rankings profile.",
   tourTitle:"Weekly Tournament", tourEnds:(d,h)=>`Ends in ${d}d ${h}h`, tourPrize:"🥇 Gold frame + 1000 coins · 🥈 Silver frame + 600 · 🥉 Bronze frame + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`You are #${p} this week`, tourResult:(p,c)=>`Weekly Tournament: you finished #${p} · +${c} coins`, tourDone:"Tournament results", tourJoin:"Play ranked games to enter", tourLast:p=>`Last week: #${p}`,
@@ -914,6 +923,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   teamsOf:(t,n)=>`${t} equipos de ${n}`, optNote:(m,big)=>`Los jugadores IA y el tamaño del mapa solo se aplican a ${m} en el mapa ${big?"enorme":"normal"}.`,
   tiers:["Bronce","Plata","Oro","Platino","Diamante","Maestro"], rpToNext:(n,t)=>`${n} RP para ${t}`, topTier:"Rango máximo", rankRecord:(g,w)=>`${g} partidas · ${w} victorias`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`¡Ascendiste a ${t}!`, demoted:t=>`Bajaste a ${t}`, promoReward:c=>`+${c} monedas`, rankQuit:d=>`Saliste de una clasificatoria: cuenta como último puesto (${d}).`,
   tierLockAria:(n,t)=>`${n} (bloqueado: llega a ${t} en Clasificatoria)`, tierLockLine:(n,t)=>`Aspecto <b>${n}</b> · llega a <b>${t}</b> en Clasificatoria para desbloquearlo`,
+  tiTitle:"Títulos", tiNone:"Sin título", tiNames:{weekly:"Campeón semanal",immortal:"Inmortal",perfect:"Perfeccionista",vip:"VIP",bhunter:"Cazador de agujeros negros"}, tiNote:"Toca un título para llevarlo. Se ve bajo tu nombre en tu perfil y en el ranking.", tiHow:{weekly:"Gana el Torneo semanal",immortal:"Gana el Torneo semanal 3 veces",perfect:"Consigue todas las insignias",bhunter:"Ten la apariencia Agujero negro"},
   frDiamond:t=>`Llega al rango ${t} en Clasificatoria`, frImmortal:n=>`Gana el Torneo semanal 3 veces (${n}/3)`, frCosmos:(n,t)=>`Consigue todas las insignias (${n}/${t})`, frSpecial:"Especial",
   frGot:n=>`¡Conseguiste el marco ${n}! Ya lo llevas.`, frTitle:"Marcos", frNone:"Ninguno", frNames:{legend:"Leyenda",diamond:"Diamante",immortal:"Inmortal",cosmos:"Cosmos",gold:"Trofeo de oro",silver:"Trofeo de plata",bronze:"Trofeo de bronce",rainbow:"Arcoíris",flame:"Llama",ice:"Hielo",neon:"Neón",champ:"Campeón"}, frTour:p=>`Torneo semanal: n.º ${p}`, frAch:n=>`Insignia: ${n}`, frNote:"Tu marco se ve en tu perfil del ranking.",
   tourTitle:"Torneo semanal", tourEnds:(d,h)=>`Termina en ${d}d ${h}h`, tourPrize:"🥇 Marco de oro + 1000 monedas · 🥈 Plata + 600 · 🥉 Bronce + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Vas #${p} esta semana`, tourResult:(p,c)=>`Torneo semanal: quedaste #${p} · +${c} monedas`, tourDone:"Resultados del torneo", tourJoin:"Juega partidas clasificatorias para entrar", tourLast:p=>`Semana pasada: #${p}`,
@@ -1032,6 +1042,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   teamsOf:(t,n)=>`${t} times de ${n}`, optNote:(m,big)=>`Jogadores IA e tamanho do mapa valem só para ${m} no mapa ${big?"enorme":"normal"}.`,
   tiers:["Bronze","Prata","Ouro","Platina","Diamante","Mestre"], rpToNext:(n,t)=>`${n} RP para ${t}`, topTier:"Elo máximo", rankRecord:(g,w)=>`${g} partidas · ${w} vitórias`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Você subiu para ${t}!`, demoted:t=>`Você caiu para ${t}`, promoReward:c=>`+${c} moedas`, rankQuit:d=>`Você saiu de uma ranqueada, então conta como último lugar (${d}).`,
   tierLockAria:(n,t)=>`${n} (bloqueado: chegue a ${t} na Ranqueada)`, tierLockLine:(n,t)=>`Visual <b>${n}</b> · chegue a <b>${t}</b> na Ranqueada para desbloquear`,
+  tiTitle:"Títulos", tiNone:"Sem título", tiNames:{weekly:"Campeão semanal",immortal:"Imortal",perfect:"Perfeccionista",vip:"VIP",bhunter:"Caçador de buracos negros"}, tiNote:"Toque num título para usar. Ele aparece sob seu nome no perfil e no ranking.", tiHow:{weekly:"Vença o Torneio semanal",immortal:"Vença o Torneio semanal 3 vezes",perfect:"Ganhe todas as conquistas",bhunter:"Tenha o visual Buraco negro"},
   frDiamond:t=>`Chegue ao rank ${t} no Ranqueado`, frImmortal:n=>`Vença o Torneio semanal 3 vezes (${n}/3)`, frCosmos:(n,t)=>`Ganhe todas as conquistas (${n}/${t})`, frSpecial:"Especial",
   frGot:n=>`Você ganhou a moldura ${n}! Já está usando.`, frTitle:"Molduras", frNone:"Nenhuma", frNames:{legend:"Lenda",diamond:"Diamante",immortal:"Imortal",cosmos:"Cosmos",gold:"Troféu de ouro",silver:"Troféu de prata",bronze:"Troféu de bronze",rainbow:"Arco-íris",flame:"Chama",ice:"Gelo",neon:"Neon",champ:"Campeão"}, frTour:p=>`Torneio semanal: ${p}º`, frAch:n=>`Conquista: ${n}`, frNote:"Sua moldura aparece no seu perfil do ranking.",
   tourTitle:"Torneio semanal", tourEnds:(d,h)=>`Termina em ${d}d ${h}h`, tourPrize:"🥇 Moldura de ouro + 1000 moedas · 🥈 Prata + 600 · 🥉 Bronze + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Você está em #${p} nesta semana`, tourResult:(p,c)=>`Torneio semanal: você ficou em #${p} · +${c} moedas`, tourDone:"Resultado do torneio", tourJoin:"Jogue partidas ranqueadas para entrar", tourLast:p=>`Semana passada: #${p}`,
@@ -1150,6 +1161,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   teamsOf:(t,n)=>`${t} équipes de ${n}`, optNote:(m,big)=>`Les joueurs IA et la taille de la carte ne s'appliquent qu'à ${m} sur la carte ${big?"géante":"normale"}.`,
   tiers:["Bronze","Argent","Or","Platine","Diamant","Maître"], rpToNext:(n,t)=>`${n} RP avant ${t}`, topTier:"Rang maximum", rankRecord:(g,w)=>`${g} parties · ${w} victoires`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Promu en ${t} !`, demoted:t=>`Redescendu en ${t}`, promoReward:c=>`+${c} pièces`, rankQuit:d=>`Tu as quitté une partie classée : elle compte comme dernière place (${d}).`,
   tierLockAria:(n,t)=>`${n} (verrouillée : atteins ${t} en Classé)`, tierLockLine:(n,t)=>`Apparence <b>${n}</b> · atteins <b>${t}</b> en Classé pour la débloquer`,
+  tiTitle:"Titres", tiNone:"Aucun titre", tiNames:{weekly:"Champion de la semaine",immortal:"Immortel",perfect:"Perfectionniste",vip:"VIP",bhunter:"Chasseur de trous noirs"}, tiNote:"Touche un titre pour le porter. Il s'affiche sous ton nom sur ton profil et dans le classement.", tiHow:{weekly:"Gagne le tournoi hebdo",immortal:"Gagne le tournoi hebdo 3 fois",perfect:"Obtiens tous les badges",bhunter:"Possède l'apparence Trou noir"},
   frDiamond:t=>`Atteins le rang ${t} en classé`, frImmortal:n=>`Gagne le tournoi hebdo 3 fois (${n}/3)`, frCosmos:(n,t)=>`Obtiens tous les badges (${n}/${t})`, frSpecial:"Spécial",
   frGot:n=>`Cadre ${n} obtenu ! Il est équipé.`, frTitle:"Cadres", frNone:"Aucun", frNames:{legend:"Légende",diamond:"Diamant",immortal:"Immortel",cosmos:"Cosmos",gold:"Trophée d'or",silver:"Trophée d'argent",bronze:"Trophée de bronze",rainbow:"Arc-en-ciel",flame:"Flamme",ice:"Glace",neon:"Néon",champ:"Champion"}, frTour:p=>`Tournoi hebdo : #${p}`, frAch:n=>`Badge : ${n}`, frNote:"Ton cadre s'affiche sur ton profil du classement.",
   tourTitle:"Tournoi hebdo", tourEnds:(d,h)=>`Fin dans ${d} j ${h} h`, tourPrize:"🥇 Cadre or + 1000 pièces · 🥈 Argent + 600 · 🥉 Bronze + 300 · Top 10 : 150 · Top 50 : 50", tourYou:p=>`Tu es #${p} cette semaine`, tourResult:(p,c)=>`Tournoi hebdo : tu as fini #${p} · +${c} pièces`, tourDone:"Résultats du tournoi", tourJoin:"Joue en classé pour participer", tourLast:p=>`Semaine dernière : #${p}`,
@@ -1268,6 +1280,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   teamsOf:(t,n)=>`${t} Teams à ${n}`, optNote:(m,big)=>`KI-Spieler und Kartengröße gelten nur für ${m} auf der ${big?"Riesenkarte":"normalen Karte"}.`,
   tiers:["Bronze","Silber","Gold","Platin","Diamant","Meister"], rpToNext:(n,t)=>`${n} RP bis ${t}`, topTier:"Höchster Rang", rankRecord:(g,w)=>`${g} Runden · ${w} Siege`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Aufgestiegen zu ${t}!`, demoted:t=>`Abgestiegen zu ${t}`, promoReward:c=>`+${c} Münzen`, rankQuit:d=>`Du hast eine gewertete Runde verlassen, das zählt als letzter Platz (${d}).`,
   tierLockAria:(n,t)=>`${n} (gesperrt: erreiche ${t} in Gewertet)`, tierLockLine:(n,t)=>`Skin <b>${n}</b> · erreiche <b>${t}</b> in Gewertet, um ihn freizuschalten`,
+  tiTitle:"Titel", tiNone:"Kein Titel", tiNames:{weekly:"Wochenchampion",immortal:"Unsterblich",perfect:"Perfektionist",vip:"VIP",bhunter:"Schwarzes-Loch-Jäger"}, tiNote:"Tippe auf einen Titel, um ihn zu tragen. Er steht unter deinem Namen im Profil und in der Rangliste.", tiHow:{weekly:"Gewinne das Wochenturnier",immortal:"Gewinne das Wochenturnier 3-mal",perfect:"Hol dir alle Abzeichen",bhunter:"Besitze den Skin Schwarzes Loch"},
   frDiamond:t=>`Erreiche den Rang ${t} in Rangliste`, frImmortal:n=>`Gewinne das Wochenturnier 3-mal (${n}/3)`, frCosmos:(n,t)=>`Hol dir alle Abzeichen (${n}/${t})`, frSpecial:"Spezial",
   frGot:n=>`Rahmen ${n} erhalten! Ist jetzt aktiv.`, frTitle:"Rahmen", frNone:"Keiner", frNames:{legend:"Legende",diamond:"Diamant",immortal:"Unsterblich",cosmos:"Kosmos",gold:"Goldpokal",silver:"Silberpokal",bronze:"Bronzepokal",rainbow:"Regenbogen",flame:"Flamme",ice:"Eis",neon:"Neon",champ:"Champion"}, frTour:p=>`Wochenturnier: Platz ${p}`, frAch:n=>`Abzeichen: ${n}`, frNote:"Dein Rahmen erscheint in deinem Ranglisten-Profil.",
   tourTitle:"Wochenturnier", tourEnds:(d,h)=>`Endet in ${d} T ${h} Std`, tourPrize:"🥇 Goldrahmen + 1000 Münzen · 🥈 Silber + 600 · 🥉 Bronze + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Du bist diese Woche #${p}`, tourResult:(p,c)=>`Wochenturnier: Platz ${p} · +${c} Münzen`, tourDone:"Turnierergebnis", tourJoin:"Spiel Ranglisten-Runden, um mitzumachen", tourLast:p=>`Letzte Woche: #${p}`,
@@ -1386,6 +1399,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   teamsOf:(t,n)=>`${t} 队，每队 ${n} 人`, optNote:(m,big)=>`AI 数量和地图大小只对${big?"超大":"普通"}地图的「${m}」生效。`,
   tiers:["青铜","白银","黄金","铂金","钻石","大师"], rpToNext:(n,t)=>`距${t}还差 ${n} RP`, topTier:"最高段位", rankRecord:(g,w)=>`${g} 局 · ${w} 胜`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`晋级到${t}！`, demoted:t=>`降到${t}`, promoReward:c=>`+${c} 金币`, rankQuit:d=>`你中途退出了排位赛，按最后一名计算（${d}）。`,
   tierLockAria:(n,t)=>`${n}（锁定：排位赛达到${t}）`, tierLockLine:(n,t)=>`<b>${n}</b>皮肤 · 排位赛达到<b>${t}</b>即可解锁`,
+  tiTitle:"称号", tiNone:"无称号", tiNames:{weekly:"每周冠军",immortal:"不朽",perfect:"完美主义者",vip:"VIP",bhunter:"黑洞猎人"}, tiNote:"点一个称号来佩戴。它会显示在个人资料和排行榜的名字下方。", tiHow:{weekly:"赢得每周锦标赛",immortal:"赢得每周锦标赛 3 次",perfect:"获得全部徽章",bhunter:"拥有黑洞皮肤"},
   frDiamond:t=>`在排位赛达到${t}段位`, frImmortal:n=>`赢得每周锦标赛 3 次（${n}/3）`, frCosmos:(n,t)=>`获得全部徽章（${n}/${t}）`, frSpecial:"特别",
   frGot:n=>`获得${n}边框！已经戴上了。`, frTitle:"边框", frNone:"无", frNames:{legend:"传说",diamond:"钻石",immortal:"不朽",cosmos:"宇宙",gold:"金奖杯",silver:"银奖杯",bronze:"铜奖杯",rainbow:"彩虹",flame:"火焰",ice:"冰霜",neon:"霓虹",champ:"冠军"}, frTour:p=>`每周锦标赛第 ${p} 名`, frAch:n=>`徽章：${n}`, frNote:"边框会显示在排行榜的个人资料上。",
   tourTitle:"每周锦标赛", tourEnds:(d,h)=>`还剩 ${d} 天 ${h} 小时`, tourPrize:"🥇 金色边框 + 1000 金币 · 🥈 银色 + 600 · 🥉 铜色 + 300 · 前10名：150 · 前50名：50", tourYou:p=>`本周当前第 ${p} 名`, tourResult:(p,c)=>`每周锦标赛：第 ${p} 名 · +${c} 金币`, tourDone:"锦标赛结果", tourJoin:"参加排位赛即可参赛", tourLast:p=>`上周：第 ${p} 名`,
@@ -1504,6 +1518,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   teamsOf:(t,n)=>`${n}人ずつ${t}チーム`, optNote:(m,big)=>`AIの数とマップサイズは「${m}」の${big?"巨大":"ふつうの"}マップにだけ適用されます。`,
   tiers:["ブロンズ","シルバー","ゴールド","プラチナ","ダイヤモンド","マスター"], rpToNext:(n,t)=>`${t}まであと${n} RP`, topTier:"最高ランク", rankRecord:(g,w)=>`${g}試合 · ${w}勝`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`${t}に昇格！`, demoted:t=>`${t}に降格`, promoReward:c=>`+${c}コイン`, rankQuit:d=>`ランクマッチを途中でやめたので最下位あつかいです（${d}）。`,
   tierLockAria:(n,t)=>`${n}（ロック中：ランクマッチで${t}に到達）`, tierLockLine:(n,t)=>`<b>${n}</b>スキン · ランクマッチで<b>${t}</b>に到達すると解放`,
+  tiTitle:"称号", tiNone:"称号なし", tiNames:{weekly:"週間チャンピオン",immortal:"不死身",perfect:"完璧主義者",vip:"VIP",bhunter:"ブラックホールハンター"}, tiNote:"称号をタップして装備。プロフィールとランキングで名前の下に表示されます。", tiHow:{weekly:"週間トーナメントで優勝",immortal:"週間トーナメントで3回優勝",perfect:"バッジをすべて獲得",bhunter:"ブラックホールスキンを持つ"},
   frDiamond:t=>`ランク戦で${t}ランクに到達`, frImmortal:n=>`週間トーナメントで3回優勝（${n}/3）`, frCosmos:(n,t)=>`バッジをすべて獲得（${n}/${t}）`, frSpecial:"スペシャル",
   frGot:n=>`${n}フレームを手に入れた！装備中。`, frTitle:"フレーム", frNone:"なし", frNames:{legend:"レジェンド",diamond:"ダイヤ",immortal:"不死身",cosmos:"コスモス",gold:"金トロフィー",silver:"銀トロフィー",bronze:"銅トロフィー",rainbow:"レインボー",flame:"フレイム",ice:"アイス",neon:"ネオン",champ:"チャンピオン"}, frTour:p=>`週間トーナメント${p}位`, frAch:n=>`バッジ：${n}`, frNote:"フレームはランキングのプロフィールに表示されます。",
   tourTitle:"週間トーナメント", tourEnds:(d,h)=>`残り ${d}日 ${h}時間`, tourPrize:"🥇 金のフレーム + 1000コイン · 🥈 銀 + 600 · 🥉 銅 + 300 · 10位以内：150 · 50位以内：50", tourYou:p=>`今週いま ${p}位`, tourResult:(p,c)=>`週間トーナメント：${p}位 · +${c}コイン`, tourDone:"トーナメント結果", tourJoin:"ランク戦をプレイして参加", tourLast:p=>`先週：${p}位`,
@@ -1622,6 +1637,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   teamsOf:(t,n)=>`${n}명씩 ${t}팀`, optNote:(m,big)=>`AI 수와 맵 크기는 지금 고른 ${m} · ${big?"대형":"기본"} 맵에만 적용돼요.`,
   tiers:["브론즈","실버","골드","플래티넘","다이아몬드","마스터"], rpToNext:(n,t)=>`${t}까지 ${n} RP`, topTier:"최고 티어", rankRecord:(g,w)=>`${g}판 · ${w}승`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`${t} 승급!`, demoted:t=>`${t}(으)로 강등`, promoReward:c=>`+${c} 코인`, rankQuit:d=>`랭크전을 중간에 나가서 꼴찌로 처리됐어요 (${d}).`,
   tierLockAria:(n,t)=>`${n} (잠김: 랭크전 ${t} 달성 필요)`, tierLockLine:(n,t)=>`<b>${n}</b> 스킨 · 랭크전에서 <b>${t}</b>에 오르면 열려요`,
+  tiTitle:"칭호", tiNone:"칭호 없음", tiNames:{weekly:"주간 챔피언",immortal:"불사신",perfect:"완벽주의자",vip:"VIP",bhunter:"블랙홀 사냥꾼"}, tiNote:"칭호를 누르면 달려요. 프로필과 랭킹에서 이름 아래에 보여요.", tiHow:{weekly:"주간 토너먼트 1위 하기",immortal:"주간 토너먼트 1위 3번",perfect:"업적 전부 달성",bhunter:"블랙홀 스킨 갖기"},
   frDiamond:t=>`랭크전에서 ${t} 티어 달성`, frImmortal:n=>`주간 토너먼트 1위 3번 (${n}/3)`, frCosmos:(n,t)=>`업적 전부 달성 (${n}/${t})`, frSpecial:"특별",
   frGot:n=>`${n} 테두리를 얻었어요! 바로 씌웠어요.`, frTitle:"테두리", frNone:"없음", frNames:{legend:"전설",diamond:"다이아몬드",immortal:"불사신",cosmos:"우주",gold:"황금 트로피",silver:"실버 트로피",bronze:"브론즈 트로피",rainbow:"무지개",flame:"불꽃",ice:"얼음",neon:"네온",champ:"챔피언"}, frTour:p=>`주간 토너먼트 ${p}위`, frAch:n=>`업적: ${n}`, frNote:"고른 테두리는 랭킹 프로필에 보여요.",
   tourTitle:"주간 토너먼트", tourEnds:(d,h)=>`${d}일 ${h}시간 남음`, tourPrize:"🥇 황금 테두리 + 1000코인 · 🥈 실버 테두리 + 600 · 🥉 브론즈 테두리 + 300 · 10위 안: 150 · 50위 안: 50", tourYou:p=>`이번 주 현재 ${p}위`, tourResult:(p,c)=>`주간 토너먼트 ${p}위 · +${c}코인`, tourDone:"토너먼트 결과", tourJoin:"랭크전을 하면 자동으로 참가해요", tourLast:p=>`지난주: ${p}위`,
@@ -2208,7 +2224,7 @@ async function postRank(){
   try{ checkTop(); }catch(e){}
   if(!RK.db||!RK.uid||!RK.canPost||rank.games<1||rank.season!==seasonKey()) return;
   const wk=weekKey(), body={name:String(myName||'').slice(0,12),season:seasonKey(),rp:rank.rp,tier:tierOf(rank.rp),games:rank.games,wins:rank.wins,
-    week:wk,weekRp:rank.week===wk?(rank.weekRp||0):0,skin:skin&&skin.id||'basic',frame:myFrame()||'',t:Date.now(),pf:profSummary()};
+    week:wk,weekRp:rank.week===wk?(rank.weekRp||0):0,skin:skin&&skin.id||'basic',frame:myFrame()||'',title:myTitle()||'',t:Date.now(),pf:profSummary()};
   try{ await RK.db.collection('lb').doc(RK.uid).set(body); rank.posted=rank.games; rank.postedName=body.name; saveRank(); }
   catch(e){ if(e&&(e.code==='invalid_argument'||e.code==='transform_error')) RK.canPost=false; }
 }
@@ -2272,6 +2288,16 @@ function tourSettle(){
 // frames won before the collection existed join it
 if(rank.tour&&rank.tour.frame&&!(rank.frames||[]).includes(rank.tour.frame)){ rank.frames=(rank.frames||[]).concat(rank.tour.frame); if(rank.frameOn==null) rank.frameOn=rank.tour.frame; saveRank(); }
 const myFrame=()=>rank.frameOn&&frameOwned(rank.frameOn)?rank.frameOn:null;
+/* ---------- titles: each badge's name can be worn under your name, plus a few special ones ---------- */
+const TITLES_SP=[{id:'weekly',cond:()=>(rank.tourWins||0)>=1},{id:'immortal',cond:()=>(rank.tourWins||0)>=3},{id:'perfect',cond:()=>ACH.every(a=>achState.done[a.id])},
+  {id:'bhunter',cond:()=>(rank.rOwned||[]).includes('blackhole')},{id:'vip',rp:5000}];
+const titleName=id=>{ if(!id) return ''; const sp=(L.tiNames||{})[id]; if(sp) return sp; const a=L.ach&&L.ach[id]; return a?a[0]:''; };
+const titleOwned=id=>{ const sp=TITLES_SP.find(x=>x.id===id); if(sp) return sp.cond?sp.cond():(rank.titles||[]).includes(id); return !!achState.done[id]; };
+const myTitle=()=>rank.title&&titleOwned(rank.title)?rank.title:'';
+function botTitle(d){ const h=String(d.name).split('').reduce((a,c)=>a*33+c.charCodeAt(0)|0,5381), r=((h>>>0)%997)/997;
+  if(r>.45) return ''; const pool=['first','dress','hunter','lord','giant','streak3','oops','regular','watcher','teamWin','timedWin','survWin','emperor','slayer','streak10','miner','monarch','snakeLen','bslayer','zchief','gladiator','ocean','hacker','vip'];
+  return pool[Math.floor(r/.45*pool.length)]||''; }
+const rkTitle=d=>d._me||(d.id&&d.id===RK.uid)?myTitle():d.bot?botTitle(d):(titleName(d.title)?d.title:'');
 const frameOf=p=>p===me&&!p.isBot?myFrame():p.frame||null;
 function drawFrame(g,cx,cy,S,fr,tNow){ let c=FRAME_COL[fr]; if(!c) return; const s=S*1.16, L=cx-s/2, T=cy-s/2;
   if(fr==='rainbow') c=[hsl((tNow/8)%360,90,60),hsl((tNow/8+120)%360,90,72)];
@@ -2315,7 +2341,7 @@ function rkRender(rows){
   const wk=weekKey(), week=RK.tab==='week', mine=RK.uid, box=$('rkList');
   const val=d=>week?L.rpGain(d.weekRp||0):`${d.rp||0} RP`;
   RK.map=new Map();
-  const li=(d,i)=>{ RK.map.set(String(d.id),d); return `<li class="rkRow ${d.id===mine?'you':''} ${i<3?'top'+(i+1):''}" tabindex="0" role="button" data-rk="${esc(String(d.id))}" aria-label="${esc(L.profileOf(String(d.name||'?')))}"><b>${i+1}</b>${tierBadge(Math.max(0,Math.min(TIERS.length-1,d.tier|0)),16)}${rkAv(d)}<span class="nm">${esc(String(d.name||'?'))}</span><span class="v">${val(d)}</span></li>`; };
+  const li=(d,i)=>{ RK.map.set(String(d.id),d); return `<li class="rkRow ${d.id===mine?'you':''} ${i<3?'top'+(i+1):''}" tabindex="0" role="button" data-rk="${esc(String(d.id))}" aria-label="${esc(L.profileOf(String(d.name||'?')))}"><b>${i+1}</b>${tierBadge(Math.max(0,Math.min(TIERS.length-1,d.tier|0)),16)}${rkAv(d)}<span class="nm">${esc(String(d.name||'?'))}${(t=>t?`<small class="ttl">${esc(titleName(t))}</small>`:'')(rkTitle(d))}</span><span class="v">${val(d)}</span></li>`; };
   const key=week?'weekRp':'rp';
   rows=rows.concat(rkBots()).sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,100);
   let html=rows.map(li).join('');
@@ -2619,12 +2645,28 @@ function botProf(d){
   const plain=pool.filter(k=>!special.includes(k)), from=special.length&&R()<.15+d.tier*.08?special:plain, skn=from[Math.floor(R()*from.length)]||SKINS[1];
   return {name:d.name,rp:d.rp,ti:d.tier,skin:skn,games:life,wins,rated:life,kills:Math.round(life*(.6+sk*2.2)*(.8+R()*.4)),best:Math.round((10+sk*35+R()*6)*10)/10,
     bestKills:2+Math.floor(sk*9+R()*3),longest:90+Math.floor(sk*360+R()*120),time:Math.round(life*(130+R()*60)),season:d.games||0,hist,modes}; }
+function buildTitles(P){ const sec=$('tiSec'); sec.hidden=!P.own; if(!P.own) return; $('tiH').textContent=L.tiTitle;
+  const box=$('tiList'), cur=myTitle(); box.innerHTML='';
+  const chip=(id,txt,ok,sp)=>{ const b=document.createElement('button'); b.type='button'; b.className='tiChip'+(ok?'':' locked')+(sp?' sp':''); b.setAttribute('aria-pressed',String(cur===id)); b.textContent=txt; box.append(b); return b; };
+  const wear=id=>{ rank.title=id; saveRank(); SFX.click(); buildProf(myProf()); $('tiHint').textContent=L.tiNote; };
+  chip('',L.tiNone,true).onclick=()=>wear('');
+  const all=TITLES_SP.map(t=>({id:t.id,sp:1,t})).concat(ACH.map(a=>({id:a.id})));
+  all.sort((a,b)=>(titleOwned(b.id)?1:0)-(titleOwned(a.id)?1:0));
+  for(const x of all){ const ok=titleOwned(x.id), nm=titleName(x.id); if(!nm) continue; const b=chip(x.id,(ok?'':'🔒 ')+nm,ok,x.sp);
+    if(ok){ b.onclick=()=>wear(x.id); continue; }
+    if(x.t&&x.t.rp){ b.textContent='🔒 '+nm+' · '+x.t.rp+' RP';
+      b.onclick=()=>{ const h=$('tiHint'); if((rank.bank||0)>=x.t.rp){ h.innerHTML=`${L.rpBuyLine(nm,x.t.rp)} <button type="button" class="buyBtn" id="tiBuy">${L.buy}</button>`;
+        $('tiBuy').onclick=()=>{ if((rank.bank||0)<x.t.rp) return; rank.bank-=x.t.rp; rank.titles=(rank.titles||[]).concat(x.id); rank.title=x.id; saveRank(); SFX.ach(); buildProf(myProf()); }; }
+        else h.textContent=L.rpNeed(x.t.rp-(rank.bank||0)); }; continue; }
+    const how=x.sp?(L.tiHow||{})[x.id]:(L.ach[x.id]||[])[1]; b.onclick=()=>{ $('tiHint').textContent=`${nm} · ${how||''}`; }; }
+  if(!$('tiHint').textContent) $('tiHint').textContent=L.tiNote; }
 function buildProf(P){
   $('profSub').textContent=L.profSince(P.games);
   const extra=P.own?`<span>${COIN_ICO}${wallet.coins.toLocaleString(LANG)}</span><span>${L.bpLvShort(bpLevel())}</span>`:'';
-  $('profHead').innerHTML=`<canvas id="profCv" width="128" height="128"></canvas><div><b>${esc(P.name)}</b><small><span>${tierBadge(P.ti,18)} ${tierName(P.ti)} · ${P.rp} RP</span>${extra}</small></div>`;
+  $('profHead').innerHTML=`<canvas id="profCv" width="128" height="128"></canvas><div><b>${esc(P.name)}</b>${(t=>t?`<em class="ttl">${esc(titleName(t))}</em>`:'')(P.own?myTitle():P.title)}<small><span>${tierBadge(P.ti,18)} ${tierName(P.ti)} · ${P.rp} RP</span>${extra}</small></div>`;
   drawSkinPreview($('profCv'),P.skin);
   { const fr=P.own?myFrame():P.frame; $('profCv').className=fr?'fr-'+fr:''; }
+  try{ buildTitles(P); }catch(e){}
   const tile=(v,lbl,hl)=>`<div${hl?' class="hl"':''}><em>${v}</em><span>${lbl}</span></div>`, num=v=>Math.round(v).toLocaleString(LANG);
   $('profGrid').innerHTML=[
     tile(num(P.games),L.pGames), tile(num(P.wins)+(P.rated?` <small>${Math.round(P.wins/P.rated*100)}%</small>`:''),L.pWins,true),
@@ -2695,7 +2737,7 @@ $('achOpen').onclick=openAch; $('achDone').onclick=closeAch;
 $('rkOpen').onclick=openRk; $('rkDone').onclick=closeRk;
 function rkPick(el){ const id=el&&el.dataset.rk; if(!id) return; SFX.click();
   if(id==='_me'||id===RK.uid) return openProf(null,'rkOv',id);
-  const d=RK.map&&RK.map.get(id); if(!d) return; const P=d.bot?botProf(d):lbProf(d); P.frame=rkFrame(d); openProf(P,'rkOv',id); }
+  const d=RK.map&&RK.map.get(id); if(!d) return; const P=d.bot?botProf(d):lbProf(d); P.frame=rkFrame(d); P.title=rkTitle(d); openProf(P,'rkOv',id); }
 $('rkList').addEventListener('click',e=>rkPick(e.target.closest('.rkRow')));
 $('rkList').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ const r=e.target.closest('.rkRow'); if(r){ e.preventDefault(); rkPick(r); } } });
 $('bpOpen').onclick=()=>openBp('startOv'); $('bpDone').onclick=closeBp;
