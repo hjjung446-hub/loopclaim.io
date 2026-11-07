@@ -3569,7 +3569,8 @@ function deathMsg(c){
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2600); }
 // when someone cut my tail, the camera goes to where it happened (often far behind me) and marks the spot
 function deathSpot(p,c){ const k=c&&c.killer;
-  if(c&&c.type==='cut'&&k&&k!==p&&k.nx!=null){ const x=k.nx+.5, y=k.ny+.5; cutMark={x,y,t0:performance.now()}; return {x,y}; }
+  const kx=k&&(mode.online?k.x:k.nx), ky=k&&(mode.online?k.y:k.ny);   // online: the server already moved the cutter onto the cut cell
+  if(c&&c.type==='cut'&&k&&k!==p&&kx!=null){ const x=kx+.5, y=ky+.5; cutMark={x,y,t0:performance.now()}; return {x,y}; }
   return {x:p.x+.5,y:p.y+.5}; }
 let cutMark=null;
 function gameOver(c){
