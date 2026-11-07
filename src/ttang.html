@@ -2822,7 +2822,7 @@ function kill(p,cause){
       if(me.lifeKills>=3) unlock('streak3'); if(me.lifeKills>=10) unlock('streak10'); if(me.lifeKills>=20) unlock('hacker'); } }
   p.place=players.filter(q=>q.alive).length+1;
   killFeed(p,cause); p.lifeKills=0;
-  if(mode.gold) goldDrop(p,cause);
+  if(mode.gold&&!mode.online) goldDrop(p,cause);
   if(cause&&cause.killer&&cause.killer!==p&&cause.killer.skin&&cause.killer.skin.spark) passBurst(cause.killer,p.x+.5,p.y+.5,4,null);
   if(cause&&cause.killer&&cause.killer!==p) botEmote(cause.killer,cause.killer===me?[]:(p===me?['😂','😎','👍','😂']:['😎','😂','👍']),p===me?.6:.25);
   if(mode.tutorial&&tut&&cause&&cause.killer===me) tut.kills++;
@@ -2838,7 +2838,7 @@ function kill(p,cause){
       const T=biggestTeam(p); if(T&&T!==p.team) joined=infect(p,{team:T,name:lands[T-1].name}); } }
   else if(mode.zombie&&p.team===1) joined=infect(p,cause.killer&&cause.killer.team===2?cause.killer:{team:2,name:L.zombies});
   if(mode.boss&&cause&&cause.killer&&cause.killer.boss&&!p.boss) cause.killer.pts=(cause.killer.pts||0)+10;
-  if(mode.online){ if(p!==me) return; if(!mode.time&&!mode.infect){ gameOver(cause); return; } }
+  if(mode.online){ if(p!==me) return; if(mode.duel) return; if(!mode.time&&!mode.infect&&!mode.zombie){ gameOver(cause); return; } }
   if(mode.duel){ duelDeath(p,cause); return; }
   if(p.boss) bossDown(p,cause);
   if(p.isBot) p.respawnAt=gt+(p.boss?8000:mode.time?5000:2200+rnd(2500));
@@ -3237,7 +3237,7 @@ function drawHillArrow(ox,oy,S,now){
   ctx.restore(); }
 
 /* ---------- 1v1 Duel: best of three rounds against one AI that gets tougher every win ---------- */
-const DUEL_ROUND=90000;
+let DUEL_ROUND=90000;
 let duel=null, duelRec={streak:0,best:0,wins:0,games:0};
 try{ const r=localStorage.getItem('ttang-duel'); if(r) Object.assign(duelRec,JSON.parse(r)); }catch(e){}
 const saveDuel=()=>{ try{ localStorage.setItem('ttang-duel',JSON.stringify(duelRec)); }catch(e){} };
@@ -3540,7 +3540,7 @@ function updateHud(){
     $('mePct').innerHTML=`${pct(me.area).toFixed(1)}<small>%</small>`;
     $('meSub').textContent=((mode.teams||mode.infect)&&lands[me.team-1]?`${lands[me.team-1].name} · `:'')+`${L.killsLine(me.kills)} · ${L.sec(Math.floor((gt-me.bornAt)/1000))}`;
   }
-  if(mode.online&&NET.state==='on') $('meSub').textContent='🌐 '+Math.round(NET.rtt)+'ms · '+$('meSub').textContent;   // shows you're really on the server
+  if(mode.online&&NET.state==='on') $('meSub').textContent='🌐 '+Math.round(NET.rtt)+'ms · '+$('meSub').textContent.replace(/^(🌐 \d+ms · )+/,'');   // shows you're really on the server
   const tm=$('timer'), showT=$('startOv').hidden;
   if(mode.time){ const sec=Math.ceil(Math.max(0,mode.time-gt)/1000); tm.hidden=!showT;
     tm.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`+(mode.hill&&hill&&hillMoveAt<mode.time?` · ${L.hillMoveIn(Math.max(0,Math.ceil((hillMoveAt-gt)/1000)))}`:''); tm.classList.toggle('hot',sec<=10); }
@@ -3685,7 +3685,7 @@ try{ if(/[?&]debug=1/.test(location.search)) window.__lc=()=>({me,players,owner,
 function netSend(o){ if(NET.ws&&NET.ws.readyState===1) NET.ws.send(JSON.stringify(o)); }
 function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; if(ws) try{ ws.close(); }catch(e){} }
 function netSkinId(){ return skin===PHOTO_SKIN||!skin?'basic':skin.id; }
-const ONLINE_MODES=['normal','timed','ranked','team','survival','infect'];
+const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie','gold','hill','duel','boss','snowball'];
 const netCan=k=>ONLINE_MODES.includes(k)&&!!netURL();
 function netBegin(){
   if(NET.state==='on'){
@@ -3707,33 +3707,47 @@ function netBegin(){
     if(was==='connecting'){ toast(L.netOffline); NET.noServer=true; mode.online=false; setup(modeKey); begin(); } else if(mode.online){ toast(L.netLost); toMenu(); } };
 }
 function netEnterUI(){ $('startOv').hidden=true; $('overOv').hidden=true; $('toast').hidden=true; paintAccent();
-  queue=[]; deathCam=me&&me.alive?null:{x:N/2,y:N/2}; cutMark=null; feedMute=false; $('meBox').hidden=!me.alive; $('tools').hidden=false; run={kills:0,best:0,t0:gt,paid:false}; SFX.start(); updateHud(); }
+  queue=[]; deathCam=me&&me.alive?null:{x:N/2,y:N/2}; cutMark=null; feedMute=false; $('meBox').hidden=!me.alive; $('tools').hidden=false; run={kills:0,best:0,t0:gt,paid:false}; SFX.start(); updateHud();
+  if(mode.zombie) roleBanner();
+  if(mode.duel&&duel) setTimeout(()=>{ if(duel&&mode.duel) streakBanner(L.duelRound(duel.round),duel.round>1?L.duelScore(duel.score[0],duel.score[1]):duel.b?L.duelVs(esc(duel.b.name)):''); },200); }
 const b64u8=s=>{ const b=atob(s), a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; };
 function netSkinOf(id,col){ const sk=SKINS.find(k=>k.id===id&&!k.secret)||SKINS[0]; return sk.id==='basic'?{...sk,col}:sk; }
 function netDummy(id){ const o={id,name:'',area:0,pat:'',skin:null}; setColor(o,'#c8cdd8'); return o; }
 // land colour: your team's in Teams / Infection, your skin's otherwise
-function netTint(p){ if(mode.teams||mode.infect){ const l=lands[p.team-1]; if(l) setColor(p,l.col); } else setColor(p,p.skin.col); }
-function netPlayer(m){ const sk=netSkinOf(m.skin,m.col), p=mkPlayer(m.id,m.name,sk.col,!!m.bot); p.skin=sk; p.netOn=true; p.team=m.team||m.id;
+function netTint(p){ if(p.boss){ setColor(p,BOSS_LOOK.col); p.trailCol='rgba(214,40,80,.85)'; return; } if(mode.teams||mode.infect){ const l=lands[p.team-1]; if(l) setColor(p,l.col); } else setColor(p,p.skin.col); }
+function netBossLook(p,on){ p.boss=!!on; if(!on) return; p.name=L.bossName; p.skin={id:'boss',name:'Boss',col:BOSS_LOOK.col,deco:'horns',pat:'claw',aura:'#ff3d6e'}; p.level=p.level||1; p.maxHp=p.maxHp||2; p.hp=p.hp==null?2:p.hp; }
+function netStat(p,s,h){ if(s==null) return; if(mode.gold) p.gold=s; else if(mode.hill) p.hill=s/10; else if(mode.boss){ p.pts=s; p.bossHits=h||0; } else if(mode.snowball) p.balls=s; }
+function netThrow(){ if(!me||!me.alive||!(me.balls>0)||me.frozenUntil>gt||gt<(me.nextThrow||0)) return false; me.nextThrow=gt+350; netSend({t:'throw'}); SFX.throwBall(); return true; }
+function netHill(h){ if(!h) return; const was=hill; hill={x:h[0],y:h[1]}; hillNext=h[2]>=0?{x:h[2],y:h[3]}:null; hillMoveAt=h[4]; hillZ=h[5]; }
+function netBoss(b){ if(!b){ boss=null; return; } const p=NET.byId[b[0]]; if(!p) return; if(!p.boss){ netBossLook(p,true); netTint(p); } boss=p; p.hp=b[1]; p.maxHp=b[2]; p.level=b[3]; p.respawnAt=b[4]?gt+b[4]:0; }
+function netSnow(m){ if(m.sb) sballs=m.sb.map(([x,y,px,py,dir])=>({x,y,px,py,dir})); if(m.f){ for(const p of players) p.frozenUntil=0; for(const [id,left] of m.f){ const p=NET.byId[id]; if(p) p.frozenUntil=gt+left; } } }
+function netDuelScore(s){ if(!duel) return; const g=id=>{ const r=(s||[]).find(x=>x[0]===id); return r?r[1]:0; }; duel.score=[g(NET.you),duel.b?g(duel.b.id):0]; }
+function netPlayer(m){ const sk=netSkinOf(m.skin,m.col), p=mkPlayer(m.id,m.name,sk.col,!!m.bot); p.skin=sk; p.netOn=true; p.team=m.team||m.id; netBossLook(p,m.boss);
   const tid=m.team||m.id; if(mode.infect&&(!lands[tid-1]||!lands[tid-1].name||!players.some(q=>q.team===tid))){ const t={id:tid,name:L.teamOf(m.name),area:0,pat:sk.pat||''}; setColor(t,sk.col); lands[tid-1]=t; }
   netTint(p); return p; }
 function netHello(m){
   NET.state='on'; NET.you=m.you; NET.room=m.room; NET.over=!!m.over; TICK=m.tick; N=m.N;
-  mode={...makeMode(m.mode),online:true,N:m.N}; if(m.teams) mode.teams=m.teams;
-  capT=new Float64Array(N*N); floats=[]; owner=b64u8(m.owner); trail=b64u8(m.trail); gold=new Uint8Array(N*N); goldN=0;
-  snow=new Map(); piles=new Map(); sballs=[]; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
+  mode={...makeMode(m.mode),online:true,N:m.N}; if(m.teams) mode.teams=m.teams; if(m.time) mode.time=m.time; if(m.zTime) mode.zTime=m.zTime; if(m.duelRound) DUEL_ROUND=m.duelRound;
+  capT=new Float64Array(N*N); floats=[]; owner=b64u8(m.owner); trail=b64u8(m.trail); gold=m.gold?b64u8(m.gold):new Uint8Array(N*N); goldN=0; for(let c=0;c<N*N;c++) if(gold[c]) goldN++;
+  snow=new Map(); piles=new Map((m.piles||[]).map(c=>[c,1])); sballs=[]; hill=null; hillNext=null; boss=null; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
   off.width=off.height=N; img=ox2.createImageData(N,N); lo=m.lo||0; hi=m.hi!=null?m.hi:N-1; gt=m.g||0; ended=!!m.over; worldHasMe=true; paused=false; nextShrink=1e15;
-  if(mode.teams){ teams=TEAMDEFS.slice(0,mode.teams).map((t,i)=>{ const o={id:i+1,name:t.name,area:0}; setColor(o,t.col); return o; }); lands=teams; }
-  else { lands=[]; for(let i=1;i<=(m.slots||32);i++) lands.push(netDummy(i)); teams=mode.infect?lands:[]; }
+  if(mode.teams){ teams=(mode.zombie?ZDEFS:TEAMDEFS).slice(0,mode.teams).map((t,i)=>{ const o={id:i+1,name:t.name,area:0}; setColor(o,t.col); return o; }); lands=teams; }
+  else { lands=[]; for(let i=1;i<=Math.max(32,m.slots||32);i++) lands.push(netDummy(i)); teams=mode.infect?lands:[]; }
   players=[]; NET.byId=[];
   for(const q of m.players){ const p=netPlayer(q); players.push(p); NET.byId[q.id]=p; if(!mode.teams&&!mode.infect) lands[q.id-1]=p;
-    if(q.alive) Object.assign(p,{alive:true,x:q.x,y:q.y,px:q.x,py:q.y,dir:q.dir,area:q.area,kills:q.kills,trailCells:q.trail.slice(),exitCell:q.trail.length?q.trail[0]:-1}); }
+    if(q.alive) Object.assign(p,{alive:true,x:q.x,y:q.y,px:q.x,py:q.y,dir:q.dir,area:q.area,kills:q.kills,trailCells:q.trail.slice(),exitCell:q.trail.length?q.trail[0]:-1});
+    netStat(p,q.s,q.bossHits); }
   for(const p of players) netTint(p);
-  me=NET.byId[NET.you]; me.isBot=false; applySkin(skin); NET.pend=[]; me.sx=null; me.predX=null;
+  me=NET.byId[NET.you]; me.isBot=false; applySkin(skin); NET.pend=[]; me.sx=null; me.predX=null; me.zStart=mode.zombie&&me.team===2;
+  netHill(m.h); netBoss(m.b); netSnow(m);
+  if(mode.duel){ const opp=players.find(p=>p!==me)||null; duel={score:[0,0],round:(m.duel&&m.duel.round)||1,over:false,busy:false,elapsed:0,dead:[],a:me,b:opp,look:[duelLook(me),duelLook(opp)],opp:duelLook(opp),watch:false}; netDuelScore(m.duel&&m.duel.s); } else duel=null;
   particles=[]; rings=[]; camInit=false; lastTick=performance.now(); netAreas(); }
 function netAreas(){ const cnt=new Int32Array(lands.length+2); for(let c=0;c<N*N;c++) cnt[owner[c]]++; for(const l of lands) if(l) l.area=cnt[l.id]||0; }
 function netEnd(e){ NET.over=true; if(ended) return; feedMute=false;
   const w=e.win;
-  if(mode.time) endTimed();
+  if(mode.duel){ if(duel) duelFinish(w===NET.you); }
+  else if(mode.zombie) endZombie(w===1,e.why==='h'||e.why==='z'?e.why:false);
+  else if(mode.time) endTimed();
   else if(mode.teams){ const t=lands[w-1]; if(t) endTeam(t); }
   else if(mode.survival) endSurvival(NET.byId[w]||null);
   else if(mode.infect) endInfect(w); }
@@ -3746,7 +3760,7 @@ function netTurn(d){ if(!me||!me.alive) return;
   NET.pend.push({d,at,tick:NET.tick}); netSend({t:'d',d,at}); netPredict(false); }
 function netPredict(stepped){ if(!me||!me.alive||me.sx==null){ return; }
   NET.pend=NET.pend.filter(t=>NET.tick-t.tick<=NET.lead+4);
-  let x=me.sx,y=me.sy,d=me.sdir; const path=[], k=NET.lead;
+  let x=me.sx,y=me.sy,d=me.sdir; const path=[], k=me.frozenUntil>gt?0:NET.lead;
   const turnAt=c=>{ for(const t of NET.pend) if(t.at===c&&t.d!==(d+2)%4) d=t.d; };
   for(let i=0;i<k;i++){ turnAt(x+y*N); const nx=x+DX[d], ny=y+DY[d]; if(!inb(nx,ny)) break; x=nx; y=ny; path.push(x+y*N); }
   turnAt(x+y*N);
@@ -3759,11 +3773,19 @@ function netApply(m){
   if(me&&me.sx!=null){ me.x=me.sx; me.y=me.sy; me.dir=me.sdir; me.trailCells=me.srvTrail||me.trailCells; }
   for(const e of m.e){
     if(e.k==='join'||e.k==='meta'){ const old=NET.byId[e.id];
-      if(e.k==='meta'&&old){ old.skin=netSkinOf(e.skin,e.col); netTint(old); }
+      if(e.k==='meta'&&old){ old.skin=netSkinOf(e.skin,e.col); old.name=e.name; netBossLook(old,e.boss); netTint(old); if(e.boss) boss=old; }
       else { if(old) players.splice(players.indexOf(old),1); const p=netPlayer(e); players.push(p); NET.byId[e.id]=p; if(!mode.teams&&!mode.infect) lands[e.id-1]=p;
         if(e.id===NET.you){ me=p; me.isBot=false; } } }
     else if(e.k==='leave'){ const p=NET.byId[e.id]; if(p&&p!==me){ p.alive=false; players.splice(players.indexOf(p),1); NET.byId[e.id]=null; if(!mode.teams&&!mode.infect) lands[e.id-1]=netDummy(e.id); } }
     else if(e.k==='over') netEnd(e);
+    else if(e.k==='gb'){ const p=NET.byId[e.id]; if(p===me){ floats.push({x:me.x+.5,y:me.y-.6,text:'+'+e.v+' 🪙',t0:t0+120,col:'#c98a00'}); SFX.coin(e.v); const el=$('mePct'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); } else if(p&&e.v>=5) botEmote(p,['🤑','😎'],.4); }
+    else if(e.k==='gs'){ if(e.id===NET.you){ floats.push({x:me.x+.5,y:me.y-.6,text:L.goldSteal(e.n),t0,col:'#c98a00'}); SFX.coin(e.n); } if(e.from===NET.you) floats.push({x:me.x+.5,y:me.y-.6,text:'-'+e.n+' 🪙',t0,col:'#e23b4a'}); }
+    else if(e.k==='hm'){ toast(L.hillMoved); SFX.hillMove(); }
+    else if(e.k==='bh'){ const b=boss; if(!b) continue; b.hp=e.hp; b.maxHp=e.max; b.level=e.lv; const by=NET.byId[e.by]||null; if(by===me&&e.down) addStat('bossKOs'); bossFx(b,by,!!e.down); }
+    else if(e.k==='sh'){ const q=NET.byId[e.id]; if(q) sbHit(q,NET.byId[e.by]||null); }
+    else if(e.k==='dround'&&duel){ const r=e.win?(e.win===NET.you?1:-1):0; netDuelScore(e.s);
+      streakBanner(r===0?L.duelDraw:r>0?L.duelRoundWin:L.duelRoundLose,(e.up?L.duelTimeUp+' · ':'')+L.duelScore(duel.score[0],duel.score[1]));
+      if(settings.sound) (r>0?SFX.win:r<0?SFX.lose:SFX.click)(); }
     else if(e.k==='die'){ const p=NET.byId[e.id]; if(!p||!p.alive) continue; const k=e.by?NET.byId[e.by]:null;
       const cause={type:e.type==='lost'?'lost':e.type,by:k?k.name:'',killer:k&&(e.type==='cut'||e.type==='land')?k:null,other:k&&e.type==='head'?k:null};
       if(k&&cause.killer&&k!==p) k.kills=(k.kills||0);
@@ -3782,8 +3804,14 @@ function netApply(m){
     if(p===me){ floats.push({x:p.x+.5,y:p.y,text:'+'+(got/N/N*100).toFixed(got/N/N<.001?2:1)+'%',t0,col:p.dark}); const el=$('mePct'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
       if(run) run.cells=(run.cells||0)+got; mission('cells',got); mission('big',got); SFX.capture(got); if(got>=100) unlock('bite'); if(got>=N*N*.05) unlock('feast'); }
     if(p.skin&&p.skin.spark) passBurst(p,p.x+.5,p.y+.5,Math.min(9,2.5+Math.sqrt(got)/2),null); }
-  for(const [id,area,k,team] of m.a){ const p=NET.byId[id]; if(!p) continue; if(team&&p.team!==team){ p.team=team; netTint(p); if(p===me) paintAccent(); } p.area=area; p.kills=k; if(p.alive) p.best=Math.max(p.best||0,area); }
+  for(const [id,area,k,team,st,bh] of m.a){ const p=NET.byId[id]; if(!p) continue; if(team&&p.team!==team){ p.team=team; netTint(p); if(p===me) paintAccent(); } p.area=area; p.kills=k; netStat(p,st,bh); if(p.alive) p.best=Math.max(p.best||0,area); }
   if(m.z){ lo=m.z[0]; hi=m.z[1]; } netAreas();
+  if(m.gd){ const g=m.gd; for(let i=0;i<g.length;i+=2){ const c=g[i], v=g[i+1]; if(gold[c]&&!v) goldN--; else if(!gold[c]&&v) goldN++; gold[c]=v; } }
+  if(m.pd){ const g=m.pd; for(let i=0;i<g.length;i+=2){ if(g[i+1]) piles.set(g[i],1); else piles.delete(g[i]); } }
+  netHill(m.h); if(m.b!==undefined) netBoss(m.b); netSnow(m);
+  if(mode.hill&&hill){ const Z=hillZ, cnt=new Map(); for(let y=hill.y;y<hill.y+Z;y++) for(let x=hill.x;x<hill.x+Z;x++){ const o=owner[x+y*N]; if(o) cnt.set(o,(cnt.get(o)||0)+1); }
+    for(const p of players) p.hillFrac=p.alive?(cnt.get(p.team)||0)/(Z*Z):0; }
+  if(mode.gold&&me&&me.gold>=100) unlock('miner');
   if(me&&me.alive&&run) run.best=Math.max(run.best||0,me.area);
   if(me&&me.alive&&!NET.over){ me.sx=me.x; me.sy=me.y; me.sdir=me.dir; me.srvTrail=me.trailCells; netPredict(true); } else if(me&&me.alive){ me.sx=null; } else if(me){ me.sx=null; NET.pend=[]; }
   if(t0-NET.pingT>2000){ NET.pingT=t0; netSend({t:'ping',c:t0}); }
@@ -3924,7 +3952,7 @@ addEventListener('keydown',e=>{
   if(e.code==='Escape'&&!card&&!start&&!$('tools').hidden){e.preventDefault();if(!$('emoBar').hidden) closeEmoBar(); else quitGame();return;}
   if(settings.emotes!==false&&!card&&!start&&!$('tools').hidden&&/^Digit[1-9]$/.test(e.code)){ const em=myEmotes()[+e.code.slice(5)-1]; if(em){e.preventDefault();sendEmote(em);} return; }
   if(e.code in KEY){e.preventDefault();push(KEY[e.code]);return;}
-  if(e.code==='Space'&&!card&&!start&&mode&&mode.snowball&&worldHasMe&&!spectating){ e.preventDefault(); throwBall(me); return; }
+  if(e.code==='Space'&&!card&&!start&&mode&&mode.snowball&&worldHasMe&&!spectating){ e.preventDefault(); (mode.online?netThrow():throwBall(me)); return; }
   if(tag==='BUTTON') return;
   if(e.code==='Space'||e.code==='Enter'){ if(card){e.preventDefault();$('againBtn').click();} else if(start){e.preventDefault();begin();} }
 });
@@ -3961,7 +3989,7 @@ $('emoBtn').onclick=e=>{ e.stopPropagation(); $('emoBar').hidden?openEmoBar():cl
 $('tools').addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
 $('dpad').addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
 $('ballHud').addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
-$('ballHud').addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); throwBall(me); });
+$('ballHud').addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); (mode.online?netThrow():throwBall(me)); });
 for(const b of $('dpad').querySelectorAll('button')){ const d=+b.dataset.d;
   b.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); if(me&&!spectating) push(d); b.classList.add('on'); });
   const off=()=>b.classList.remove('on'); b.addEventListener('pointerup',off); b.addEventListener('pointerleave',off); b.addEventListener('pointercancel',off);
