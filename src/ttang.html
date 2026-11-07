@@ -278,6 +278,8 @@ body.xmas .xmasHat{display:block}
 .lblRow output{font-family:var(--display);font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
 .range{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
 .range input{width:100%;min-width:0;margin:0;padding:0;box-sizing:border-box;accent-color:var(--me)}
+.rkTour{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:4px 0 8px;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,rgba(255,210,63,.22),rgba(255,138,61,.12));border:1px solid rgba(226,173,0,.45);color:var(--ink)}
+.rkTour b{font-size:15px}.rkTour span{font-size:12.5px;font-weight:700;color:#b07800}.rkTour small{flex-basis:100%;font-size:12px;line-height:1.45;opacity:.85}.rkTour em{flex-basis:100%;font-style:normal;font-size:12.5px;font-weight:700}
 .topBtns{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;flex:1 1 100%;min-width:0}
 .topBtns .setOpen{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 2px 7px;font-size:11.5px;min-width:0}
 .topBtns .setOpen svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -461,7 +463,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
 
 <div class="overlay" id="startOv">
   <div class="card">
-    <div class="cardTop"><h1><span class="hatL">L<svg class="xmasHat" viewBox="0 0 120 100" aria-hidden="true"><defs><linearGradient id="hatR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0485c"/><stop offset=".55" stop-color="#d6283f"/><stop offset="1" stop-color="#a5142a"/></linearGradient><radialGradient id="hatW" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".75" stop-color="#f4f8fc"/><stop offset="1" stop-color="#d9e4f0"/></radialGradient></defs><path d="M12 78 C14 46 34 18 66 13 C90 9 106 22 108 52 C102 42 94 37 86 39 C74 43 72 60 76 78 Z" fill="url(#hatR)"/><path d="M66 13 C90 9 106 22 108 52 C103 44 97 40 90 40 C96 30 86 18 66 13 Z" fill="#a5142a" opacity=".55"/><path d="M26 64 C30 44 44 28 62 22" stroke="#ff8a98" stroke-width="4" stroke-linecap="round" fill="none" opacity=".55"/><g fill="url(#hatW)"><circle cx="107" cy="55" r="11"/><circle cx="100" cy="51" r="6"/><circle cx="113" cy="50" r="6"/><circle cx="108" cy="63" r="6"/></g><g fill="url(#hatW)"><rect x="4" y="70" width="80" height="22" rx="11"/><circle cx="12" cy="72" r="7"/><circle cx="25" cy="70" r="7.5"/><circle cx="39" cy="69" r="7.5"/><circle cx="53" cy="69" r="7.5"/><circle cx="67" cy="70" r="7.5"/><circle cx="78" cy="73" r="6.5"/><circle cx="10" cy="86" r="6"/><circle cx="76" cy="87" r="6"/></g><path d="M10 88 Q44 96 80 88" stroke="#c9d7e6" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></span>oopclaim<span>.io</span></h1><div class="topBtns"><button class="setOpen dailyBtn" id="dailyOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span class="lb">Daily</span></button><button class="setOpen bpOpen" id="bpOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2V10a2 2 0 0 0 0 4v2.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V14a2 2 0 0 0 0-4z"/><path d="M12 9.2l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 11.3l2-.3z"/></svg><span class="lb">Pass</span></button><button class="setOpen" id="rkOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a2.5 2.5 0 0 0 2.6 3.6M16 6h2.5a2.5 2.5 0 0 1-2.6 3.6M12 13v3.5M8.5 20h7M10 16.5h4"/></svg><span class="lb">Rankings</span></button><button class="setOpen" id="profOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg><span class="lb">Profile</span></button><button class="setOpen" id="achOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="15" r="5"/><path d="M8.5 3 12 10l3.5-7"/><path d="M12 12.6l.8 1.5 1.6.2-1.2 1.1.3 1.6-1.5-.8-1.5.8.3-1.6-1.2-1.1 1.6-.2z"/></svg><span class="lb">Badges</span><i class="cnt" id="achCnt"></i></button><button class="setOpen" id="setOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><span class="lb">Settings</span></button></div></div>
+    <div class="cardTop"><h1><span class="hatL">L<svg class="xmasHat" viewBox="0 0 120 100" aria-hidden="true"><defs><linearGradient id="hatR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0485c"/><stop offset=".55" stop-color="#d6283f"/><stop offset="1" stop-color="#a5142a"/></linearGradient><radialGradient id="hatW" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".75" stop-color="#f4f8fc"/><stop offset="1" stop-color="#d9e4f0"/></radialGradient></defs><path d="M12 78 C14 46 34 18 66 13 C90 9 106 22 108 52 C102 42 94 37 86 39 C74 43 72 60 76 78 Z" fill="url(#hatR)"/><path d="M66 13 C90 9 106 22 108 52 C103 44 97 40 90 40 C96 30 86 18 66 13 Z" fill="#a5142a" opacity=".55"/><path d="M26 64 C30 44 44 28 62 22" stroke="#ff8a98" stroke-width="4" stroke-linecap="round" fill="none" opacity=".55"/><g fill="url(#hatW)"><circle cx="107" cy="55" r="11"/><circle cx="100" cy="51" r="6"/><circle cx="113" cy="50" r="6"/><circle cx="108" cy="63" r="6"/></g><g fill="url(#hatW)"><rect x="4" y="70" width="80" height="22" rx="11"/><circle cx="12" cy="72" r="7"/><circle cx="25" cy="70" r="7.5"/><circle cx="39" cy="69" r="7.5"/><circle cx="53" cy="69" r="7.5"/><circle cx="67" cy="70" r="7.5"/><circle cx="78" cy="73" r="6.5"/><circle cx="10" cy="86" r="6"/><circle cx="76" cy="87" r="6"/></g><path d="M10 88 Q44 96 80 88" stroke="#c9d7e6" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></span>oopclaim<span>.io</span></h1><div class="topBtns"><button class="setOpen dailyBtn" id="dailyOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span class="lb">Daily</span></button><button class="setOpen bpOpen" id="bpOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2V10a2 2 0 0 0 0 4v2.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V14a2 2 0 0 0 0-4z"/><path d="M12 9.2l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 11.3l2-.3z"/></svg><span class="lb">Pass</span></button><button class="setOpen" id="rkOpen" type="button"><i class="cnt" id="tourCnt"></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a2.5 2.5 0 0 0 2.6 3.6M16 6h2.5a2.5 2.5 0 0 1-2.6 3.6M12 13v3.5M8.5 20h7M10 16.5h4"/></svg><span class="lb">Rankings</span></button><button class="setOpen" id="profOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg><span class="lb">Profile</span></button><button class="setOpen" id="achOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="15" r="5"/><path d="M8.5 3 12 10l3.5-7"/><path d="M12 12.6l.8 1.5 1.6.2-1.2 1.1.3 1.6-1.5-.8-1.5.8.3-1.6-1.2-1.1 1.6-.2z"/></svg><span class="lb">Badges</span><i class="cnt" id="achCnt"></i></button><button class="setOpen" id="setOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><span class="lb">Settings</span></button></div></div>
     <div class="howRow" id="howRow" hidden><button type="button" class="howTgl" id="rulesTgl" aria-expanded="false"></button><button type="button" class="howTgl tutMini" id="tutMini"></button></div>
     <p class="lede" id="startLede">Draw loops to grow your land, and cut everyone else's tail.</p>
     <ul class="rules" id="startRules">
@@ -544,6 +546,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
   <div class="card wide">
     <div class="cardTop"><h2 id="rkTitle">Rankings</h2></div>
     <div class="sizes" id="rkTabs" role="tablist"><button type="button" class="size" id="rk-week" role="tab" aria-pressed="true">This week</button><button type="button" class="size" id="rk-all" role="tab" aria-pressed="false">All-time</button></div>
+    <div class="rkTour" id="rkTour"></div>
     <ol class="res rkList" id="rkList"></ol>
     <p class="skinHint" id="rkMsg" aria-live="polite"></p>
     <button class="btn" id="rkDone" type="button">Done</button>
@@ -766,6 +769,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   teamsOf:(t,n)=>`${t} teams of ${n}`, optNote:(m,big)=>`AI players and map size only apply to ${m} on the ${big?"huge":"normal"} map.`,
   tiers:["Bronze","Silver","Gold","Platinum","Diamond","Master"], rpToNext:(n,t)=>`${n} RP to ${t}`, topTier:"Top tier", rankRecord:(g,w)=>`${g} games · ${w} wins`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Promoted to ${t}!`, demoted:t=>`Dropped to ${t}`, promoReward:c=>`+${c} coins`, rankQuit:d=>`You left a ranked match, so it counts as last place (${d}).`,
   tierLockAria:(n,t)=>`${n} (locked: reach ${t} in Ranked)`, tierLockLine:(n,t)=>`<b>${n}</b> skin · reach <b>${t}</b> in Ranked to unlock it`,
+  tourTitle:"Weekly Tournament", tourEnds:(d,h)=>`Ends in ${d}d ${h}h`, tourPrize:"🥇 Gold frame + 1000 coins · 🥈 Silver frame + 600 · 🥉 Bronze frame + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`You are #${p} this week`, tourResult:(p,c)=>`Weekly Tournament: you finished #${p} · +${c} coins`, tourDone:"Tournament results", tourJoin:"Play ranked games to enter", tourLast:p=>`Last week: #${p}`,
   rankings:"Rankings", rkWeek:"This week", rkAll:"Season", rkLoading:"Loading rankings…", rkSlow:"Rankings are taking a while to load and may be out of date.", rkOffline:"Rankings can't be reached from here right now.", rkEmpty:"No one is on the board yet. Play Ranked to be first!", rkNoPost:"You can see the rankings, but your games can't be posted from this view.", rkResets:"This week counts RP earned since Monday (UTC).", rkPlay:"Play a Ranked game to get on the board.",
   seasonEnds:d=>`Season ends in ${d} day${d===1?"":"s"}`, seasonPayout:c=>`Season-end bonus: +${c} RP`, seasonOver:(t,rp,c)=>`Finished ${t} → +${c} RP for the shop`, seasonDone:"Season over",
   rpShop:"RP Shop", rpNote:"Every RP you win in Ranked also lands here to spend. Spending it never lowers your rank. At the end of each season you get a tier bonus too.", trails:"Trail effects", trailNone:"None", trailNames:{prism:"Prism",sparkle:"Sparkle",fire:"Fire",bubble:"Bubbles"}, inUse:"In use", owned:"Owned", rpNeed:n=>`You need ${n} more RP.`, rpBuyLine:(n,p)=>`<b>${n}</b> · ${p} RP`, rpAria:(n,p)=>`${n} (${p} RP in the RP shop)`, rpInShop:(n,p)=>`<b>${n}</b> costs ${p} RP in the RP shop.`, trailOn:n=>`Trail effect: ${n}`,
@@ -881,6 +885,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   teamsOf:(t,n)=>`${t} equipos de ${n}`, optNote:(m,big)=>`Los jugadores IA y el tamaño del mapa solo se aplican a ${m} en el mapa ${big?"enorme":"normal"}.`,
   tiers:["Bronce","Plata","Oro","Platino","Diamante","Maestro"], rpToNext:(n,t)=>`${n} RP para ${t}`, topTier:"Rango máximo", rankRecord:(g,w)=>`${g} partidas · ${w} victorias`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`¡Ascendiste a ${t}!`, demoted:t=>`Bajaste a ${t}`, promoReward:c=>`+${c} monedas`, rankQuit:d=>`Saliste de una clasificatoria: cuenta como último puesto (${d}).`,
   tierLockAria:(n,t)=>`${n} (bloqueado: llega a ${t} en Clasificatoria)`, tierLockLine:(n,t)=>`Aspecto <b>${n}</b> · llega a <b>${t}</b> en Clasificatoria para desbloquearlo`,
+  tourTitle:"Torneo semanal", tourEnds:(d,h)=>`Termina en ${d}d ${h}h`, tourPrize:"🥇 Marco de oro + 1000 monedas · 🥈 Plata + 600 · 🥉 Bronce + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Vas #${p} esta semana`, tourResult:(p,c)=>`Torneo semanal: quedaste #${p} · +${c} monedas`, tourDone:"Resultados del torneo", tourJoin:"Juega partidas clasificatorias para entrar", tourLast:p=>`Semana pasada: #${p}`,
   rankings:"Ranking", rkWeek:"Esta semana", rkAll:"Temporada", rkLoading:"Cargando ranking…", rkSlow:"El ranking tarda en cargar y puede no estar al día.", rkOffline:"No se puede acceder al ranking desde aquí ahora mismo.", rkEmpty:"Aún no hay nadie. ¡Juega Clasificatoria y sé el primero!", rkNoPost:"Puedes ver el ranking, pero tus partidas no se pueden publicar desde aquí.", rkResets:"Esta semana cuenta los RP ganados desde el lunes (UTC).", rkPlay:"Juega una Clasificatoria para entrar en el ranking.",
   seasonEnds:d=>`La temporada termina en ${d} día${d===1?"":"s"}`, seasonPayout:c=>`Bono de fin de temporada: +${c} RP`, seasonOver:(t,rp,c)=>`Terminaste en ${t} → +${c} RP para la tienda`, seasonDone:"Fin de temporada",
   rpShop:"Tienda RP", rpNote:"Cada RP que ganas en Clasificatoria también llega aquí para gastarlo. Gastarlo nunca baja tu rango. Al final de cada temporada recibes además un bono por rango.", trails:"Efectos de estela", trailNone:"Ninguno", trailNames:{prism:"Prisma",sparkle:"Destellos",fire:"Fuego",bubble:"Burbujas"}, inUse:"En uso", owned:"Tuyo", rpNeed:n=>`Te faltan ${n} RP.`, rpBuyLine:(n,p)=>`<b>${n}</b> · ${p} RP`, rpAria:(n,p)=>`${n} (${p} RP en la tienda RP)`, rpInShop:(n,p)=>`<b>${n}</b> cuesta ${p} RP en la tienda RP.`, trailOn:n=>`Estela: ${n}`,
@@ -996,6 +1001,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   teamsOf:(t,n)=>`${t} times de ${n}`, optNote:(m,big)=>`Jogadores IA e tamanho do mapa valem só para ${m} no mapa ${big?"enorme":"normal"}.`,
   tiers:["Bronze","Prata","Ouro","Platina","Diamante","Mestre"], rpToNext:(n,t)=>`${n} RP para ${t}`, topTier:"Elo máximo", rankRecord:(g,w)=>`${g} partidas · ${w} vitórias`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Você subiu para ${t}!`, demoted:t=>`Você caiu para ${t}`, promoReward:c=>`+${c} moedas`, rankQuit:d=>`Você saiu de uma ranqueada, então conta como último lugar (${d}).`,
   tierLockAria:(n,t)=>`${n} (bloqueado: chegue a ${t} na Ranqueada)`, tierLockLine:(n,t)=>`Visual <b>${n}</b> · chegue a <b>${t}</b> na Ranqueada para desbloquear`,
+  tourTitle:"Torneio semanal", tourEnds:(d,h)=>`Termina em ${d}d ${h}h`, tourPrize:"🥇 Moldura de ouro + 1000 moedas · 🥈 Prata + 600 · 🥉 Bronze + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Você está em #${p} nesta semana`, tourResult:(p,c)=>`Torneio semanal: você ficou em #${p} · +${c} moedas`, tourDone:"Resultado do torneio", tourJoin:"Jogue partidas ranqueadas para entrar", tourLast:p=>`Semana passada: #${p}`,
   rankings:"Ranking", rkWeek:"Esta semana", rkAll:"Temporada", rkLoading:"Carregando ranking…", rkSlow:"O ranking está demorando para carregar e pode estar desatualizado.", rkOffline:"Não dá para acessar o ranking daqui agora.", rkEmpty:"Ninguém no ranking ainda. Jogue Ranqueada e seja o primeiro!", rkNoPost:"Você pode ver o ranking, mas suas partidas não podem ser enviadas daqui.", rkResets:"Esta semana conta o RP ganho desde segunda (UTC).", rkPlay:"Jogue uma Ranqueada para entrar no ranking.",
   seasonEnds:d=>`A temporada acaba em ${d} dia${d===1?"":"s"}`, seasonPayout:c=>`Bônus de fim de temporada: +${c} RP`, seasonOver:(t,rp,c)=>`Terminou em ${t} → +${c} RP para a loja`, seasonDone:"Fim da temporada",
   rpShop:"Loja RP", rpNote:"Todo RP que você ganha na Ranqueada também vem para cá para gastar. Gastar nunca baixa seu elo. No fim de cada temporada você ainda ganha um bônus pelo elo.", trails:"Efeitos de rastro", trailNone:"Nenhum", trailNames:{prism:"Prisma",sparkle:"Brilhos",fire:"Fogo",bubble:"Bolhas"}, inUse:"Em uso", owned:"Seu", rpNeed:n=>`Faltam ${n} RP.`, rpBuyLine:(n,p)=>`<b>${n}</b> · ${p} RP`, rpAria:(n,p)=>`${n} (${p} RP na loja RP)`, rpInShop:(n,p)=>`<b>${n}</b> custa ${p} RP na loja RP.`, trailOn:n=>`Rastro: ${n}`,
@@ -1111,6 +1117,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   teamsOf:(t,n)=>`${t} équipes de ${n}`, optNote:(m,big)=>`Les joueurs IA et la taille de la carte ne s'appliquent qu'à ${m} sur la carte ${big?"géante":"normale"}.`,
   tiers:["Bronze","Argent","Or","Platine","Diamant","Maître"], rpToNext:(n,t)=>`${n} RP avant ${t}`, topTier:"Rang maximum", rankRecord:(g,w)=>`${g} parties · ${w} victoires`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Promu en ${t} !`, demoted:t=>`Redescendu en ${t}`, promoReward:c=>`+${c} pièces`, rankQuit:d=>`Tu as quitté une partie classée : elle compte comme dernière place (${d}).`,
   tierLockAria:(n,t)=>`${n} (verrouillée : atteins ${t} en Classé)`, tierLockLine:(n,t)=>`Apparence <b>${n}</b> · atteins <b>${t}</b> en Classé pour la débloquer`,
+  tourTitle:"Tournoi hebdo", tourEnds:(d,h)=>`Fin dans ${d} j ${h} h`, tourPrize:"🥇 Cadre or + 1000 pièces · 🥈 Argent + 600 · 🥉 Bronze + 300 · Top 10 : 150 · Top 50 : 50", tourYou:p=>`Tu es #${p} cette semaine`, tourResult:(p,c)=>`Tournoi hebdo : tu as fini #${p} · +${c} pièces`, tourDone:"Résultats du tournoi", tourJoin:"Joue en classé pour participer", tourLast:p=>`Semaine dernière : #${p}`,
   rankings:"Classement", rkWeek:"Cette semaine", rkAll:"Saison", rkLoading:"Chargement du classement…", rkSlow:"Le classement met du temps à charger et n'est peut-être pas à jour.", rkOffline:"Le classement n'est pas joignable d'ici pour le moment.", rkEmpty:"Personne au classement pour l'instant. Joue en Classé pour être le premier !", rkNoPost:"Tu peux voir le classement, mais tes parties ne peuvent pas être envoyées d'ici.", rkResets:"Cette semaine compte les RP gagnés depuis lundi (UTC).", rkPlay:"Joue une partie Classé pour entrer au classement.",
   seasonEnds:d=>`Fin de saison dans ${d} jour${d===1?"":"s"}`, seasonPayout:c=>`Bonus de fin de saison : +${c} RP`, seasonOver:(t,rp,c)=>`Fini en ${t} → +${c} RP pour la boutique`, seasonDone:"Fin de saison",
   rpShop:"Boutique RP", rpNote:"Chaque RP gagné en Classé arrive aussi ici pour être dépensé. Dépenser ne fait jamais baisser ton rang. À la fin de chaque saison, tu reçois aussi un bonus de rang.", trails:"Effets de traînée", trailNone:"Aucun", trailNames:{prism:"Prisme",sparkle:"Étincelles",fire:"Feu",bubble:"Bulles"}, inUse:"Équipé", owned:"Acquis", rpNeed:n=>`Il te manque ${n} RP.`, rpBuyLine:(n,p)=>`<b>${n}</b> · ${p} RP`, rpAria:(n,p)=>`${n} (${p} RP dans la boutique RP)`, rpInShop:(n,p)=>`<b>${n}</b> coûte ${p} RP dans la boutique RP.`, trailOn:n=>`Traînée : ${n}`,
@@ -1226,6 +1233,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   teamsOf:(t,n)=>`${t} Teams à ${n}`, optNote:(m,big)=>`KI-Spieler und Kartengröße gelten nur für ${m} auf der ${big?"Riesenkarte":"normalen Karte"}.`,
   tiers:["Bronze","Silber","Gold","Platin","Diamant","Meister"], rpToNext:(n,t)=>`${n} RP bis ${t}`, topTier:"Höchster Rang", rankRecord:(g,w)=>`${g} Runden · ${w} Siege`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Aufgestiegen zu ${t}!`, demoted:t=>`Abgestiegen zu ${t}`, promoReward:c=>`+${c} Münzen`, rankQuit:d=>`Du hast eine gewertete Runde verlassen, das zählt als letzter Platz (${d}).`,
   tierLockAria:(n,t)=>`${n} (gesperrt: erreiche ${t} in Gewertet)`, tierLockLine:(n,t)=>`Skin <b>${n}</b> · erreiche <b>${t}</b> in Gewertet, um ihn freizuschalten`,
+  tourTitle:"Wochenturnier", tourEnds:(d,h)=>`Endet in ${d} T ${h} Std`, tourPrize:"🥇 Goldrahmen + 1000 Münzen · 🥈 Silber + 600 · 🥉 Bronze + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Du bist diese Woche #${p}`, tourResult:(p,c)=>`Wochenturnier: Platz ${p} · +${c} Münzen`, tourDone:"Turnierergebnis", tourJoin:"Spiel Ranglisten-Runden, um mitzumachen", tourLast:p=>`Letzte Woche: #${p}`,
   rankings:"Bestenliste", rkWeek:"Diese Woche", rkAll:"Saison", rkLoading:"Bestenliste wird geladen…", rkSlow:"Die Bestenliste lädt lange und ist vielleicht nicht aktuell.", rkOffline:"Die Bestenliste ist von hier gerade nicht erreichbar.", rkEmpty:"Noch niemand in der Liste. Spiel Gewertet und sei der Erste!", rkNoPost:"Du kannst die Bestenliste sehen, aber deine Runden können von hier nicht eingetragen werden.", rkResets:"Diese Woche zählt die RP seit Montag (UTC).", rkPlay:"Spiel eine gewertete Runde, um in die Liste zu kommen.",
   seasonEnds:d=>`Saison endet in ${d} Tag${d===1?"":"en"}`, seasonPayout:c=>`Saisonbonus: +${c} RP`, seasonOver:(t,rp,c)=>`Als ${t} beendet → +${c} RP für den Shop`, seasonDone:"Saison vorbei",
   rpShop:"RP-Shop", rpNote:"Jeder RP, den du in Gewertet gewinnst, landet auch hier zum Ausgeben. Ausgeben senkt nie deinen Rang. Am Ende jeder Saison gibt es außerdem einen Rangbonus.", trails:"Spureffekte", trailNone:"Keiner", trailNames:{prism:"Prisma",sparkle:"Funkeln",fire:"Feuer",bubble:"Blasen"}, inUse:"Aktiv", owned:"Gekauft", rpNeed:n=>`Dir fehlen ${n} RP.`, rpBuyLine:(n,p)=>`<b>${n}</b> · ${p} RP`, rpAria:(n,p)=>`${n} (${p} RP im RP-Shop)`, rpInShop:(n,p)=>`<b>${n}</b> kostet ${p} RP im RP-Shop.`, trailOn:n=>`Spureffekt: ${n}`,
@@ -1341,6 +1349,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   teamsOf:(t,n)=>`${t} 队，每队 ${n} 人`, optNote:(m,big)=>`AI 数量和地图大小只对${big?"超大":"普通"}地图的「${m}」生效。`,
   tiers:["青铜","白银","黄金","铂金","钻石","大师"], rpToNext:(n,t)=>`距${t}还差 ${n} RP`, topTier:"最高段位", rankRecord:(g,w)=>`${g} 局 · ${w} 胜`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`晋级到${t}！`, demoted:t=>`降到${t}`, promoReward:c=>`+${c} 金币`, rankQuit:d=>`你中途退出了排位赛，按最后一名计算（${d}）。`,
   tierLockAria:(n,t)=>`${n}（锁定：排位赛达到${t}）`, tierLockLine:(n,t)=>`<b>${n}</b>皮肤 · 排位赛达到<b>${t}</b>即可解锁`,
+  tourTitle:"每周锦标赛", tourEnds:(d,h)=>`还剩 ${d} 天 ${h} 小时`, tourPrize:"🥇 金色边框 + 1000 金币 · 🥈 银色 + 600 · 🥉 铜色 + 300 · 前10名：150 · 前50名：50", tourYou:p=>`本周当前第 ${p} 名`, tourResult:(p,c)=>`每周锦标赛：第 ${p} 名 · +${c} 金币`, tourDone:"锦标赛结果", tourJoin:"参加排位赛即可参赛", tourLast:p=>`上周：第 ${p} 名`,
   rankings:"排行榜", rkWeek:"本周", rkAll:"赛季", rkLoading:"正在加载排行榜…", rkSlow:"排行榜加载较慢，可能不是最新的。", rkOffline:"现在无法从这里访问排行榜。", rkEmpty:"还没有人上榜。玩一局排位赛，成为第一名吧！", rkNoPost:"你可以查看排行榜，但在这里无法上传你的成绩。", rkResets:"本周榜统计周一（UTC）以来获得的 RP。", rkPlay:"玩一局排位赛就能上榜。",
   seasonEnds:d=>`赛季还剩 ${d} 天`, seasonPayout:c=>`赛季结束奖励：+${c} RP`, seasonOver:(t,rp,c)=>`以${t}结束 → 商店 +${c} RP`, seasonDone:"赛季结束",
   rpShop:"RP 商店", rpNote:"排位赛中赢得的每一点 RP 也会存到这里，可以用来购物。花掉不会降低你的段位。每个赛季结束时还会按段位发放奖励。", trails:"拖尾特效", trailNone:"无", trailNames:{prism:"棱镜",sparkle:"闪光",fire:"火焰",bubble:"泡泡"}, inUse:"使用中", owned:"已拥有", rpNeed:n=>`还差 ${n} RP。`, rpBuyLine:(n,p)=>`<b>${n}</b> · ${p} RP`, rpAria:(n,p)=>`${n}（RP 商店 ${p} RP）`, rpInShop:(n,p)=>`<b>${n}</b>在 RP 商店售价 ${p} RP。`, trailOn:n=>`拖尾特效：${n}`,
@@ -1456,6 +1465,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   teamsOf:(t,n)=>`${n}人ずつ${t}チーム`, optNote:(m,big)=>`AIの数とマップサイズは「${m}」の${big?"巨大":"ふつうの"}マップにだけ適用されます。`,
   tiers:["ブロンズ","シルバー","ゴールド","プラチナ","ダイヤモンド","マスター"], rpToNext:(n,t)=>`${t}まであと${n} RP`, topTier:"最高ランク", rankRecord:(g,w)=>`${g}試合 · ${w}勝`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`${t}に昇格！`, demoted:t=>`${t}に降格`, promoReward:c=>`+${c}コイン`, rankQuit:d=>`ランクマッチを途中でやめたので最下位あつかいです（${d}）。`,
   tierLockAria:(n,t)=>`${n}（ロック中：ランクマッチで${t}に到達）`, tierLockLine:(n,t)=>`<b>${n}</b>スキン · ランクマッチで<b>${t}</b>に到達すると解放`,
+  tourTitle:"週間トーナメント", tourEnds:(d,h)=>`残り ${d}日 ${h}時間`, tourPrize:"🥇 金のフレーム + 1000コイン · 🥈 銀 + 600 · 🥉 銅 + 300 · 10位以内：150 · 50位以内：50", tourYou:p=>`今週いま ${p}位`, tourResult:(p,c)=>`週間トーナメント：${p}位 · +${c}コイン`, tourDone:"トーナメント結果", tourJoin:"ランク戦をプレイして参加", tourLast:p=>`先週：${p}位`,
   rankings:"ランキング", rkWeek:"今週", rkAll:"シーズン", rkLoading:"ランキングを読み込み中…", rkSlow:"ランキングの読み込みに時間がかかっています。最新でないかもしれません。", rkOffline:"いまはここからランキングにつながりません。", rkEmpty:"まだ誰もいません。ランクマッチで1番乗りしよう！", rkNoPost:"ランキングは見られますが、ここからは記録を送れません。", rkResets:"今週ランキングは月曜（UTC）からのRPで決まります。", rkPlay:"ランクマッチを1回プレイするとランキングに載ります。",
   seasonEnds:d=>`シーズン終了まであと${d}日`, seasonPayout:c=>`シーズン終了ボーナス：+${c} RP`, seasonOver:(t,rp,c)=>`${t}で終了 → ショップに+${c} RP`, seasonDone:"シーズン終了",
   rpShop:"RPショップ", rpNote:"ランクマッチで獲得したRPはここにも貯まり、買い物に使えます。使ってもランクは下がりません。シーズン終了時にはランクに応じたボーナスももらえます。", trails:"軌跡エフェクト", trailNone:"なし", trailNames:{prism:"プリズム",sparkle:"キラキラ",fire:"ほのお",bubble:"あわ"}, inUse:"使用中", owned:"所持", rpNeed:n=>`あと${n} RP必要です。`, rpBuyLine:(n,p)=>`<b>${n}</b> · ${p} RP`, rpAria:(n,p)=>`${n}（RPショップで${p} RP）`, rpInShop:(n,p)=>`<b>${n}</b>はRPショップで${p} RPです。`, trailOn:n=>`軌跡エフェクト：${n}`,
@@ -1571,6 +1581,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   teamsOf:(t,n)=>`${n}명씩 ${t}팀`, optNote:(m,big)=>`AI 수와 맵 크기는 지금 고른 ${m} · ${big?"대형":"기본"} 맵에만 적용돼요.`,
   tiers:["브론즈","실버","골드","플래티넘","다이아몬드","마스터"], rpToNext:(n,t)=>`${t}까지 ${n} RP`, topTier:"최고 티어", rankRecord:(g,w)=>`${g}판 · ${w}승`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`${t} 승급!`, demoted:t=>`${t}(으)로 강등`, promoReward:c=>`+${c} 코인`, rankQuit:d=>`랭크전을 중간에 나가서 꼴찌로 처리됐어요 (${d}).`,
   tierLockAria:(n,t)=>`${n} (잠김: 랭크전 ${t} 달성 필요)`, tierLockLine:(n,t)=>`<b>${n}</b> 스킨 · 랭크전에서 <b>${t}</b>에 오르면 열려요`,
+  tourTitle:"주간 토너먼트", tourEnds:(d,h)=>`${d}일 ${h}시간 남음`, tourPrize:"🥇 황금 테두리 + 1000코인 · 🥈 실버 테두리 + 600 · 🥉 브론즈 테두리 + 300 · 10위 안: 150 · 50위 안: 50", tourYou:p=>`이번 주 현재 ${p}위`, tourResult:(p,c)=>`주간 토너먼트 ${p}위 · +${c}코인`, tourDone:"토너먼트 결과", tourJoin:"랭크전을 하면 자동으로 참가해요", tourLast:p=>`지난주: ${p}위`,
   rankings:"랭킹", rkWeek:"주간", rkAll:"시즌", rkLoading:"랭킹 불러오는 중…", rkSlow:"랭킹을 불러오는 데 오래 걸려요. 최신이 아닐 수 있어요.", rkOffline:"지금은 여기서 랭킹에 연결할 수 없어요.", rkEmpty:"아직 아무도 없어요. 랭크전을 해서 1등을 차지하세요!", rkNoPost:"랭킹은 볼 수 있지만, 여기서는 내 기록을 올릴 수 없어요.", rkResets:"주간 랭킹은 월요일(UTC)부터 얻은 RP로 정해져요.", rkPlay:"랭크전을 한 판 하면 랭킹에 올라가요.",
   seasonEnds:d=>`시즌 종료까지 ${d}일`, seasonPayout:c=>`시즌 종료 보너스: +${c} RP`, seasonOver:(t,rp,c)=>`${t}로 시즌 마감 → 상점 RP +${c}`, seasonDone:"시즌 종료",
   rpShop:"RP 상점", rpNote:"랭크전에서 얻은 RP는 여기에도 쌓여서 물건을 살 수 있어요. 써도 랭크(티어)는 안 떨어져요. 시즌이 끝나면 티어 보너스 RP도 받아요.", trails:"꼬리 효과", trailNone:"없음", trailNames:{prism:"프리즘",sparkle:"반짝이",fire:"불꽃",bubble:"비눗방울"}, inUse:"사용 중", owned:"보유", rpNeed:n=>`RP가 ${n} 더 필요해요.`, rpBuyLine:(n,p)=>`<b>${n}</b> · ${p} RP`, rpAria:(n,p)=>`${n} (RP 상점 ${p} RP)`, rpInShop:(n,p)=>`<b>${n}</b>은(는) RP 상점에서 ${p} RP예요.`, trailOn:n=>`꼬리 효과: ${n}`,
@@ -2171,10 +2182,10 @@ async function postRank(){
 // AI rivals on the board. Each one really "plays": it has its own skill and pace, and every game it finishes
 // somewhere and gains or loses RP by the same rules as you, since the season began. It's seeded, so everyone
 // sees the same board, and it moves on its own as time passes (refreshed while the rankings are open).
-function rkBots(){
-  const now=Date.now(), stamp=Math.floor(now/20000); if(rkBots.cache&&rkBots.cache.stamp===stamp) return rkBots.cache.out;
+function rkBots(at){
+  const now=at||Date.now(), stamp=Math.floor(now/20000); if(!at&&rkBots.cache&&rkBots.cache.stamp===stamp) return rkBots.cache.out;
   const seed=n=>()=>{ n=n+0x6D2B79F5|0; let t=Math.imul(n^n>>>15,1|n); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
-  const wk=weekKey(), sk=seasonKey(), d=new Date(now);
+  const wk=weekKey(new Date(now)), sk=seasonKey(new Date(now)), d=new Date(now);
   const s0=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1), mon=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-(((d.getUTCDay()||7)-1)*864e5);
   const hash=str=>str.split('').reduce((a,c)=>a*31+c.charCodeAt(0)|0,7), sseed=hash(sk);
   if(!rkBots.names){ const r=seed(42), pool=NAMES.slice(); for(let i=pool.length-1;i>0;i--){ const k=Math.floor(r()*(i+1)); [pool[i],pool[k]]=[pool[k],pool[i]]; }
@@ -2189,10 +2200,38 @@ function rkBots(){
       rp=Math.max(0,rp+rankDelta(place,13,tierOf(rp))); games++; if(place===1) wins++;
       if(t>=mon) weekRp+=rp-before; }
     out.push({id:'bot'+i,bot:true,name:rkBots.names[i],rp,tier:tierOf(rp),week:wk,weekRp,games,wins,skill}); }
-  rkBots.cache={stamp,out}; return out; }
+  if(!at) rkBots.cache={stamp,out}; return out; }
+/* ---------- Weekly Tournament: the "This week" board, settled every Monday 00:00 UTC ---------- */
+const TOUR_PRIZE=[[1,1000,'gold'],[2,600,'silver'],[3,300,'bronze'],[10,150,null],[50,50,null],[1e9,20,null]];
+const FRAME_COL={gold:['#ffd23f','#fff3b0'],silver:['#dfe6f2','#ffffff'],bronze:['#d9894a','#ffd0a8']};
+const FRAME_MEDAL={gold:'🥇',silver:'🥈',bronze:'🥉'};
+const weekStart=(t=Date.now())=>{ const d=new Date(t); return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-(((d.getUTCDay()||7)-1)*864e5); };
+function tourLeft(){ const ms=weekStart()+7*864e5-Date.now(); return {d:Math.floor(ms/864e5),h:Math.floor(ms%864e5/36e5)}; }
+function tourPlace(myW,wk,at){ const bots=rkBots(at), others=(RK.rows||[]).filter(d=>d.id!==RK.uid&&d.week===wk);
+  return 1+bots.filter(d=>(d.weekRp||0)>myW).length+others.filter(d=>(d.weekRp||0)>myW).length; }
+// the week you last played in has ended: work out where you finished and pay out
+function tourSettle(){
+  const wk=rank.week; if(!wk||wk===weekKey()) return; rank.tour=rank.tour||{};
+  if(rank.tour.wk===wk) return;
+  const myW=rank.weekRp||0, end=rank.weekEnd||weekStart(), place=myW>0?tourPlace(myW,wk,end-1):0;
+  const pr=place?TOUR_PRIZE.find(x=>place<=x[0]):null;
+  rank.tour={wk,place,coins:pr?pr[1]:0,frame:pr?pr[2]:null,showUntil:end+7*864e5};
+  rank.week=weekKey(); rank.weekRp=0; rank.weekEnd=weekStart()+7*864e5; saveRank();
+  if(pr){ addCoins(pr[1]); setTimeout(()=>achToast({id:'_tour',name:L.tourResult(place,pr[1]),label:L.tourDone}),1200); } }
+const myFrame=()=>{ const t=rank.tour; return t&&t.frame&&Date.now()<t.showUntil?t.frame:null; };
+const frameOf=p=>p===me&&!p.isBot?myFrame():p.frame||null;
+function drawFrame(g,cx,cy,S,fr,tNow){ const c=FRAME_COL[fr]; if(!c) return; const s=S*1.16, L=cx-s/2, T=cy-s/2;
+  g.save(); g.shadowColor=c[0]; g.shadowBlur=REDUCED?0:S*.35; g.strokeStyle=c[0]; g.lineWidth=Math.max(2,S*.11); rrect(g,L,T,s,s,S*.3); g.stroke(); g.shadowBlur=0;
+  g.strokeStyle=c[1]; g.lineWidth=Math.max(1,S*.035); rrect(g,L+S*.05,T+S*.05,s-S*.1,s-S*.1,S*.26); g.stroke();
+  if(!REDUCED) for(let i=0;i<4;i++){ const a=tNow/700+i*1.5708, tw=.5+.5*Math.sin(tNow/260+i*2); star4(g,cx+Math.cos(a)*s*.62,cy+Math.sin(a)*s*.62,S*.2*(.6+.4*tw),c[1],.5+.5*tw); }
+  g.restore(); }
+function paintTour(){ const b=$('rkTour'); if(!b) return; const {d,h}=tourLeft(), wk=weekKey(), myW=rank.week===wk?(rank.weekRp||0):0;
+  const t=rank.tour, last=t&&t.place?` · ${L.tourLast(t.place)}${FRAME_MEDAL[t.frame]||''}`:'';
+  b.innerHTML=`<b>🏆 ${esc(L.tourTitle)}</b> <span>${esc(L.tourEnds(d,h))}</span><small>${esc(L.tourPrize)}</small><em>${esc(myW>0?L.tourYou(tourPlace(myW,wk)):L.tourJoin)}${esc(last)}</em>`;
+  const cn=$('tourCnt'); if(cn) cn.textContent='D-'+(d+(h>0?1:0)); }
 function rkUnsub(){ if(RK.unsub){ RK.unsub(); RK.unsub=null; } clearTimeout(RK.timer); }
 function rkRender(rows){
-  RK.rows=rows.filter(d=>!d.bot);
+  RK.rows=rows.filter(d=>!d.bot); $('rkTour').hidden=RK.tab!=='week'; try{ paintTour(); }catch(e){}
   const wk=weekKey(), week=RK.tab==='week', mine=RK.uid, box=$('rkList');
   const val=d=>week?L.rpGain(d.weekRp||0):`${d.rp||0} RP`;
   RK.map=new Map();
@@ -2244,7 +2283,7 @@ function applyRank(place,n){
   checkSeason();
   const before=rank.rp, ti=tierOf(before), d=rankDelta(place,n,ti);
   rank.rp=Math.max(0,before+d); if(rank.rp>before) rank.bank=(rank.bank||0)+(rank.rp-before); rank.games++; rank.total=(rank.total||0)+1; if(place===1) rank.wins++;
-  const wk=weekKey(); if(rank.week!==wk){ rank.week=wk; rank.weekRp=0; } rank.weekRp=(rank.weekRp||0)+(rank.rp-before);
+  const wk=weekKey(); if(rank.week&&rank.week!==wk) tourSettle(); if(rank.week!==wk){ rank.week=wk; rank.weekRp=0; } rank.weekEnd=weekStart()+7*864e5; rank.weekRp=(rank.weekRp||0)+(rank.rp-before);
   const after=tierOf(rank.rp); let reward=0;
   let skins=[];
   // promotion coins every season (season peak); tier skins once ever (lifetime peak)
@@ -3779,7 +3818,7 @@ function netBegin(){
   const url=netURL(); if(!url){ toast(L.netNoServer); return; }
   let ws; try{ ws=new WebSocket(url); }catch(e){ toast(L.netFail); return; }
   NET.ws=ws; NET.state='connecting'; NET.q=[]; toast(L.netConnecting);
-  ws.onopen=()=>ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId(),big:!!bigMap,mode:modeKey,teams:teamCount}));
+  ws.onopen=()=>ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId(),frame:myFrame()||'',big:!!bigMap,mode:modeKey,teams:teamCount}));
   ws.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(err){ return; }
     if(m.t==='hello'){ netHello(m); netEnterUI(); if(m.wait) toast(mode.survival&&!m.over?L.netWaitRound:L.netNextRound); }
     else if(m.t==='reset'){ if(NET.state!=='on') return; NET.q=[]; netHello({...m,you:NET.you}); if($('startOv').hidden) netEnterUI(); }
@@ -3805,7 +3844,7 @@ function netHill(h){ if(!h) return; const was=hill; hill={x:h[0],y:h[1]}; hillNe
 function netBoss(b){ if(!b){ boss=null; return; } const p=NET.byId[b[0]]; if(!p) return; if(!p.boss){ netBossLook(p,true); netTint(p); } boss=p; p.hp=b[1]; p.maxHp=b[2]; p.level=b[3]; p.respawnAt=b[4]?gt+b[4]:0; }
 function netSnow(m){ if(m.sb) sballs=m.sb.map(([x,y,px,py,dir])=>({x,y,px,py,dir})); if(m.f){ for(const p of players) p.frozenUntil=0; for(const [id,left] of m.f){ const p=NET.byId[id]; if(p) p.frozenUntil=gt+left; } } }
 function netDuelScore(s){ if(!duel) return; const g=id=>{ const r=(s||[]).find(x=>x[0]===id); return r?r[1]:0; }; duel.score=[g(NET.you),duel.b?g(duel.b.id):0]; }
-function netPlayer(m){ const sk=netSkinOf(m.skin,m.col), p=mkPlayer(m.id,m.name,sk.col,!!m.bot); p.skin=sk; p.netOn=true; p.team=m.team||m.id; netBossLook(p,m.boss);
+function netPlayer(m){ const sk=netSkinOf(m.skin,m.col), p=mkPlayer(m.id,m.name,sk.col,!!m.bot); p.skin=sk; p.netOn=true; p.team=m.team||m.id; p.frame=FRAME_COL[m.frame]?m.frame:null; netBossLook(p,m.boss);
   const tid=m.team||m.id; if(mode.infect&&(!lands[tid-1]||!lands[tid-1].name||!players.some(q=>q.team===tid))){ const t={id:tid,name:L.teamOf(m.name),area:0,pat:sk.pat||''}; setColor(t,sk.col); lands[tid-1]=t; }
   netTint(p); return p; }
 function netHello(m){
@@ -4873,12 +4912,13 @@ function render(now){
     if(sk&&sk.spark&&!zom&&!REDUCED&&!paused&&particles.length<650&&Math.random()<(sk.lite?(p.trailCells.length?.12:.04):(p.trailCells.length?.45:.18))){ const [hx,hy]=ip(p), a=Math.random()*6.28, v=.003+Math.random()*.008;
       const col=sparkCol(sk.spark);
       particles.push({x:hx-DX[p.dir]*.4+(Math.random()-.5)*.6,y:hy-DY[p.dir]*.4+(Math.random()-.5)*.6,vx:Math.cos(a)*v,vy:Math.sin(a)*v+(sk.spark==='sakura'?.006:0),life:.75,col,sz:sk.spark==='sakura'?.26:.18,round:true,a:.9}); }
+    const fr=zom?null:frameOf(p); if(fr) drawFrame(ctx,cx,cy,hs,fr,tNow);
     const top=drawHead(ctx,cx,cy,hs,p.col,p.dark,p.dir,zom?'zombie':(sk?sk.deco:''),zom?null:sk);
     if(ov&&p!==fol) continue;
-    const nmT=p.boss?`${p.name} Lv.${p.level}`:p.name;
+    const nmT=(p.boss?`${p.name} Lv.${p.level}`:p.name)+(fr?' '+FRAME_MEDAL[fr]:'');
     ctx.lineWidth=4;ctx.strokeStyle=C.nameStroke;ctx.strokeText(nmT,cx,top-4);
     ctx.fillStyle=p.boss?'#c81e3a':p===me||p===fol?p.dark:C.ink;ctx.fillText(nmT,cx,top-4);
-    const bt=badgeOf(p); if(bt>=0){ const fs=Math.max(11,S*.5), bh=fs*1.05, tw=ctx.measureText(p.name).width; drawShield(ctx,cx-tw/2-bh*.95,top-4-fs*.98,bh,bt); }
+    const bt=badgeOf(p); if(bt>=0){ const fs=Math.max(11,S*.5), bh=fs*1.05, tw=ctx.measureText(nmT).width; drawShield(ctx,cx-tw/2-bh*.95,top-4-fs*.98,bh,bt); }
     if(p.emote) drawEmote(p,cx,top-4-Math.max(11,S*.5)*1.1,S);
   }
 
@@ -5260,6 +5300,7 @@ checkSeason(); bpCheckSeason(); dailyRoll(); paintDailyDot();
 setInterval(()=>{ if(daily&&daily.day!==dayKey()){ dailyRoll(); paintDailyDot(); if(!$('dailyOv').hidden) buildDaily(); } },60000);
 buildSkins(); paintSkinCur(); buildModes(); renderAch(); paintCoins();
 if(bpNote) setTimeout(()=>achToast({id:'_bp',name:L.bpAuto(bpNote),label:L.bpTitle}),1600);
+try{ tourSettle(); paintTour(); }catch(e){}
 if(seasonNote){ const n=seasonNote; setTimeout(()=>achToast({id:'_season',name:L.seasonOver(tierName(n.tier),n.rp,n.pay),label:L.seasonDone}),900); }
 document.addEventListener('visibilitychange',()=>{lastTick=performance.now();});
 requestAnimationFrame(loop);

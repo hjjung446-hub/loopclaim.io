@@ -107,7 +107,7 @@ function humans(r){ let n=0; for(const p of r.slots) if(p&&!p.bot) n++; return n
 function count(r){ let n=0; for(const p of r.slots) if(p) n++; return n; }
 function pickRoom(cfg){ let best=null; for(const r of rooms){ if(r.cfg.key!==cfg.key) continue; const h=humans(r); if(h<r.cfg.humans&&(!best||h>humans(best))) best=r; } return best||makeRoom(cfg); }
 function freeSlot(r){ for(let i=1;i<=r.cfg.max;i++) if(!r.slots[i]) return i; return 0; }
-function meta(p){ return {id:p.id,name:p.name,col:p.col,skin:p.skin,bot:!!p.bot,team:p.team,boss:!!p.boss}; }
+function meta(p){ return {id:p.id,name:p.name,col:p.col,skin:p.skin,bot:!!p.bot,team:p.team,boss:!!p.boss,frame:p.frame||''}; }
 // Zombie: the first few in become zombies, latecomers join the horde
 const zStart=n=>Math.max(2,Math.round(n*.08));
 function zJoinTeam(r){ let z=0,n=0; for(const q of r.slots) if(q){ n++; if(q.team===2) z++; }
@@ -115,7 +115,7 @@ function zJoinTeam(r){ let z=0,n=0; for(const q of r.slots) if(q){ n++; if(q.tea
 function zAssign(r){ const ps=r.slots.filter(Boolean).sort(()=>Math.random()-.5), nz=zStart(ps.length); ps.forEach((p,i)=>p.team=i<nz?2:1); }
 function smallestTeam(r){ const n=new Array(r.cfg.teams+1).fill(0); for(const q of r.slots) if(q) n[q.team]++; let b=1; for(let t=2;t<=r.cfg.teams;t++) if(n[t]<n[b]||(n[t]===n[b]&&Math.random()<.5)) b=t; return b; }
 function addPlayer(r,o){ const id=freeSlot(r); if(!id) return null;
-  const p={id,name:o.name,col:o.col,skin:o.skin,bot:!!o.bot,ws:o.ws||null,alive:false,x:0,y:0,dir:0,trail:[],exit:-1,kills:0,area:0,respawnAt:0,q:[],ai:{},team:id};
+  const p={id,name:o.name,col:o.col,skin:o.skin,frame:o.frame||'',bot:!!o.bot,ws:o.ws||null,alive:false,x:0,y:0,dir:0,trail:[],exit:-1,kills:0,area:0,respawnAt:0,q:[],ai:{},team:id};
   if(r.cfg.zombie) p.team=zJoinTeam(r);
   else if(r.cfg.teams) p.team=smallestTeam(r);
   else if(r.slots.some(q=>q&&q.team===id)){ // Infection: this slot's team colour is still in use, so take a free one
@@ -462,7 +462,7 @@ function onConnect(ws){
       const cfg=makeCfg(String(m.mode||'normal'),!!m.big,m.teams|0);
       room=pickRoom(cfg); N=room.N;
       if(!freeSlot(room)){ const b=room.slots.find(p=>p&&p.bot&&!p.boss); if(b) removePlayer(room,b); }   // a person takes an AI's seat
-      me=addPlayer(room,{name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),ws});
+      me=addPlayer(room,{name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),frame:['gold','silver','bronze'].includes(m.frame)?m.frame:'',ws});
       if(!me){ ws.send({t:'full'}); ws.close(); return; }
       fillBots(room); room.clients.add(ws);
       ws.send({t:'hello',you:me.id,wait:!canJoinNow(room),...snapshot(room)});
