@@ -46,9 +46,18 @@ const BOT_COLS=['#e8455a','#f2994a','#f2c94c','#6fcf97','#27ae60','#2d9cdb','#56
 /* ---------------- static files ---------------- */
 const PUB=path.join(__dirname,'public');
 const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon','.json':'application/json'};
+/* ---------------- regional servers ----------------
+   On Fly.io one app runs a copy in several regions. Players reach the nearest one automatically; ?region=xxx asks
+   Fly's proxy to replay the request to that region instead (fly-replay). REGIONS lists the picker, e.g.
+   "na:iad,sa:gru,eu:fra,asia:nrt,sea:sin,oc:syd,af:jnb". KR_URL can point at a separate server in Korea. */
+const HERE=process.env.FLY_REGION||'';
+const REGIONS=(process.env.REGIONS||'').split(',').map(x=>x.trim()).filter(Boolean).map(x=>{ const [id,code]=x.split(':'); return {id,code}; }).filter(r=>r.id&&/^[a-z]{3}$/.test(r.code||''));
+const wantRegion=url=>{ const m=/[?&]region=([a-z]{3})\b/.exec(url||''); return m&&HERE&&m[1]!==HERE&&REGIONS.some(r=>r.code===m[1])?m[1]:''; };
 const server=http.createServer((req,res)=>{
+  { const r=wantRegion(req.url); if(r){ res.writeHead(200,{'fly-replay':'region='+r,'cache-control':'no-store'}); return res.end(); } }
   let u=decodeURIComponent((req.url||'/').split('?')[0]); if(u==='/') u='/index.html';
-  if(u==='/healthz'){ res.writeHead(200,{'content-type':'text/plain','cache-control':'no-store'}); res.end('ok'); return; }
+  if(u==='/healthz'){ res.writeHead(200,{'content-type':'text/plain','cache-control':'no-store','access-control-allow-origin':'*'}); res.end('ok '+HERE); return; }
+  if(u==='/regions'){ res.writeHead(200,{'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'*'}); return res.end(JSON.stringify({here:HERE,list:REGIONS,kr:process.env.KR_URL||''})); }
   if(u==='/health'){ res.writeHead(200,{'content-type':'text/plain'}); return res.end('ok '+rooms.length+' rooms'); }
   const f=path.normalize(path.join(PUB,u)); if(!f.startsWith(PUB)){ res.writeHead(403); return res.end(); }
   fs.readFile(f,(e,b)=>{ if(e){ res.writeHead(404); return res.end('not found'); }
@@ -57,6 +66,7 @@ const server=http.createServer((req,res)=>{
 
 /* ---------------- minimal WebSocket (RFC 6455) ---------------- */
 server.on('upgrade',(req,sock)=>{
+  { const r=wantRegion(req.url); if(r){ sock.end('HTTP/1.1 200 OK\r\nfly-replay: region='+r+'\r\nContent-Length: 0\r\n\r\n'); return; } }
   if((req.url||'').split('?')[0]!=='/ws'||req.headers.upgrade?.toLowerCase()!=='websocket'){ sock.destroy(); return; }
   const key=req.headers['sec-websocket-key']; if(!key){ sock.destroy(); return; }
   const acc=crypto.createHash('sha1').update(key+'258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest('base64');

@@ -337,6 +337,10 @@ body.xmas .xmasHat{display:block}
 @keyframes achPop{from{transform:translate(-50%,16px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 @media (prefers-reduced-motion:reduce){.achToast{animation:none}}
 .howRow{display:flex;gap:8px}
+.regionRow{display:flex;align-items:center;gap:10px;margin:2px 0 8px}
+.regionRow label{flex:none;font-size:12.5px;font-weight:700;color:var(--muted)}
+.regionRow select{flex:1;min-width:0;font:inherit;font-size:13.5px;font-weight:700;color:var(--ink);background:var(--ground);border:0;border-radius:10px;padding:8px 10px}
+#startOv.newbie .regionRow{display:none!important}
 #startOv.newbie #modes,#startOv.newbie #sizeRow,#startOv.newbie #teamRow,#startOv.newbie #netRow,#startOv.newbie #rankBox,#startOv.newbie #watchStartBtn,#startOv.newbie #modeLbl,#startOv.newbie #modeDesc{display:none!important}
 .newbieNote{margin:2px 0 0;padding:8px 12px;border-radius:10px;background:var(--ground);font-size:12.5px;font-weight:700;color:var(--muted);text-align:center}
 .firstHint{margin:-2px 0 2px;text-align:center;font-size:12.5px;font-weight:700;color:var(--me)}
@@ -522,6 +526,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
         <button type="button" class="size" id="net-on" aria-pressed="true">Online</button>
         <button type="button" class="size" id="net-off" aria-pressed="false">Offline</button>
       </div>
+      <div class="regionRow" id="regionRow" hidden><label id="regLbl" for="regionSel">Server</label><select id="regionSel"></select></div>
       <div class="modes" id="modes" role="group" aria-labelledby="modeLbl"></div>
       <div class="sizes" id="sizeRow" role="group" aria-label="Map size">
         <button type="button" class="size" id="size-normal" aria-pressed="true">Normal map</button>
@@ -845,6 +850,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   fxLbl:"Effects & animation", arrowPad:"Arrow buttons", winterTitle:"Winter Festival", winterSub:d=>`Grab ❄️ on the map → limited skins · ${d} days left`, flakeGain:(n,t)=>`❄️ +${n} snowflakes · ${t} total`, flakeBuyLine:(n,p)=>`<b>${n}</b> skin · ❄️${p}`, flakeNeed:(n,p,k)=>`The <b>${n}</b> skin costs ❄️${p}. You need ${k} more snowflakes.`, winterHint:"❄️ Winter Festival skins! Collect snowflakes on the map to trade for them.",
   sbThrow:"Throw (Space)", sbFrozenHud:"Frozen!", sbHit:"Hit! ❄️", sbFrozen:"Frozen! 🥶",
   newbieNote:n=>`More modes unlock after ${n} more game${n>1?"s":""}`, newbieOpen:"New modes unlocked! Try Teams, Survival, Ranked and more.", firstHint:"First time? A 1-minute tutorial starts first (you can skip it).", rulesBtn:"How to play", tutShort:"Tutorial →", theme:"Theme", themeLight:"Light", themeDark:"Dark", netConnecting:"Connecting…", netFail:"Couldn't reach the server.", netLost:"Lost the connection to the server.", netNoServer:"Online play needs the game server. Open the game from your server's address.", netFull:"The server is full. Try again in a moment.",
+  regLbl:"Server", regAuto:"Auto", regNames:{na:"North America (US East)",sa:"South America (Brazil)",eu:"Europe (Germany)",asia:"Asia (Japan)",sea:"Southeast Asia (Singapore)",oc:"Oceania (Australia)",af:"Africa (South Africa)",kr:"Korea"},
   playOnline:"Online", playOffline:"Offline (vs AI)", playWhere:"Where to play",
   netOffline:"Couldn't reach the server, so this is an offline game with AI.", netNextRound:"The next round starts in a moment.", netWaitRound:"No respawns in Survival — you'll join the next round.", langNote:"The page reloads to switch language."
 };
@@ -964,6 +970,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   fxLbl:"Efectos y animación", arrowPad:"Botones de flecha", winterTitle:"Festival de Invierno", winterSub:d=>`Atrapa ❄️ en el mapa → aspectos limitados · quedan ${d} días`, flakeGain:(n,t)=>`❄️ +${n} copos · ${t} en total`, flakeBuyLine:(n,p)=>`Aspecto <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> cuesta ❄️${p}. Te faltan ${k} copos.`, winterHint:"❄️ ¡Aspectos del Festival de Invierno! Junta copos en el mapa para canjearlos.",
   sbThrow:"Lanzar (Espacio)", sbFrozenHud:"¡Congelado!", sbHit:"¡Impacto! ❄️", sbFrozen:"¡Congelado! 🥶",
   newbieNote:n=>`Más modos tras ${n} partida${n>1?"s":""} más`, newbieOpen:"¡Nuevos modos desbloqueados! Prueba Equipos, Supervivencia, Clasificatoria y más.", firstHint:"¿Primera vez? Antes empieza un tutorial de 1 minuto (puedes saltarlo).", rulesBtn:"Cómo jugar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Oscuro", netConnecting:"Conectando…", netFail:"No se pudo conectar al servidor.", netLost:"Se perdió la conexión con el servidor.", netNoServer:"El modo en línea necesita el servidor del juego. Abre el juego desde la dirección de tu servidor.", netFull:"El servidor está lleno. Inténtalo de nuevo en un momento.",
+  regLbl:"Servidor", regAuto:"Automático (el más cercano)", regNames:{na:"Norteamérica (EE. UU. este)",sa:"Sudamérica (Brasil)",eu:"Europa (Alemania)",asia:"Asia (Japón)",sea:"Sudeste asiático (Singapur)",oc:"Oceanía (Australia)",af:"África (Sudáfrica)",kr:"Corea"},
   playOnline:"En línea", playOffline:"Sin conexión (vs IA)", playWhere:"Dónde jugar",
   netOffline:"No se pudo conectar al servidor: partida sin conexión con IA.", netNextRound:"La próxima ronda empieza enseguida.", netWaitRound:"En Supervivencia no se reaparece: entrarás en la próxima ronda.", langNote:"La página se recarga para cambiar de idioma."
 };
@@ -1083,6 +1090,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   fxLbl:"Efeitos e animação", arrowPad:"Botões de seta", winterTitle:"Festival de Inverno", winterSub:d=>`Pegue ❄️ no mapa → visuais limitados · faltam ${d} dias`, flakeGain:(n,t)=>`❄️ +${n} flocos · ${t} no total`, flakeBuyLine:(n,p)=>`Visual <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> custa ❄️${p}. Faltam ${k} flocos.`, winterHint:"❄️ Visuais do Festival de Inverno! Junte flocos no mapa para trocar.",
   sbThrow:"Jogar (Espaço)", sbFrozenHud:"Congelado!", sbHit:"Acertou! ❄️", sbFrozen:"Congelado! 🥶",
   newbieNote:n=>`Mais modos após mais ${n} partida${n>1?"s":""}`, newbieOpen:"Novos modos liberados! Experimente Equipes, Sobrevivência, Ranqueada e mais.", firstHint:"Primeira vez? Antes começa um tutorial de 1 minuto (dá para pular).", rulesBtn:"Como jogar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Escuro", netConnecting:"Conectando…", netFail:"Não foi possível conectar ao servidor.", netLost:"A conexão com o servidor caiu.", netNoServer:"O modo online precisa do servidor do jogo. Abra o jogo pelo endereço do seu servidor.", netFull:"O servidor está cheio. Tente de novo daqui a pouco.",
+  regLbl:"Servidor", regAuto:"Automático (mais próximo)", regNames:{na:"América do Norte (EUA leste)",sa:"América do Sul (Brasil)",eu:"Europa (Alemanha)",asia:"Ásia (Japão)",sea:"Sudeste Asiático (Singapura)",oc:"Oceania (Austrália)",af:"África (África do Sul)",kr:"Coreia"},
   playOnline:"Online", playOffline:"Offline (vs IA)", playWhere:"Onde jogar",
   netOffline:"Não deu para conectar ao servidor: partida offline com IA.", netNextRound:"A próxima rodada começa já já.", netWaitRound:"Na Sobrevivência não há renascimento: você entra na próxima rodada.", langNote:"A página recarrega para trocar o idioma."
 };
@@ -1202,6 +1210,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   fxLbl:"Effets et animations", arrowPad:"Boutons fléchés", winterTitle:"Festival d'hiver", winterSub:d=>`Attrape les ❄️ sur la carte → apparences limitées · encore ${d} j`, flakeGain:(n,t)=>`❄️ +${n} flocons · ${t} au total`, flakeBuyLine:(n,p)=>`Apparence <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> coûte ❄️${p}. Il te manque ${k} flocons.`, winterHint:"❄️ Apparences du Festival d'hiver ! Ramasse des flocons sur la carte pour les échanger.",
   sbThrow:"Lancer (Espace)", sbFrozenHud:"Gelé !", sbHit:"Touché ! ❄️", sbFrozen:"Gelé ! 🥶",
   newbieNote:n=>`D'autres modes s'ouvrent après ${n} partie${n>1?"s":""} de plus`, newbieOpen:"Nouveaux modes débloqués ! Essaie Équipes, Survie, Classé et plus.", firstHint:"Première fois ? Un tutoriel d'1 minute commence d'abord (tu peux le passer).", rulesBtn:"Comment jouer", tutShort:"Tutoriel →", theme:"Thème", themeLight:"Clair", themeDark:"Sombre", netConnecting:"Connexion…", netFail:"Impossible de joindre le serveur.", netLost:"Connexion au serveur perdue.", netNoServer:"Le mode en ligne a besoin du serveur du jeu. Ouvre le jeu depuis l'adresse de ton serveur.", netFull:"Le serveur est plein. Réessaie dans un instant.",
+  regLbl:"Serveur", regAuto:"Auto (le plus proche)", regNames:{na:"Amérique du Nord (USA Est)",sa:"Amérique du Sud (Brésil)",eu:"Europe (Allemagne)",asia:"Asie (Japon)",sea:"Asie du Sud-Est (Singapour)",oc:"Océanie (Australie)",af:"Afrique (Afrique du Sud)",kr:"Corée"},
   playOnline:"En ligne", playOffline:"Hors ligne (vs IA)", playWhere:"Où jouer",
   netOffline:"Serveur injoignable : partie hors ligne contre l'IA.", netNextRound:"La prochaine manche commence dans un instant.", netWaitRound:"Pas de réapparition en Survie : tu rejoindras la prochaine manche.", langNote:"La page se recharge pour changer de langue."
 };
@@ -1321,6 +1330,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   fxLbl:"Effekte & Animation", arrowPad:"Pfeiltasten", winterTitle:"Winterfest", winterSub:d=>`Sammle ❄️ auf der Karte → limitierte Skins · noch ${d} Tage`, flakeGain:(n,t)=>`❄️ +${n} Schneeflocken · ${t} insgesamt`, flakeBuyLine:(n,p)=>`Skin <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> kostet ❄️${p}. Dir fehlen ${k} Schneeflocken.`, winterHint:"❄️ Winterfest-Skins! Sammle Schneeflocken auf der Karte und tausche sie ein.",
   sbThrow:"Werfen (Leertaste)", sbFrozenHud:"Eingefroren!", sbHit:"Treffer! ❄️", sbFrozen:"Eingefroren! 🥶",
   newbieNote:n=>`Weitere Modi nach ${n} weiteren Runde${n>1?"n":""}`, newbieOpen:"Neue Modi freigeschaltet! Probier Teams, Überleben, Rangliste und mehr.", firstHint:"Zum ersten Mal hier? Zuerst kommt ein 1-Minuten-Tutorial (überspringbar).", rulesBtn:"Spielregeln", tutShort:"Tutorial →", theme:"Design", themeLight:"Hell", themeDark:"Dunkel", netConnecting:"Verbinde…", netFail:"Server nicht erreichbar.", netLost:"Verbindung zum Server verloren.", netNoServer:"Online-Spiel braucht den Spielserver. Öffne das Spiel über die Adresse deines Servers.", netFull:"Der Server ist voll. Versuch es gleich noch mal.",
+  regLbl:"Server", regAuto:"Automatisch (nächster)", regNames:{na:"Nordamerika (USA Ost)",sa:"Südamerika (Brasilien)",eu:"Europa (Deutschland)",asia:"Asien (Japan)",sea:"Südostasien (Singapur)",oc:"Ozeanien (Australien)",af:"Afrika (Südafrika)",kr:"Korea"},
   playOnline:"Online", playOffline:"Offline (gegen KI)", playWhere:"Wo spielen",
   netOffline:"Server nicht erreichbar – Offline-Spiel gegen die KI.", netNextRound:"Die nächste Runde startet gleich.", netWaitRound:"Im Überleben gibt es kein Wiedereinsteigen – du bist in der nächsten Runde dabei.", langNote:"Die Seite lädt neu, um die Sprache zu wechseln."
 };
@@ -1440,6 +1450,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   fxLbl:"特效与动画", arrowPad:"方向按钮", winterTitle:"冬日庆典", winterSub:d=>`在地图上收集❄️ → 兑换限定皮肤 · 剩余${d}天`, flakeGain:(n,t)=>`❄️ +${n} 雪花 · 共${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>皮肤 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>需要❄️${p}，还差${k}片雪花。`, winterHint:"❄️ 冬日庆典限定皮肤！在地图上收集雪花来兑换。",
   sbThrow:"投掷（空格）", sbFrozenHud:"冻住了！", sbHit:"命中！❄️", sbFrozen:"冻住了！🥶",
   newbieNote:n=>`再玩 ${n} 局解锁更多模式`, newbieOpen:"新模式已解锁！试试团队、生存、排位等。", firstHint:"第一次玩？会先开始 1 分钟教程（可以跳过）。", rulesBtn:"玩法", tutShort:"教程 →", theme:"主题", themeLight:"浅色", themeDark:"深色", netConnecting:"连接中…", netFail:"无法连接服务器。", netLost:"与服务器的连接已断开。", netNoServer:"在线模式需要游戏服务器。请从你的服务器地址打开游戏。", netFull:"服务器已满，请稍后再试。",
+  regLbl:"服务器", regAuto:"自动（最近）", regNames:{na:"北美（美国东部）",sa:"南美（巴西）",eu:"欧洲（德国）",asia:"亚洲（日本）",sea:"东南亚（新加坡）",oc:"大洋洲（澳大利亚）",af:"非洲（南非）",kr:"韩国"},
   playOnline:"在线", playOffline:"离线（对战 AI）", playWhere:"游戏方式",
   netOffline:"无法连接服务器，改为与 AI 离线对战。", netNextRound:"下一局马上开始。", netWaitRound:"生存模式不能复活，下一局再加入吧。", langNote:"切换语言时页面会重新加载。"
 };
@@ -1559,6 +1570,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   fxLbl:"エフェクトとアニメ", arrowPad:"矢印ボタン", winterTitle:"ウィンターフェス", winterSub:d=>`マップの❄️を集めて限定スキンと交換 · 残り${d}日`, flakeGain:(n,t)=>`❄️ +${n} 雪の結晶 · 合計${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>スキン · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>は❄️${p}。あと${k}個必要です。`, winterHint:"❄️ ウィンターフェス限定スキン！マップで雪の結晶を集めて交換しよう。",
   sbThrow:"投げる（スペース）", sbFrozenHud:"凍った！", sbHit:"命中！❄️", sbFrozen:"凍った！🥶",
   newbieNote:n=>`あと${n}回遊ぶと他のモードが開きます`, newbieOpen:"新しいモードが解放！チーム戦、サバイバル、ランク戦などを遊んでみよう。", firstHint:"はじめて？先に1分のチュートリアルが始まります（スキップできます）。", rulesBtn:"遊び方", tutShort:"チュートリアル →", theme:"テーマ", themeLight:"ライト", themeDark:"ダーク", netConnecting:"接続中…", netFail:"サーバーに接続できません。", netLost:"サーバーとの接続が切れました。", netNoServer:"オンライン対戦にはゲームサーバーが必要です。サーバーのアドレスからゲームを開いてください。", netFull:"サーバーが満員です。少し待ってからもう一度どうぞ。",
+  regLbl:"サーバー", regAuto:"自動（いちばん近い）", regNames:{na:"北米（米国東部）",sa:"南米（ブラジル）",eu:"ヨーロッパ（ドイツ）",asia:"アジア（日本）",sea:"東南アジア（シンガポール）",oc:"オセアニア（オーストラリア）",af:"アフリカ（南アフリカ）",kr:"韓国"},
   playOnline:"オンライン", playOffline:"オフライン（AIと対戦）", playWhere:"プレイ方法",
   netOffline:"サーバーにつながらないので、AIとのオフライン対戦になります。", netNextRound:"次のラウンドがまもなく始まります。", netWaitRound:"サバイバルは復活なし。次のラウンドから参加できます。", langNote:"言語を切り替えるとページが再読み込みされます。"
 };
@@ -1678,6 +1690,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   fxLbl:"이펙트·애니메이션", arrowPad:"화살표 버튼", winterTitle:"겨울 축제", winterSub:d=>`맵의 ❄️를 모아 한정 스킨과 교환 · ${d}일 남음`, flakeGain:(n,t)=>`❄️ 눈송이 +${n} · 보유 ${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b> 스킨 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> 스킨은 ❄️${p}이에요. 눈송이 ${k}개가 더 필요해요.`, winterHint:"❄️ 겨울 축제 한정 스킨! 맵에 떨어진 눈송이를 모아서 교환하세요.",
   sbThrow:"던지기 (스페이스)", sbFrozenHud:"얼었어요!", sbHit:"명중! ❄️", sbFrozen:"얼었다! 🥶",
   newbieNote:n=>`다른 모드는 ${n}판 더 하면 열려요`, newbieOpen:"새 모드가 열렸어요! 팀전, 생존전, 랭크전 등을 골라보세요.", firstHint:"처음이면 1분 튜토리얼부터 시작해요 (건너뛰기 가능)", rulesBtn:"게임 방법", tutShort:"튜토리얼 →", theme:"테마", themeLight:"화이트", themeDark:"블랙", netConnecting:"서버에 연결하는 중…", netFail:"서버에 연결할 수 없어요.", netLost:"서버 연결이 끊겼어요.", netNoServer:"온라인 모드는 게임 서버가 필요해요. 서버 주소로 게임을 열어주세요.", netFull:"서버가 가득 찼어요. 잠시 후 다시 시도해주세요.",
+  regLbl:"서버", regAuto:"자동", regNames:{na:"북아메리카 (미국 동부)",sa:"남아메리카 (브라질)",eu:"유럽 (독일)",asia:"아시아 (일본)",sea:"동남아 (싱가포르)",oc:"오세아니아 (호주)",af:"아프리카 (남아공)",kr:"한국"},
   playOnline:"온라인", playOffline:"오프라인 (AI와)", playWhere:"플레이 방식",
   netOffline:"서버에 연결할 수 없어서 AI와 오프라인으로 시작해요.", netNextRound:"곧 다음 판이 시작돼요.", netWaitRound:"생존전은 부활이 없어요. 다음 판부터 참가해요.", langNote:"언어를 바꾸면 페이지가 새로고침돼요."
 };
@@ -3936,9 +3949,31 @@ function exitSpectate(){
   paintAccent();
 }
 /* ---------- online play (needs the Loopclaim server: node server.js) ---------- */
-function netURL(){ if(NET.noServer) return ''; try{ const q=new URLSearchParams(location.search).get('server'); if(q) return q; const s=localStorage.getItem('ttang-server'); if(s) return s; }catch(e){}
+function netBase(){ if(NET.noServer) return ''; try{ const q=new URLSearchParams(location.search).get('server'); if(q) return q; const s=localStorage.getItem('ttang-server'); if(s) return s; }catch(e){}
   if(!/^https?:$/.test(location.protocol)||/claude\.ai|claudeusercontent|anthropic|ttang\.test/.test(location.host)) return '';
   return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws'; }
+// regional servers: the picker appears only when the server says it runs in several regions (see /regions)
+const REG={list:[],here:'',kr:'',ping:{},pick:''};
+try{ REG.pick=localStorage.getItem('ttang-region')||''; }catch(e){}
+function netURL(){ const b=netBase(); if(!b) return '';
+  if(REG.pick==='kr'&&REG.kr) return REG.kr;
+  const r=REG.list.find(x=>x.code===REG.pick); return r?b+(b.includes('?')?'&':'?')+'region='+r.code:b; }
+async function regionsLoad(){ const b=netBase(); if(!b||!/^wss?:\/\//.test(b)) return;
+  const http=b.replace(/^ws/,'http').replace(/\/ws(\?.*)?$/,'');
+  try{ const r=await fetch(http+'/regions',{cache:'no-store'}); if(!r.ok) return; const j=await r.json(); REG.list=Array.isArray(j.list)?j.list:[]; REG.here=j.here||''; REG.kr=j.kr||''; }catch(e){ return; }
+  if(!REG.list.length&&!REG.kr) return;
+  paintRegions();
+  const ping=async(url)=>{ let best=1e9; for(let i=0;i<2;i++){ const t=performance.now(); try{ await fetch(url,{cache:'no-store'}); best=Math.min(best,performance.now()-t); }catch(e){ return null; } } return Math.round(best); };
+  REG.ping['']=await ping(http+'/healthz'); paintRegions();
+  for(const x of REG.list){ REG.ping[x.code]=await ping(http+'/healthz?region='+x.code); paintRegions(); }
+  if(REG.kr){ REG.ping.kr=await ping(REG.kr.replace(/^ws/,'http').replace(/\/ws(\?.*)?$/,'')+'/healthz'); paintRegions(); } }
+function paintRegions(){ const row=$('regionRow'), sel=$('regionSel'); if(!row) return;
+  row.hidden=!(REG.list.length||REG.kr)||!netWant; if(row.hidden) return;
+  $('regLbl').textContent=L.regLbl; const nm=L.regNames||{}, ms=v=>v!=null&&v<1e9?` · ${v}ms`:'';
+  const here=REG.list.find(x=>x.code===REG.here);
+  const opts=[['',L.regAuto+(here?' · '+(nm[here.id]||here.id):'')+ms(REG.ping[''])]].concat(REG.list.map(x=>[x.code,(nm[x.id]||x.id)+ms(REG.ping[x.code])]));
+  if(REG.kr) opts.push(['kr',(nm.kr||'Korea')+ms(REG.ping.kr)]);
+  sel.innerHTML=opts.map(([v,t])=>`<option value="${esc(v)}"${v===REG.pick?' selected':''}>${esc(t)}</option>`).join(''); }
 try{ if(/[?&]debug=1/.test(location.search)){ window.__lc=()=>({me,players,owner,trail,N,NET,lands,mode});
   window.__cheat=CHEAT;
   window.__cheatDo={
@@ -3967,10 +4002,12 @@ const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie
 let netWant=true; try{ netWant=localStorage.getItem('ttang-net')!=='off'; }catch(e){}
 const netCan=k=>netWant&&ONLINE_MODES.includes(k)&&!!netURL();
 // the Online / Offline switch on the menu (only where a server exists)
-function paintNetRow(){ const row=$('netRow'); if(!row) return; const has=!NET.noServer&&!!netURL(); row.hidden=!has;
+function paintNetRow(){ try{ paintRegions(); }catch(e){} const row=$('netRow'); if(!row) return; const has=!NET.noServer&&!!netURL(); row.hidden=!has;
   $('net-on').setAttribute('aria-pressed',String(netWant)); $('net-off').setAttribute('aria-pressed',String(!netWant)); }
 for(const v of [true,false]) $(v?'net-on':'net-off').onclick=()=>{ netWant=v; try{ localStorage.setItem('ttang-net',v?'on':'off'); }catch(e){} paintNetRow(); try{ $('modeDesc').textContent=descOf(modeKey); }catch(e){} };
 paintNetRow();
+$('regionSel').onchange=e=>{ REG.pick=e.target.value; try{ localStorage.setItem('ttang-region',REG.pick); }catch(err){} };
+regionsLoad();
 function netBegin(){
   if(NET.state==='on'){
     if(NET.over){ toast(L.netNextRound); return; }
