@@ -7,6 +7,8 @@ const http=require('http'), fs=require('fs'), path=require('path'), crypto=requi
 
 const PORT=+process.env.PORT||8080;
 const TICK=115;   // ms per step
+const PROF=process.env.PROF?{ms:0,n:0}:null;
+if(PROF) setInterval(()=>{ console.log(`rooms ${rooms.length} · avg step ${(PROF.ms/Math.max(1,PROF.n)).toFixed(2)} ms · cpu/s ${(PROF.ms/10/1000*100).toFixed(1)}%`); PROF.ms=0; PROF.n=0; },10000).unref();
 // the modes that run online, with the same numbers as the offline game (fill = players in the room, AI included)
 const MODES={
   normal:  {N:100,fill:13},
@@ -77,7 +79,8 @@ server.on('upgrade',(req,sock)=>{
   sock.on('close',()=>{ if(ws.open){ ws.open=false; if(ws.onclose) ws.onclose(); } });
   sock.on('error',()=>{ if(ws.open){ ws.open=false; if(ws.onclose) ws.onclose(); } });
   const LAG=+process.env.LAG||0;   // testing only: simulate a slow connection (ms each way)
-  if(LAG){ const snd=ws.send.bind(ws); ws.send=o=>setTimeout(()=>snd(o),LAG); }
+  const JIT=+process.env.JIT||0;   // testing only: random extra delay, order kept
+  if(LAG||JIT){ const snd=ws.send.bind(ws); let last=0; ws.send=o=>{ const at=Math.max(Date.now()+LAG+Math.random()*JIT,last); last=at; setTimeout(()=>snd(o),at-Date.now()); }; }
   onConnect(ws);
   if(LAG){ const on=ws.onmsg; ws.onmsg=m=>setTimeout(()=>on(m),LAG); }
 });
@@ -97,7 +100,7 @@ function makeRoom(cfg){ N=cfg.N; const r={id:++roomSeq,cfg,N,owner:new Uint8Arra
   clients:new Set(),od:[],td:[],ev:[],tick:0,mark:new Int32Array(N*N),stamp:0,q:new Int32Array(N*N),mk:new Int32Array(N*N),bq:new Int32Array(N*N),dq:new Int32Array(N*N),st2:0,
   t0:Date.now(),lo:0,hi:N-1,nextShrink:0,over:0,started:false,
   gold:new Uint8Array(N*N),goldN:0,gd:[],nextGold:0,piles:new Set(),pd:[],balls:[],duel:{score:{},round:1},dNext:0};
-  r.timer=setInterval(()=>{ try{ step(r); }catch(e){ console.error(e); } },TICK); rooms.push(r); fillBots(r); modeInit(r); return r; }
+  r.timer=setInterval(()=>{ const t0=process.hrtime.bigint(); try{ step(r); }catch(e){ console.error(e); } if(PROF){ PROF.ms+=Number(process.hrtime.bigint()-t0)/1e6; PROF.n++; } },TICK); rooms.push(r); fillBots(r); modeInit(r); return r; }
 // the per-round extras of the EX modes
 function modeInit(r){ const c=r.cfg; N=r.N;
   if(c.gold){ r.gold.fill(0); r.goldN=0; r.nextGold=0; goldFill(r,true); r.gd=[]; }
@@ -447,7 +450,9 @@ function step(r){
   else if(cfg.survival){ const al=ps.filter(p=>p.alive); if(al.length>=2) r.started=true; if(r.started&&al.length<=1){ r.started=false; roundOver(r,al[0]?al[0].id:0,'last'); } }
   else if(cfg.infect&&ps.length>1){ const ts=new Set(ps.map(p=>p.team)); if(ts.size===1) roundOver(r,ps[0].team,'infect'); }
   send(r,ps,g);
-  if(!humans(r)&&r.clients.size===0&&rooms.filter(q=>q.cfg.key===cfg.key).length>1){ clearInterval(r.timer); rooms.splice(rooms.indexOf(r),1); } }
+  // nobody watching: close the room after 20 s so empty rooms full of AI don't eat the (tiny) CPU
+  if(r.clients.size===0){ if(!r.emptySince) r.emptySince=now; else if(now-r.emptySince>20000){ clearInterval(r.timer); rooms.splice(rooms.indexOf(r),1); } }
+  else r.emptySince=0; }
 function send(r,ps,g){
   const msg=JSON.stringify({t:'t',n:r.tick,g,p:ps.filter(p=>p.alive).map(p=>[p.id,p.x,p.y,p.dir]),a:ps.map(p=>[p.id,p.area,p.kills,p.team,stat(r,p),p.bossHits||0]),o:r.od,r:r.td,e:r.ev,z:r.cfg.survival?[r.lo,r.hi]:0,
     gd:r.gd.length?r.gd:undefined,pd:r.pd.length?r.pd:undefined,...extras(r,Date.now())});
