@@ -391,6 +391,18 @@ body.xmas .xmasHat{display:block}
 .rkAv.fr-ice,.profHead canvas.fr-ice{box-shadow:0 0 0 2.5px #7fd4ff,0 0 10px 2px rgba(190,240,255,.95)}
 .rkAv.fr-neon,.profHead canvas.fr-neon{box-shadow:0 0 0 2px #ff4fd8,0 0 0 4.5px #4ff0ff,0 0 10px 1px rgba(79,240,255,.8)}
 .rkAv.fr-champ,.profHead canvas.fr-champ{box-shadow:0 0 0 2.5px #a54be0,0 0 0 4.5px #ffd23f,0 0 10px 1px rgba(255,210,63,.7)}
+.rkAv.fr-legend,.profHead canvas.fr-legend,.rkAv.fr-cosmos,.profHead canvas.fr-cosmos{box-sizing:border-box;border:3px solid transparent;animation:frSpin 3s linear infinite}
+.rkAv.fr-legend,.profHead canvas.fr-legend{background:linear-gradient(var(--card),var(--card)) padding-box,conic-gradient(from var(--fa),#ffd23f,#ff5fa2,#b967ff,#4ff0ff,#9cf27a,#ffd23f) border-box;box-shadow:0 0 12px 2px rgba(255,210,63,.65)}
+.profHead canvas.fr-legend,.profHead canvas.fr-cosmos{border-width:4px}
+.rkAv.fr-cosmos,.profHead canvas.fr-cosmos{background:linear-gradient(var(--card),var(--card)) padding-box,conic-gradient(from var(--fa),#1b1150,#b58cff,#ffffff,#4ff0ff,#1b1150,#b58cff,#1b1150) border-box;box-shadow:0 0 12px 3px rgba(181,140,255,.75);animation-duration:6s}
+.rkAv.fr-diamond,.profHead canvas.fr-diamond{box-shadow:0 0 0 2.5px #e8fbff,0 0 0 4.5px #6fd3ff,0 0 12px 2px rgba(111,211,255,.9);animation:frGlint 1.6s ease-in-out infinite alternate}
+.rkAv.fr-immortal,.profHead canvas.fr-immortal{box-shadow:0 0 0 2.5px #ff2d55,0 0 0 5px #ffd23f,0 0 14px 3px rgba(255,45,85,.85);animation:frBurn .9s ease-in-out infinite alternate}
+@property --fa{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes frSpin{to{--fa:360deg}}
+@keyframes frGlint{to{box-shadow:0 0 0 2.5px #ffffff,0 0 0 4.5px #a8e9ff,0 0 18px 4px rgba(190,240,255,1)}}
+@keyframes frBurn{to{box-shadow:0 0 0 2.5px #ff5a3d,0 0 0 5px #ffe27a,0 0 20px 5px rgba(255,90,61,.9)}}
+.frames .spFrame{background:linear-gradient(160deg,rgba(185,103,255,.16),rgba(255,210,63,.14));border-color:rgba(185,103,255,.35)}
+.frames .spFrame span{font-weight:800}
 .frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:6px}
 .frames .skin .rkAv{width:46px;height:46px;margin:6px 0 4px}
 .frH{margin:12px 0 6px;font-size:15px}
@@ -783,7 +795,8 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   teamsOf:(t,n)=>`${t} teams of ${n}`, optNote:(m,big)=>`AI players and map size only apply to ${m} on the ${big?"huge":"normal"} map.`,
   tiers:["Bronze","Silver","Gold","Platinum","Diamond","Master"], rpToNext:(n,t)=>`${n} RP to ${t}`, topTier:"Top tier", rankRecord:(g,w)=>`${g} games · ${w} wins`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Promoted to ${t}!`, demoted:t=>`Dropped to ${t}`, promoReward:c=>`+${c} coins`, rankQuit:d=>`You left a ranked match, so it counts as last place (${d}).`,
   tierLockAria:(n,t)=>`${n} (locked: reach ${t} in Ranked)`, tierLockLine:(n,t)=>`<b>${n}</b> skin · reach <b>${t}</b> in Ranked to unlock it`,
-  frGot:n=>`Got the ${n} frame! It's on now.`, frTitle:"Frames", frNone:"None", frNames:{gold:"Gold Trophy",silver:"Silver Trophy",bronze:"Bronze Trophy",rainbow:"Rainbow",flame:"Flame",ice:"Ice",neon:"Neon",champ:"Champion"}, frTour:p=>`Weekly Tournament #${p}`, frAch:n=>`Badge: ${n}`, frNote:"Your frame shows on your rankings profile.",
+  frDiamond:t=>`Reach ${t} tier in Ranked`, frImmortal:n=>`Win the Weekly Tournament 3 times (${n}/3)`, frCosmos:(n,t)=>`Earn every badge (${n}/${t})`, frSpecial:"Special",
+  frGot:n=>`Got the ${n} frame! It's on now.`, frTitle:"Frames", frNone:"None", frNames:{legend:"Legend",diamond:"Diamond",immortal:"Immortal",cosmos:"Cosmos",gold:"Gold Trophy",silver:"Silver Trophy",bronze:"Bronze Trophy",rainbow:"Rainbow",flame:"Flame",ice:"Ice",neon:"Neon",champ:"Champion"}, frTour:p=>`Weekly Tournament #${p}`, frAch:n=>`Badge: ${n}`, frNote:"Your frame shows on your rankings profile.",
   tourTitle:"Weekly Tournament", tourEnds:(d,h)=>`Ends in ${d}d ${h}h`, tourPrize:"🥇 Gold frame + 1000 coins · 🥈 Silver frame + 600 · 🥉 Bronze frame + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`You are #${p} this week`, tourResult:(p,c)=>`Weekly Tournament: you finished #${p} · +${c} coins`, tourDone:"Tournament results", tourJoin:"Play ranked games to enter", tourLast:p=>`Last week: #${p}`,
   rankings:"Rankings", rkWeek:"This week", rkAll:"Season", rkLoading:"Loading rankings…", rkSlow:"Rankings are taking a while to load and may be out of date.", rkOffline:"Rankings can't be reached from here right now.", rkEmpty:"No one is on the board yet. Play Ranked to be first!", rkNoPost:"You can see the rankings, but your games can't be posted from this view.", rkResets:"This week counts RP earned since Monday (UTC).", rkPlay:"Play a Ranked game to get on the board.",
   seasonEnds:d=>`Season ends in ${d} day${d===1?"":"s"}`, seasonPayout:c=>`Season-end bonus: +${c} RP`, seasonOver:(t,rp,c)=>`Finished ${t} → +${c} RP for the shop`, seasonDone:"Season over",
@@ -900,7 +913,8 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   teamsOf:(t,n)=>`${t} equipos de ${n}`, optNote:(m,big)=>`Los jugadores IA y el tamaño del mapa solo se aplican a ${m} en el mapa ${big?"enorme":"normal"}.`,
   tiers:["Bronce","Plata","Oro","Platino","Diamante","Maestro"], rpToNext:(n,t)=>`${n} RP para ${t}`, topTier:"Rango máximo", rankRecord:(g,w)=>`${g} partidas · ${w} victorias`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`¡Ascendiste a ${t}!`, demoted:t=>`Bajaste a ${t}`, promoReward:c=>`+${c} monedas`, rankQuit:d=>`Saliste de una clasificatoria: cuenta como último puesto (${d}).`,
   tierLockAria:(n,t)=>`${n} (bloqueado: llega a ${t} en Clasificatoria)`, tierLockLine:(n,t)=>`Aspecto <b>${n}</b> · llega a <b>${t}</b> en Clasificatoria para desbloquearlo`,
-  frGot:n=>`¡Conseguiste el marco ${n}! Ya lo llevas.`, frTitle:"Marcos", frNone:"Ninguno", frNames:{gold:"Trofeo de oro",silver:"Trofeo de plata",bronze:"Trofeo de bronce",rainbow:"Arcoíris",flame:"Llama",ice:"Hielo",neon:"Neón",champ:"Campeón"}, frTour:p=>`Torneo semanal: n.º ${p}`, frAch:n=>`Insignia: ${n}`, frNote:"Tu marco se ve en tu perfil del ranking.",
+  frDiamond:t=>`Llega al rango ${t} en Clasificatoria`, frImmortal:n=>`Gana el Torneo semanal 3 veces (${n}/3)`, frCosmos:(n,t)=>`Consigue todas las insignias (${n}/${t})`, frSpecial:"Especial",
+  frGot:n=>`¡Conseguiste el marco ${n}! Ya lo llevas.`, frTitle:"Marcos", frNone:"Ninguno", frNames:{legend:"Leyenda",diamond:"Diamante",immortal:"Inmortal",cosmos:"Cosmos",gold:"Trofeo de oro",silver:"Trofeo de plata",bronze:"Trofeo de bronce",rainbow:"Arcoíris",flame:"Llama",ice:"Hielo",neon:"Neón",champ:"Campeón"}, frTour:p=>`Torneo semanal: n.º ${p}`, frAch:n=>`Insignia: ${n}`, frNote:"Tu marco se ve en tu perfil del ranking.",
   tourTitle:"Torneo semanal", tourEnds:(d,h)=>`Termina en ${d}d ${h}h`, tourPrize:"🥇 Marco de oro + 1000 monedas · 🥈 Plata + 600 · 🥉 Bronce + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Vas #${p} esta semana`, tourResult:(p,c)=>`Torneo semanal: quedaste #${p} · +${c} monedas`, tourDone:"Resultados del torneo", tourJoin:"Juega partidas clasificatorias para entrar", tourLast:p=>`Semana pasada: #${p}`,
   rankings:"Ranking", rkWeek:"Esta semana", rkAll:"Temporada", rkLoading:"Cargando ranking…", rkSlow:"El ranking tarda en cargar y puede no estar al día.", rkOffline:"No se puede acceder al ranking desde aquí ahora mismo.", rkEmpty:"Aún no hay nadie. ¡Juega Clasificatoria y sé el primero!", rkNoPost:"Puedes ver el ranking, pero tus partidas no se pueden publicar desde aquí.", rkResets:"Esta semana cuenta los RP ganados desde el lunes (UTC).", rkPlay:"Juega una Clasificatoria para entrar en el ranking.",
   seasonEnds:d=>`La temporada termina en ${d} día${d===1?"":"s"}`, seasonPayout:c=>`Bono de fin de temporada: +${c} RP`, seasonOver:(t,rp,c)=>`Terminaste en ${t} → +${c} RP para la tienda`, seasonDone:"Fin de temporada",
@@ -1017,7 +1031,8 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   teamsOf:(t,n)=>`${t} times de ${n}`, optNote:(m,big)=>`Jogadores IA e tamanho do mapa valem só para ${m} no mapa ${big?"enorme":"normal"}.`,
   tiers:["Bronze","Prata","Ouro","Platina","Diamante","Mestre"], rpToNext:(n,t)=>`${n} RP para ${t}`, topTier:"Elo máximo", rankRecord:(g,w)=>`${g} partidas · ${w} vitórias`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Você subiu para ${t}!`, demoted:t=>`Você caiu para ${t}`, promoReward:c=>`+${c} moedas`, rankQuit:d=>`Você saiu de uma ranqueada, então conta como último lugar (${d}).`,
   tierLockAria:(n,t)=>`${n} (bloqueado: chegue a ${t} na Ranqueada)`, tierLockLine:(n,t)=>`Visual <b>${n}</b> · chegue a <b>${t}</b> na Ranqueada para desbloquear`,
-  frGot:n=>`Você ganhou a moldura ${n}! Já está usando.`, frTitle:"Molduras", frNone:"Nenhuma", frNames:{gold:"Troféu de ouro",silver:"Troféu de prata",bronze:"Troféu de bronze",rainbow:"Arco-íris",flame:"Chama",ice:"Gelo",neon:"Neon",champ:"Campeão"}, frTour:p=>`Torneio semanal: ${p}º`, frAch:n=>`Conquista: ${n}`, frNote:"Sua moldura aparece no seu perfil do ranking.",
+  frDiamond:t=>`Chegue ao rank ${t} no Ranqueado`, frImmortal:n=>`Vença o Torneio semanal 3 vezes (${n}/3)`, frCosmos:(n,t)=>`Ganhe todas as conquistas (${n}/${t})`, frSpecial:"Especial",
+  frGot:n=>`Você ganhou a moldura ${n}! Já está usando.`, frTitle:"Molduras", frNone:"Nenhuma", frNames:{legend:"Lenda",diamond:"Diamante",immortal:"Imortal",cosmos:"Cosmos",gold:"Troféu de ouro",silver:"Troféu de prata",bronze:"Troféu de bronze",rainbow:"Arco-íris",flame:"Chama",ice:"Gelo",neon:"Neon",champ:"Campeão"}, frTour:p=>`Torneio semanal: ${p}º`, frAch:n=>`Conquista: ${n}`, frNote:"Sua moldura aparece no seu perfil do ranking.",
   tourTitle:"Torneio semanal", tourEnds:(d,h)=>`Termina em ${d}d ${h}h`, tourPrize:"🥇 Moldura de ouro + 1000 moedas · 🥈 Prata + 600 · 🥉 Bronze + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Você está em #${p} nesta semana`, tourResult:(p,c)=>`Torneio semanal: você ficou em #${p} · +${c} moedas`, tourDone:"Resultado do torneio", tourJoin:"Jogue partidas ranqueadas para entrar", tourLast:p=>`Semana passada: #${p}`,
   rankings:"Ranking", rkWeek:"Esta semana", rkAll:"Temporada", rkLoading:"Carregando ranking…", rkSlow:"O ranking está demorando para carregar e pode estar desatualizado.", rkOffline:"Não dá para acessar o ranking daqui agora.", rkEmpty:"Ninguém no ranking ainda. Jogue Ranqueada e seja o primeiro!", rkNoPost:"Você pode ver o ranking, mas suas partidas não podem ser enviadas daqui.", rkResets:"Esta semana conta o RP ganho desde segunda (UTC).", rkPlay:"Jogue uma Ranqueada para entrar no ranking.",
   seasonEnds:d=>`A temporada acaba em ${d} dia${d===1?"":"s"}`, seasonPayout:c=>`Bônus de fim de temporada: +${c} RP`, seasonOver:(t,rp,c)=>`Terminou em ${t} → +${c} RP para a loja`, seasonDone:"Fim da temporada",
@@ -1134,7 +1149,8 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   teamsOf:(t,n)=>`${t} équipes de ${n}`, optNote:(m,big)=>`Les joueurs IA et la taille de la carte ne s'appliquent qu'à ${m} sur la carte ${big?"géante":"normale"}.`,
   tiers:["Bronze","Argent","Or","Platine","Diamant","Maître"], rpToNext:(n,t)=>`${n} RP avant ${t}`, topTier:"Rang maximum", rankRecord:(g,w)=>`${g} parties · ${w} victoires`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Promu en ${t} !`, demoted:t=>`Redescendu en ${t}`, promoReward:c=>`+${c} pièces`, rankQuit:d=>`Tu as quitté une partie classée : elle compte comme dernière place (${d}).`,
   tierLockAria:(n,t)=>`${n} (verrouillée : atteins ${t} en Classé)`, tierLockLine:(n,t)=>`Apparence <b>${n}</b> · atteins <b>${t}</b> en Classé pour la débloquer`,
-  frGot:n=>`Cadre ${n} obtenu ! Il est équipé.`, frTitle:"Cadres", frNone:"Aucun", frNames:{gold:"Trophée d'or",silver:"Trophée d'argent",bronze:"Trophée de bronze",rainbow:"Arc-en-ciel",flame:"Flamme",ice:"Glace",neon:"Néon",champ:"Champion"}, frTour:p=>`Tournoi hebdo : #${p}`, frAch:n=>`Badge : ${n}`, frNote:"Ton cadre s'affiche sur ton profil du classement.",
+  frDiamond:t=>`Atteins le rang ${t} en classé`, frImmortal:n=>`Gagne le tournoi hebdo 3 fois (${n}/3)`, frCosmos:(n,t)=>`Obtiens tous les badges (${n}/${t})`, frSpecial:"Spécial",
+  frGot:n=>`Cadre ${n} obtenu ! Il est équipé.`, frTitle:"Cadres", frNone:"Aucun", frNames:{legend:"Légende",diamond:"Diamant",immortal:"Immortel",cosmos:"Cosmos",gold:"Trophée d'or",silver:"Trophée d'argent",bronze:"Trophée de bronze",rainbow:"Arc-en-ciel",flame:"Flamme",ice:"Glace",neon:"Néon",champ:"Champion"}, frTour:p=>`Tournoi hebdo : #${p}`, frAch:n=>`Badge : ${n}`, frNote:"Ton cadre s'affiche sur ton profil du classement.",
   tourTitle:"Tournoi hebdo", tourEnds:(d,h)=>`Fin dans ${d} j ${h} h`, tourPrize:"🥇 Cadre or + 1000 pièces · 🥈 Argent + 600 · 🥉 Bronze + 300 · Top 10 : 150 · Top 50 : 50", tourYou:p=>`Tu es #${p} cette semaine`, tourResult:(p,c)=>`Tournoi hebdo : tu as fini #${p} · +${c} pièces`, tourDone:"Résultats du tournoi", tourJoin:"Joue en classé pour participer", tourLast:p=>`Semaine dernière : #${p}`,
   rankings:"Classement", rkWeek:"Cette semaine", rkAll:"Saison", rkLoading:"Chargement du classement…", rkSlow:"Le classement met du temps à charger et n'est peut-être pas à jour.", rkOffline:"Le classement n'est pas joignable d'ici pour le moment.", rkEmpty:"Personne au classement pour l'instant. Joue en Classé pour être le premier !", rkNoPost:"Tu peux voir le classement, mais tes parties ne peuvent pas être envoyées d'ici.", rkResets:"Cette semaine compte les RP gagnés depuis lundi (UTC).", rkPlay:"Joue une partie Classé pour entrer au classement.",
   seasonEnds:d=>`Fin de saison dans ${d} jour${d===1?"":"s"}`, seasonPayout:c=>`Bonus de fin de saison : +${c} RP`, seasonOver:(t,rp,c)=>`Fini en ${t} → +${c} RP pour la boutique`, seasonDone:"Fin de saison",
@@ -1251,7 +1267,8 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   teamsOf:(t,n)=>`${t} Teams à ${n}`, optNote:(m,big)=>`KI-Spieler und Kartengröße gelten nur für ${m} auf der ${big?"Riesenkarte":"normalen Karte"}.`,
   tiers:["Bronze","Silber","Gold","Platin","Diamant","Meister"], rpToNext:(n,t)=>`${n} RP bis ${t}`, topTier:"Höchster Rang", rankRecord:(g,w)=>`${g} Runden · ${w} Siege`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`Aufgestiegen zu ${t}!`, demoted:t=>`Abgestiegen zu ${t}`, promoReward:c=>`+${c} Münzen`, rankQuit:d=>`Du hast eine gewertete Runde verlassen, das zählt als letzter Platz (${d}).`,
   tierLockAria:(n,t)=>`${n} (gesperrt: erreiche ${t} in Gewertet)`, tierLockLine:(n,t)=>`Skin <b>${n}</b> · erreiche <b>${t}</b> in Gewertet, um ihn freizuschalten`,
-  frGot:n=>`Rahmen ${n} erhalten! Ist jetzt aktiv.`, frTitle:"Rahmen", frNone:"Keiner", frNames:{gold:"Goldpokal",silver:"Silberpokal",bronze:"Bronzepokal",rainbow:"Regenbogen",flame:"Flamme",ice:"Eis",neon:"Neon",champ:"Champion"}, frTour:p=>`Wochenturnier: Platz ${p}`, frAch:n=>`Abzeichen: ${n}`, frNote:"Dein Rahmen erscheint in deinem Ranglisten-Profil.",
+  frDiamond:t=>`Erreiche den Rang ${t} in Rangliste`, frImmortal:n=>`Gewinne das Wochenturnier 3-mal (${n}/3)`, frCosmos:(n,t)=>`Hol dir alle Abzeichen (${n}/${t})`, frSpecial:"Spezial",
+  frGot:n=>`Rahmen ${n} erhalten! Ist jetzt aktiv.`, frTitle:"Rahmen", frNone:"Keiner", frNames:{legend:"Legende",diamond:"Diamant",immortal:"Unsterblich",cosmos:"Kosmos",gold:"Goldpokal",silver:"Silberpokal",bronze:"Bronzepokal",rainbow:"Regenbogen",flame:"Flamme",ice:"Eis",neon:"Neon",champ:"Champion"}, frTour:p=>`Wochenturnier: Platz ${p}`, frAch:n=>`Abzeichen: ${n}`, frNote:"Dein Rahmen erscheint in deinem Ranglisten-Profil.",
   tourTitle:"Wochenturnier", tourEnds:(d,h)=>`Endet in ${d} T ${h} Std`, tourPrize:"🥇 Goldrahmen + 1000 Münzen · 🥈 Silber + 600 · 🥉 Bronze + 300 · Top 10: 150 · Top 50: 50", tourYou:p=>`Du bist diese Woche #${p}`, tourResult:(p,c)=>`Wochenturnier: Platz ${p} · +${c} Münzen`, tourDone:"Turnierergebnis", tourJoin:"Spiel Ranglisten-Runden, um mitzumachen", tourLast:p=>`Letzte Woche: #${p}`,
   rankings:"Bestenliste", rkWeek:"Diese Woche", rkAll:"Saison", rkLoading:"Bestenliste wird geladen…", rkSlow:"Die Bestenliste lädt lange und ist vielleicht nicht aktuell.", rkOffline:"Die Bestenliste ist von hier gerade nicht erreichbar.", rkEmpty:"Noch niemand in der Liste. Spiel Gewertet und sei der Erste!", rkNoPost:"Du kannst die Bestenliste sehen, aber deine Runden können von hier nicht eingetragen werden.", rkResets:"Diese Woche zählt die RP seit Montag (UTC).", rkPlay:"Spiel eine gewertete Runde, um in die Liste zu kommen.",
   seasonEnds:d=>`Saison endet in ${d} Tag${d===1?"":"en"}`, seasonPayout:c=>`Saisonbonus: +${c} RP`, seasonOver:(t,rp,c)=>`Als ${t} beendet → +${c} RP für den Shop`, seasonDone:"Saison vorbei",
@@ -1368,7 +1385,8 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   teamsOf:(t,n)=>`${t} 队，每队 ${n} 人`, optNote:(m,big)=>`AI 数量和地图大小只对${big?"超大":"普通"}地图的「${m}」生效。`,
   tiers:["青铜","白银","黄金","铂金","钻石","大师"], rpToNext:(n,t)=>`距${t}还差 ${n} RP`, topTier:"最高段位", rankRecord:(g,w)=>`${g} 局 · ${w} 胜`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`晋级到${t}！`, demoted:t=>`降到${t}`, promoReward:c=>`+${c} 金币`, rankQuit:d=>`你中途退出了排位赛，按最后一名计算（${d}）。`,
   tierLockAria:(n,t)=>`${n}（锁定：排位赛达到${t}）`, tierLockLine:(n,t)=>`<b>${n}</b>皮肤 · 排位赛达到<b>${t}</b>即可解锁`,
-  frGot:n=>`获得${n}边框！已经戴上了。`, frTitle:"边框", frNone:"无", frNames:{gold:"金奖杯",silver:"银奖杯",bronze:"铜奖杯",rainbow:"彩虹",flame:"火焰",ice:"冰霜",neon:"霓虹",champ:"冠军"}, frTour:p=>`每周锦标赛第 ${p} 名`, frAch:n=>`徽章：${n}`, frNote:"边框会显示在排行榜的个人资料上。",
+  frDiamond:t=>`在排位赛达到${t}段位`, frImmortal:n=>`赢得每周锦标赛 3 次（${n}/3）`, frCosmos:(n,t)=>`获得全部徽章（${n}/${t}）`, frSpecial:"特别",
+  frGot:n=>`获得${n}边框！已经戴上了。`, frTitle:"边框", frNone:"无", frNames:{legend:"传说",diamond:"钻石",immortal:"不朽",cosmos:"宇宙",gold:"金奖杯",silver:"银奖杯",bronze:"铜奖杯",rainbow:"彩虹",flame:"火焰",ice:"冰霜",neon:"霓虹",champ:"冠军"}, frTour:p=>`每周锦标赛第 ${p} 名`, frAch:n=>`徽章：${n}`, frNote:"边框会显示在排行榜的个人资料上。",
   tourTitle:"每周锦标赛", tourEnds:(d,h)=>`还剩 ${d} 天 ${h} 小时`, tourPrize:"🥇 金色边框 + 1000 金币 · 🥈 银色 + 600 · 🥉 铜色 + 300 · 前10名：150 · 前50名：50", tourYou:p=>`本周当前第 ${p} 名`, tourResult:(p,c)=>`每周锦标赛：第 ${p} 名 · +${c} 金币`, tourDone:"锦标赛结果", tourJoin:"参加排位赛即可参赛", tourLast:p=>`上周：第 ${p} 名`,
   rankings:"排行榜", rkWeek:"本周", rkAll:"赛季", rkLoading:"正在加载排行榜…", rkSlow:"排行榜加载较慢，可能不是最新的。", rkOffline:"现在无法从这里访问排行榜。", rkEmpty:"还没有人上榜。玩一局排位赛，成为第一名吧！", rkNoPost:"你可以查看排行榜，但在这里无法上传你的成绩。", rkResets:"本周榜统计周一（UTC）以来获得的 RP。", rkPlay:"玩一局排位赛就能上榜。",
   seasonEnds:d=>`赛季还剩 ${d} 天`, seasonPayout:c=>`赛季结束奖励：+${c} RP`, seasonOver:(t,rp,c)=>`以${t}结束 → 商店 +${c} RP`, seasonDone:"赛季结束",
@@ -1485,7 +1503,8 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   teamsOf:(t,n)=>`${n}人ずつ${t}チーム`, optNote:(m,big)=>`AIの数とマップサイズは「${m}」の${big?"巨大":"ふつうの"}マップにだけ適用されます。`,
   tiers:["ブロンズ","シルバー","ゴールド","プラチナ","ダイヤモンド","マスター"], rpToNext:(n,t)=>`${t}まであと${n} RP`, topTier:"最高ランク", rankRecord:(g,w)=>`${g}試合 · ${w}勝`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`${t}に昇格！`, demoted:t=>`${t}に降格`, promoReward:c=>`+${c}コイン`, rankQuit:d=>`ランクマッチを途中でやめたので最下位あつかいです（${d}）。`,
   tierLockAria:(n,t)=>`${n}（ロック中：ランクマッチで${t}に到達）`, tierLockLine:(n,t)=>`<b>${n}</b>スキン · ランクマッチで<b>${t}</b>に到達すると解放`,
-  frGot:n=>`${n}フレームを手に入れた！装備中。`, frTitle:"フレーム", frNone:"なし", frNames:{gold:"金トロフィー",silver:"銀トロフィー",bronze:"銅トロフィー",rainbow:"レインボー",flame:"フレイム",ice:"アイス",neon:"ネオン",champ:"チャンピオン"}, frTour:p=>`週間トーナメント${p}位`, frAch:n=>`バッジ：${n}`, frNote:"フレームはランキングのプロフィールに表示されます。",
+  frDiamond:t=>`ランク戦で${t}ランクに到達`, frImmortal:n=>`週間トーナメントで3回優勝（${n}/3）`, frCosmos:(n,t)=>`バッジをすべて獲得（${n}/${t}）`, frSpecial:"スペシャル",
+  frGot:n=>`${n}フレームを手に入れた！装備中。`, frTitle:"フレーム", frNone:"なし", frNames:{legend:"レジェンド",diamond:"ダイヤ",immortal:"不死身",cosmos:"コスモス",gold:"金トロフィー",silver:"銀トロフィー",bronze:"銅トロフィー",rainbow:"レインボー",flame:"フレイム",ice:"アイス",neon:"ネオン",champ:"チャンピオン"}, frTour:p=>`週間トーナメント${p}位`, frAch:n=>`バッジ：${n}`, frNote:"フレームはランキングのプロフィールに表示されます。",
   tourTitle:"週間トーナメント", tourEnds:(d,h)=>`残り ${d}日 ${h}時間`, tourPrize:"🥇 金のフレーム + 1000コイン · 🥈 銀 + 600 · 🥉 銅 + 300 · 10位以内：150 · 50位以内：50", tourYou:p=>`今週いま ${p}位`, tourResult:(p,c)=>`週間トーナメント：${p}位 · +${c}コイン`, tourDone:"トーナメント結果", tourJoin:"ランク戦をプレイして参加", tourLast:p=>`先週：${p}位`,
   rankings:"ランキング", rkWeek:"今週", rkAll:"シーズン", rkLoading:"ランキングを読み込み中…", rkSlow:"ランキングの読み込みに時間がかかっています。最新でないかもしれません。", rkOffline:"いまはここからランキングにつながりません。", rkEmpty:"まだ誰もいません。ランクマッチで1番乗りしよう！", rkNoPost:"ランキングは見られますが、ここからは記録を送れません。", rkResets:"今週ランキングは月曜（UTC）からのRPで決まります。", rkPlay:"ランクマッチを1回プレイするとランキングに載ります。",
   seasonEnds:d=>`シーズン終了まであと${d}日`, seasonPayout:c=>`シーズン終了ボーナス：+${c} RP`, seasonOver:(t,rp,c)=>`${t}で終了 → ショップに+${c} RP`, seasonDone:"シーズン終了",
@@ -1602,7 +1621,8 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   teamsOf:(t,n)=>`${n}명씩 ${t}팀`, optNote:(m,big)=>`AI 수와 맵 크기는 지금 고른 ${m} · ${big?"대형":"기본"} 맵에만 적용돼요.`,
   tiers:["브론즈","실버","골드","플래티넘","다이아몬드","마스터"], rpToNext:(n,t)=>`${t}까지 ${n} RP`, topTier:"최고 티어", rankRecord:(g,w)=>`${g}판 · ${w}승`, rpGain:d=>`${d>0?"+":""}${d} RP`, promoted:t=>`${t} 승급!`, demoted:t=>`${t}(으)로 강등`, promoReward:c=>`+${c} 코인`, rankQuit:d=>`랭크전을 중간에 나가서 꼴찌로 처리됐어요 (${d}).`,
   tierLockAria:(n,t)=>`${n} (잠김: 랭크전 ${t} 달성 필요)`, tierLockLine:(n,t)=>`<b>${n}</b> 스킨 · 랭크전에서 <b>${t}</b>에 오르면 열려요`,
-  frGot:n=>`${n} 테두리를 얻었어요! 바로 씌웠어요.`, frTitle:"테두리", frNone:"없음", frNames:{gold:"황금 트로피",silver:"실버 트로피",bronze:"브론즈 트로피",rainbow:"무지개",flame:"불꽃",ice:"얼음",neon:"네온",champ:"챔피언"}, frTour:p=>`주간 토너먼트 ${p}위`, frAch:n=>`업적: ${n}`, frNote:"고른 테두리는 랭킹 프로필에 보여요.",
+  frDiamond:t=>`랭크전에서 ${t} 티어 달성`, frImmortal:n=>`주간 토너먼트 1위 3번 (${n}/3)`, frCosmos:(n,t)=>`업적 전부 달성 (${n}/${t})`, frSpecial:"특별",
+  frGot:n=>`${n} 테두리를 얻었어요! 바로 씌웠어요.`, frTitle:"테두리", frNone:"없음", frNames:{legend:"전설",diamond:"다이아몬드",immortal:"불사신",cosmos:"우주",gold:"황금 트로피",silver:"실버 트로피",bronze:"브론즈 트로피",rainbow:"무지개",flame:"불꽃",ice:"얼음",neon:"네온",champ:"챔피언"}, frTour:p=>`주간 토너먼트 ${p}위`, frAch:n=>`업적: ${n}`, frNote:"고른 테두리는 랭킹 프로필에 보여요.",
   tourTitle:"주간 토너먼트", tourEnds:(d,h)=>`${d}일 ${h}시간 남음`, tourPrize:"🥇 황금 테두리 + 1000코인 · 🥈 실버 테두리 + 600 · 🥉 브론즈 테두리 + 300 · 10위 안: 150 · 50위 안: 50", tourYou:p=>`이번 주 현재 ${p}위`, tourResult:(p,c)=>`주간 토너먼트 ${p}위 · +${c}코인`, tourDone:"토너먼트 결과", tourJoin:"랭크전을 하면 자동으로 참가해요", tourLast:p=>`지난주: ${p}위`,
   rankings:"랭킹", rkWeek:"주간", rkAll:"시즌", rkLoading:"랭킹 불러오는 중…", rkSlow:"랭킹을 불러오는 데 오래 걸려요. 최신이 아닐 수 있어요.", rkOffline:"지금은 여기서 랭킹에 연결할 수 없어요.", rkEmpty:"아직 아무도 없어요. 랭크전을 해서 1등을 차지하세요!", rkNoPost:"랭킹은 볼 수 있지만, 여기서는 내 기록을 올릴 수 없어요.", rkResets:"주간 랭킹은 월요일(UTC)부터 얻은 RP로 정해져요.", rkPlay:"랭크전을 한 판 하면 랭킹에 올라가요.",
   seasonEnds:d=>`시즌 종료까지 ${d}일`, seasonPayout:c=>`시즌 종료 보너스: +${c} RP`, seasonOver:(t,rp,c)=>`${t}로 시즌 마감 → 상점 RP +${c}`, seasonDone:"시즌 종료",
@@ -2225,10 +2245,12 @@ function rkBots(at){
   if(!at) rkBots.cache={stamp,out}; return out; }
 /* ---------- Weekly Tournament: the "This week" board, settled every Monday 00:00 UTC ---------- */
 const TOUR_PRIZE=[[1,1000,'gold'],[2,600,'silver'],[3,300,'bronze'],[10,150,null],[50,50,null],[1e9,20,null]];
-const FRAME_COL={gold:['#ffd23f','#fff3b0'],silver:['#dfe6f2','#ffffff'],bronze:['#d9894a','#ffd0a8'],rainbow:['#ff5fa2','#ffffff'],flame:['#ff6a1f','#ffd23f'],ice:['#9fe6ff','#ffffff'],neon:['#ff4fd8','#4ff0ff'],champ:['#a54be0','#ffd23f']};
+const FRAME_COL={legend:['#ffd23f','#b967ff'],diamond:['#bff4ff','#6fd3ff'],immortal:['#ff2d55','#ffd23f'],cosmos:['#b58cff','#4ff0ff'],gold:['#ffd23f','#fff3b0'],silver:['#dfe6f2','#ffffff'],bronze:['#d9894a','#ffd0a8'],rainbow:['#ff5fa2','#ffffff'],flame:['#ff6a1f','#ffd23f'],ice:['#9fe6ff','#ffffff'],neon:['#ff4fd8','#4ff0ff'],champ:['#a54be0','#ffd23f']};
 // collectable frames: the three trophies come only from the Weekly Tournament
-const FRAMES=[{id:'gold',tour:1},{id:'silver',tour:2},{id:'bronze',tour:3},{id:'neon',rp:1200},{id:'ice',rp:1500},{id:'rainbow',rp:2000},{id:'flame',rp:3500},{id:'champ',ach:'rank1'}];
-const frameOwned=id=>{ const f=FRAMES.find(x=>x.id===id); if(!f) return false; return f.ach?!!achState.done[f.ach]:(rank.frames||[]).includes(id); };
+const FRAMES=[{id:'gold',tour:1},{id:'silver',tour:2},{id:'bronze',tour:3},{id:'neon',rp:1200},{id:'ice',rp:1500},{id:'rainbow',rp:2000},{id:'flame',rp:3500},{id:'champ',ach:'rank1'},
+  // special: hard to get
+  {id:'legend',rp:10000,sp:1},{id:'diamond',sp:1,cond:()=>(rank.peak||0)>=TIERS.length-1},{id:'immortal',sp:1,cond:()=>(rank.tourWins||0)>=3},{id:'cosmos',sp:1,cond:()=>ACH.every(a=>achState.done[a.id])}];
+const frameOwned=id=>{ const f=FRAMES.find(x=>x.id===id); if(!f) return false; return f.cond?f.cond():f.ach?!!achState.done[f.ach]:(rank.frames||[]).includes(id); };
 function frameGive(id,wear){ rank.frames=rank.frames||[]; if(!rank.frames.includes(id)) rank.frames.push(id); if(wear) rank.frameOn=id; saveRank(); }
 const FRAME_MEDAL={gold:'🥇',silver:'🥈',bronze:'🥉',champ:'👑'};
 const weekStart=(t=Date.now())=>{ const d=new Date(t); return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-(((d.getUTCDay()||7)-1)*864e5); };
@@ -2243,6 +2265,7 @@ function tourSettle(){
   const pr=place?TOUR_PRIZE.find(x=>place<=x[0]):null;
   rank.tour={wk,place,coins:pr?pr[1]:0,frame:pr?pr[2]:null,showUntil:end+7*864e5};
   rank.week=weekKey(); rank.weekRp=0; rank.weekEnd=weekStart()+7*864e5; saveRank();
+  if(place===1) rank.tourWins=(rank.tourWins||0)+1;
   if(pr&&pr[2]) frameGive(pr[2],true);
   if(pr){ addCoins(pr[1]); setTimeout(()=>achToast({id:'_tour',name:L.tourResult(place,pr[1]),label:L.tourDone}),1200); } }
 // frames won before the collection existed join it
@@ -2282,6 +2305,7 @@ function botFrame(d){ const t=botFrames().get(d.name); if(t) return t;
   if(!botFrame.top||botFrame.top.at<Date.now()-60000){ const all=rkBots(); botFrame.top={at:Date.now(),name:all.reduce((a,b)=>(b.rp||0)>(a.rp||0)?b:a,all[0]).name}; }
   if(d.name===botFrame.top.name) return 'champ';
   const h=String(d.name).split('').reduce((a,c)=>a*31+c.charCodeAt(0)|0,97), r=((h>>>0)%1000)/1000;
+  if(r>.99) return 'legend'; if((d.tier|0)>=TIERS.length-1&&r>.6) return 'diamond';
   if(r<.1) return 'neon'; if(r<.17) return 'ice'; if(r<.23) return 'rainbow'; if(r<.27) return 'flame'; return null; }
 const rkFrame=d=>d._me||(d.id&&d.id===RK.uid)?myFrame():d.bot?botFrame(d):FRAME_COL[d.frame]?d.frame:null;
 const rkAv=d=>{ const u=avatarURL(rkSkinOf(d)), f=rkFrame(d); return u?`<img class="rkAv${f?' fr-'+f:''}" src="${u}" alt="">`:'<i></i>'; };
@@ -5131,7 +5155,7 @@ function buildFrames(){ const box=$('frames'); if(!box) return; box.innerHTML=''
   const tile=(id,name,ok)=>{ const b=document.createElement('button'); b.type='button'; b.className='skin'+(ok?'':' locked'); b.id='frame-'+(id||'none'); b.setAttribute('aria-pressed',String((cur||'')===(id||'')));
     b.innerHTML=`<img class="rkAv${id?' fr-'+id:''}" src="${av}" alt=""><span>${esc(name)}</span>`; box.append(b); return b; };
   tile('',L.frNone,true).onclick=()=>{ rank.frameOn=''; saveRank(); buildFrames(); $('skinHint').textContent=L.frNote; SFX.click(); };
-  for(const f of FRAMES){ const ok=frameOwned(f.id), nm=(L.frNames||{})[f.id]||f.id, b=tile(f.id,nm,ok);
+  for(const f of FRAMES){ const ok=frameOwned(f.id), nm=(L.frNames||{})[f.id]||f.id, b=tile(f.id,nm,ok); if(f.sp) b.classList.add('spFrame');
     if(ok){ b.onclick=()=>{ rank.frameOn=f.id; saveRank(); buildFrames(); $('skinHint').textContent=L.frNote; SFX.click(); }; continue; }
     const tag=document.createElement('i');
     if(f.coins){ tag.className='priceTag'; tag.innerHTML=COIN_ICO+f.coins;
@@ -5143,6 +5167,9 @@ function buildFrames(){ const box=$('frames'); if(!box) return; box.innerHTML=''
         $('buyBtn').onclick=()=>{ if((rank.bank||0)<f.rp) return; rank.bank-=f.rp; frameGive(f.id,true); SFX.ach(); try{ paintRpBank(); }catch(e){} buildFrames(); $('skinHint').textContent=L.frGot(nm); }; $('buyBtn').focus(); }
         else h.textContent=L.rpNeed(f.rp-(rank.bank||0)); }; }
     else if(f.tour){ tag.className='rpTag'; tag.textContent=FRAME_MEDAL[f.id]; b.onclick=()=>{ $('skinHint').textContent=`${nm} · ${L.frTour(f.tour)}`; }; }
+    else if(f.cond){ tag.className='rpTag spTag'; tag.textContent='✦';
+      const hint=f.id==='diamond'?L.frDiamond(tierName(TIERS.length-1)):f.id==='immortal'?L.frImmortal(rank.tourWins||0):L.frCosmos(ACH.filter(a=>achState.done[a.id]).length,ACH.length);
+      b.onclick=()=>{ $('skinHint').textContent=`${L.frSpecial} · ${nm} · ${hint}`; }; }
     else if(f.ach){ tag.className='rpTag'; tag.textContent='🏅'; b.onclick=()=>{ $('skinHint').textContent=`${nm} · ${L.frAch((L.ach[f.ach]||[f.ach])[0])}`; }; }
     b.append(tag); } }
 function buildSkins(){
