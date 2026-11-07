@@ -44,7 +44,7 @@ https://내게임.itch.io/loopclaim?server=wss://내이름.onrender.com/ws
 
 ## 4. 게임을 고친 뒤
 
-`ttang.html`을 고쳤으면 `sh build.sh`로 `public/index.html`을 다시 만들고 서버에 올려요.
+`src/ttang.html`을 고쳤으면 `sh build.sh`로 `public/index.html`을 다시 만들고 서버에 올려요.
 
 ## 동작 방식
 
