@@ -337,6 +337,10 @@ body.xmas .xmasHat{display:block}
 @keyframes achPop{from{transform:translate(-50%,16px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 @media (prefers-reduced-motion:reduce){.achToast{animation:none}}
 .howRow{display:flex;gap:8px}
+.firstHint{margin:-2px 0 2px;text-align:center;font-size:12.5px;font-weight:700;color:var(--me)}
+.howBox{display:grid;gap:10px;padding:12px;border-radius:14px;background:var(--ground)}
+.howBox .rules li b{background:var(--card)}
+.howBox .tutBtn{background:var(--card)}
 .howTgl{flex:1;font:inherit;font-size:14px;font-weight:700;border:0;border-radius:12px;padding:9px 12px;cursor:pointer;background:var(--ground);color:var(--ink);text-align:center}
 .howTgl.tutMini{color:var(--me)}.howTgl[aria-expanded="true"]{background:var(--me);color:#fff}
 .howTgl:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
@@ -500,14 +504,16 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
 <div class="overlay" id="startOv">
   <div class="card">
     <div class="cardTop"><h1><span class="hatL">L<svg class="xmasHat" viewBox="0 0 120 100" aria-hidden="true"><defs><linearGradient id="hatR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0485c"/><stop offset=".55" stop-color="#d6283f"/><stop offset="1" stop-color="#a5142a"/></linearGradient><radialGradient id="hatW" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".75" stop-color="#f4f8fc"/><stop offset="1" stop-color="#d9e4f0"/></radialGradient></defs><path d="M12 78 C14 46 34 18 66 13 C90 9 106 22 108 52 C102 42 94 37 86 39 C74 43 72 60 76 78 Z" fill="url(#hatR)"/><path d="M66 13 C90 9 106 22 108 52 C103 44 97 40 90 40 C96 30 86 18 66 13 Z" fill="#a5142a" opacity=".55"/><path d="M26 64 C30 44 44 28 62 22" stroke="#ff8a98" stroke-width="4" stroke-linecap="round" fill="none" opacity=".55"/><g fill="url(#hatW)"><circle cx="107" cy="55" r="11"/><circle cx="100" cy="51" r="6"/><circle cx="113" cy="50" r="6"/><circle cx="108" cy="63" r="6"/></g><g fill="url(#hatW)"><rect x="4" y="70" width="80" height="22" rx="11"/><circle cx="12" cy="72" r="7"/><circle cx="25" cy="70" r="7.5"/><circle cx="39" cy="69" r="7.5"/><circle cx="53" cy="69" r="7.5"/><circle cx="67" cy="70" r="7.5"/><circle cx="78" cy="73" r="6.5"/><circle cx="10" cy="86" r="6"/><circle cx="76" cy="87" r="6"/></g><path d="M10 88 Q44 96 80 88" stroke="#c9d7e6" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></span>oopclaim<span>.io</span></h1><div class="topBtns"><button class="setOpen dailyBtn" id="dailyOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span class="lb">Daily</span></button><button class="setOpen bpOpen" id="bpOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2V10a2 2 0 0 0 0 4v2.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V14a2 2 0 0 0 0-4z"/><path d="M12 9.2l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 11.3l2-.3z"/></svg><span class="lb">Pass</span></button><button class="setOpen" id="rkOpen" type="button"><i class="cnt" id="tourCnt"></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a2.5 2.5 0 0 0 2.6 3.6M16 6h2.5a2.5 2.5 0 0 1-2.6 3.6M12 13v3.5M8.5 20h7M10 16.5h4"/></svg><span class="lb">Rankings</span></button><button class="setOpen" id="profOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg><span class="lb">Profile</span></button><button class="setOpen" id="achOpen" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="15" r="5"/><path d="M8.5 3 12 10l3.5-7"/><path d="M12 12.6l.8 1.5 1.6.2-1.2 1.1.3 1.6-1.5-.8-1.5.8.3-1.6-1.2-1.1 1.6-.2z"/></svg><span class="lb">Badges</span><i class="cnt" id="achCnt"></i></button><button class="setOpen" id="setOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><span class="lb">Settings</span></button></div></div>
-    <div class="howRow" id="howRow" hidden><button type="button" class="howTgl" id="rulesTgl" aria-expanded="false"></button><button type="button" class="howTgl tutMini" id="tutMini"></button></div>
     <p class="lede" id="startLede">Draw loops to grow your land, and cut everyone else's tail.</p>
+    <div class="howRow" id="howRow"><button type="button" class="howTgl" id="rulesTgl" aria-expanded="false" aria-controls="howBox"></button><button type="button" class="howTgl tutMini" id="tutMini" hidden></button></div>
+    <div class="howBox" id="howBox" hidden>
     <ul class="rules" id="startRules">
       <li><b>1</b><span>Leave your land and you draw a tail behind you.</span></li>
       <li><b>2</b><span>Get back to your land and everything inside the loop becomes yours.</span></li>
       <li><b>3</b><span>If someone hits your tail, you're out. Hit theirs and they're out.</span></li>
     </ul>
     <button class="tutBtn" id="tutOpen" type="button"><span>New here?</span> Try the tutorial →</button>
+    </div>
     <div class="field">
       <label id="modeLbl">Mode</label>
       <div class="sizes" id="netRow" role="group" aria-label="Where to play" hidden>
@@ -536,6 +542,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     </div>
     <div class="btns">
       <button class="btn" id="startBtn" type="button">Play</button>
+      <p class="firstHint" id="firstHint" hidden></p>
       <button class="btn ghost" id="watchStartBtn" type="button">Watch AI play</button>
     </div>
     <p class="keys"><kbd>↑</kbd> <kbd>←</kbd> <kbd>↓</kbd> <kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> · on phones, swipe</p>
@@ -834,7 +841,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   secretDesc:"Hidden badge — find it yourself", secretSkin:"Hidden skin", secretLine:"<b>???</b> · a hidden skin. Its unlock condition is a secret!",
   fxLbl:"Effects & animation", arrowPad:"Arrow buttons", winterTitle:"Winter Festival", winterSub:d=>`Grab ❄️ on the map → limited skins · ${d} days left`, flakeGain:(n,t)=>`❄️ +${n} snowflakes · ${t} total`, flakeBuyLine:(n,p)=>`<b>${n}</b> skin · ❄️${p}`, flakeNeed:(n,p,k)=>`The <b>${n}</b> skin costs ❄️${p}. You need ${k} more snowflakes.`, winterHint:"❄️ Winter Festival skins! Collect snowflakes on the map to trade for them.",
   sbThrow:"Throw (Space)", sbFrozenHud:"Frozen!", sbHit:"Hit! ❄️", sbFrozen:"Frozen! 🥶",
-  rulesBtn:"How to play", tutShort:"Tutorial →", theme:"Theme", themeLight:"Light", themeDark:"Dark", netConnecting:"Connecting…", netFail:"Couldn't reach the server.", netLost:"Lost the connection to the server.", netNoServer:"Online play needs the game server. Open the game from your server's address.", netFull:"The server is full. Try again in a moment.",
+  firstHint:"First time? A 1-minute tutorial starts first (you can skip it).", rulesBtn:"How to play", tutShort:"Tutorial →", theme:"Theme", themeLight:"Light", themeDark:"Dark", netConnecting:"Connecting…", netFail:"Couldn't reach the server.", netLost:"Lost the connection to the server.", netNoServer:"Online play needs the game server. Open the game from your server's address.", netFull:"The server is full. Try again in a moment.",
   playOnline:"Online", playOffline:"Offline (vs AI)", playWhere:"Where to play",
   netOffline:"Couldn't reach the server, so this is an offline game with AI.", netNextRound:"The next round starts in a moment.", netWaitRound:"No respawns in Survival — you'll join the next round.", langNote:"The page reloads to switch language."
 };
@@ -953,7 +960,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   secretDesc:"Logro oculto: descúbrelo tú", secretSkin:"Aspecto oculto", secretLine:"<b>???</b> · un aspecto oculto. ¡Su condición es secreta!",
   fxLbl:"Efectos y animación", arrowPad:"Botones de flecha", winterTitle:"Festival de Invierno", winterSub:d=>`Atrapa ❄️ en el mapa → aspectos limitados · quedan ${d} días`, flakeGain:(n,t)=>`❄️ +${n} copos · ${t} en total`, flakeBuyLine:(n,p)=>`Aspecto <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> cuesta ❄️${p}. Te faltan ${k} copos.`, winterHint:"❄️ ¡Aspectos del Festival de Invierno! Junta copos en el mapa para canjearlos.",
   sbThrow:"Lanzar (Espacio)", sbFrozenHud:"¡Congelado!", sbHit:"¡Impacto! ❄️", sbFrozen:"¡Congelado! 🥶",
-  rulesBtn:"Cómo jugar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Oscuro", netConnecting:"Conectando…", netFail:"No se pudo conectar al servidor.", netLost:"Se perdió la conexión con el servidor.", netNoServer:"El modo en línea necesita el servidor del juego. Abre el juego desde la dirección de tu servidor.", netFull:"El servidor está lleno. Inténtalo de nuevo en un momento.",
+  firstHint:"¿Primera vez? Antes empieza un tutorial de 1 minuto (puedes saltarlo).", rulesBtn:"Cómo jugar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Oscuro", netConnecting:"Conectando…", netFail:"No se pudo conectar al servidor.", netLost:"Se perdió la conexión con el servidor.", netNoServer:"El modo en línea necesita el servidor del juego. Abre el juego desde la dirección de tu servidor.", netFull:"El servidor está lleno. Inténtalo de nuevo en un momento.",
   playOnline:"En línea", playOffline:"Sin conexión (vs IA)", playWhere:"Dónde jugar",
   netOffline:"No se pudo conectar al servidor: partida sin conexión con IA.", netNextRound:"La próxima ronda empieza enseguida.", netWaitRound:"En Supervivencia no se reaparece: entrarás en la próxima ronda.", langNote:"La página se recarga para cambiar de idioma."
 };
@@ -1072,7 +1079,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   secretDesc:"Conquista oculta — descubra sozinho", secretSkin:"Visual oculto", secretLine:"<b>???</b> · um visual oculto. A condição é segredo!",
   fxLbl:"Efeitos e animação", arrowPad:"Botões de seta", winterTitle:"Festival de Inverno", winterSub:d=>`Pegue ❄️ no mapa → visuais limitados · faltam ${d} dias`, flakeGain:(n,t)=>`❄️ +${n} flocos · ${t} no total`, flakeBuyLine:(n,p)=>`Visual <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> custa ❄️${p}. Faltam ${k} flocos.`, winterHint:"❄️ Visuais do Festival de Inverno! Junte flocos no mapa para trocar.",
   sbThrow:"Jogar (Espaço)", sbFrozenHud:"Congelado!", sbHit:"Acertou! ❄️", sbFrozen:"Congelado! 🥶",
-  rulesBtn:"Como jogar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Escuro", netConnecting:"Conectando…", netFail:"Não foi possível conectar ao servidor.", netLost:"A conexão com o servidor caiu.", netNoServer:"O modo online precisa do servidor do jogo. Abra o jogo pelo endereço do seu servidor.", netFull:"O servidor está cheio. Tente de novo daqui a pouco.",
+  firstHint:"Primeira vez? Antes começa um tutorial de 1 minuto (dá para pular).", rulesBtn:"Como jogar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Escuro", netConnecting:"Conectando…", netFail:"Não foi possível conectar ao servidor.", netLost:"A conexão com o servidor caiu.", netNoServer:"O modo online precisa do servidor do jogo. Abra o jogo pelo endereço do seu servidor.", netFull:"O servidor está cheio. Tente de novo daqui a pouco.",
   playOnline:"Online", playOffline:"Offline (vs IA)", playWhere:"Onde jogar",
   netOffline:"Não deu para conectar ao servidor: partida offline com IA.", netNextRound:"A próxima rodada começa já já.", netWaitRound:"Na Sobrevivência não há renascimento: você entra na próxima rodada.", langNote:"A página recarrega para trocar o idioma."
 };
@@ -1191,7 +1198,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   secretDesc:"Badge caché — à toi de le trouver", secretSkin:"Apparence cachée", secretLine:"<b>???</b> · une apparence cachée. Sa condition est secrète !",
   fxLbl:"Effets et animations", arrowPad:"Boutons fléchés", winterTitle:"Festival d'hiver", winterSub:d=>`Attrape les ❄️ sur la carte → apparences limitées · encore ${d} j`, flakeGain:(n,t)=>`❄️ +${n} flocons · ${t} au total`, flakeBuyLine:(n,p)=>`Apparence <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> coûte ❄️${p}. Il te manque ${k} flocons.`, winterHint:"❄️ Apparences du Festival d'hiver ! Ramasse des flocons sur la carte pour les échanger.",
   sbThrow:"Lancer (Espace)", sbFrozenHud:"Gelé !", sbHit:"Touché ! ❄️", sbFrozen:"Gelé ! 🥶",
-  rulesBtn:"Comment jouer", tutShort:"Tutoriel →", theme:"Thème", themeLight:"Clair", themeDark:"Sombre", netConnecting:"Connexion…", netFail:"Impossible de joindre le serveur.", netLost:"Connexion au serveur perdue.", netNoServer:"Le mode en ligne a besoin du serveur du jeu. Ouvre le jeu depuis l'adresse de ton serveur.", netFull:"Le serveur est plein. Réessaie dans un instant.",
+  firstHint:"Première fois ? Un tutoriel d'1 minute commence d'abord (tu peux le passer).", rulesBtn:"Comment jouer", tutShort:"Tutoriel →", theme:"Thème", themeLight:"Clair", themeDark:"Sombre", netConnecting:"Connexion…", netFail:"Impossible de joindre le serveur.", netLost:"Connexion au serveur perdue.", netNoServer:"Le mode en ligne a besoin du serveur du jeu. Ouvre le jeu depuis l'adresse de ton serveur.", netFull:"Le serveur est plein. Réessaie dans un instant.",
   playOnline:"En ligne", playOffline:"Hors ligne (vs IA)", playWhere:"Où jouer",
   netOffline:"Serveur injoignable : partie hors ligne contre l'IA.", netNextRound:"La prochaine manche commence dans un instant.", netWaitRound:"Pas de réapparition en Survie : tu rejoindras la prochaine manche.", langNote:"La page se recharge pour changer de langue."
 };
@@ -1310,7 +1317,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   secretDesc:"Verstecktes Abzeichen – finde es selbst", secretSkin:"Versteckter Skin", secretLine:"<b>???</b> · ein versteckter Skin. Die Bedingung ist geheim!",
   fxLbl:"Effekte & Animation", arrowPad:"Pfeiltasten", winterTitle:"Winterfest", winterSub:d=>`Sammle ❄️ auf der Karte → limitierte Skins · noch ${d} Tage`, flakeGain:(n,t)=>`❄️ +${n} Schneeflocken · ${t} insgesamt`, flakeBuyLine:(n,p)=>`Skin <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> kostet ❄️${p}. Dir fehlen ${k} Schneeflocken.`, winterHint:"❄️ Winterfest-Skins! Sammle Schneeflocken auf der Karte und tausche sie ein.",
   sbThrow:"Werfen (Leertaste)", sbFrozenHud:"Eingefroren!", sbHit:"Treffer! ❄️", sbFrozen:"Eingefroren! 🥶",
-  rulesBtn:"Spielregeln", tutShort:"Tutorial →", theme:"Design", themeLight:"Hell", themeDark:"Dunkel", netConnecting:"Verbinde…", netFail:"Server nicht erreichbar.", netLost:"Verbindung zum Server verloren.", netNoServer:"Online-Spiel braucht den Spielserver. Öffne das Spiel über die Adresse deines Servers.", netFull:"Der Server ist voll. Versuch es gleich noch mal.",
+  firstHint:"Zum ersten Mal hier? Zuerst kommt ein 1-Minuten-Tutorial (überspringbar).", rulesBtn:"Spielregeln", tutShort:"Tutorial →", theme:"Design", themeLight:"Hell", themeDark:"Dunkel", netConnecting:"Verbinde…", netFail:"Server nicht erreichbar.", netLost:"Verbindung zum Server verloren.", netNoServer:"Online-Spiel braucht den Spielserver. Öffne das Spiel über die Adresse deines Servers.", netFull:"Der Server ist voll. Versuch es gleich noch mal.",
   playOnline:"Online", playOffline:"Offline (gegen KI)", playWhere:"Wo spielen",
   netOffline:"Server nicht erreichbar – Offline-Spiel gegen die KI.", netNextRound:"Die nächste Runde startet gleich.", netWaitRound:"Im Überleben gibt es kein Wiedereinsteigen – du bist in der nächsten Runde dabei.", langNote:"Die Seite lädt neu, um die Sprache zu wechseln."
 };
@@ -1429,7 +1436,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   secretDesc:"隐藏徽章——自己去发现吧", secretSkin:"隐藏皮肤", secretLine:"<b>???</b> · 隐藏皮肤。解锁条件是秘密！",
   fxLbl:"特效与动画", arrowPad:"方向按钮", winterTitle:"冬日庆典", winterSub:d=>`在地图上收集❄️ → 兑换限定皮肤 · 剩余${d}天`, flakeGain:(n,t)=>`❄️ +${n} 雪花 · 共${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>皮肤 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>需要❄️${p}，还差${k}片雪花。`, winterHint:"❄️ 冬日庆典限定皮肤！在地图上收集雪花来兑换。",
   sbThrow:"投掷（空格）", sbFrozenHud:"冻住了！", sbHit:"命中！❄️", sbFrozen:"冻住了！🥶",
-  rulesBtn:"玩法", tutShort:"教程 →", theme:"主题", themeLight:"浅色", themeDark:"深色", netConnecting:"连接中…", netFail:"无法连接服务器。", netLost:"与服务器的连接已断开。", netNoServer:"在线模式需要游戏服务器。请从你的服务器地址打开游戏。", netFull:"服务器已满，请稍后再试。",
+  firstHint:"第一次玩？会先开始 1 分钟教程（可以跳过）。", rulesBtn:"玩法", tutShort:"教程 →", theme:"主题", themeLight:"浅色", themeDark:"深色", netConnecting:"连接中…", netFail:"无法连接服务器。", netLost:"与服务器的连接已断开。", netNoServer:"在线模式需要游戏服务器。请从你的服务器地址打开游戏。", netFull:"服务器已满，请稍后再试。",
   playOnline:"在线", playOffline:"离线（对战 AI）", playWhere:"游戏方式",
   netOffline:"无法连接服务器，改为与 AI 离线对战。", netNextRound:"下一局马上开始。", netWaitRound:"生存模式不能复活，下一局再加入吧。", langNote:"切换语言时页面会重新加载。"
 };
@@ -1548,7 +1555,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   secretDesc:"隠しバッジ — 自分で見つけよう", secretSkin:"隠しスキン", secretLine:"<b>???</b> · 隠しスキン。解放条件はヒミツ！",
   fxLbl:"エフェクトとアニメ", arrowPad:"矢印ボタン", winterTitle:"ウィンターフェス", winterSub:d=>`マップの❄️を集めて限定スキンと交換 · 残り${d}日`, flakeGain:(n,t)=>`❄️ +${n} 雪の結晶 · 合計${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>スキン · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>は❄️${p}。あと${k}個必要です。`, winterHint:"❄️ ウィンターフェス限定スキン！マップで雪の結晶を集めて交換しよう。",
   sbThrow:"投げる（スペース）", sbFrozenHud:"凍った！", sbHit:"命中！❄️", sbFrozen:"凍った！🥶",
-  rulesBtn:"遊び方", tutShort:"チュートリアル →", theme:"テーマ", themeLight:"ライト", themeDark:"ダーク", netConnecting:"接続中…", netFail:"サーバーに接続できません。", netLost:"サーバーとの接続が切れました。", netNoServer:"オンライン対戦にはゲームサーバーが必要です。サーバーのアドレスからゲームを開いてください。", netFull:"サーバーが満員です。少し待ってからもう一度どうぞ。",
+  firstHint:"はじめて？先に1分のチュートリアルが始まります（スキップできます）。", rulesBtn:"遊び方", tutShort:"チュートリアル →", theme:"テーマ", themeLight:"ライト", themeDark:"ダーク", netConnecting:"接続中…", netFail:"サーバーに接続できません。", netLost:"サーバーとの接続が切れました。", netNoServer:"オンライン対戦にはゲームサーバーが必要です。サーバーのアドレスからゲームを開いてください。", netFull:"サーバーが満員です。少し待ってからもう一度どうぞ。",
   playOnline:"オンライン", playOffline:"オフライン（AIと対戦）", playWhere:"プレイ方法",
   netOffline:"サーバーにつながらないので、AIとのオフライン対戦になります。", netNextRound:"次のラウンドがまもなく始まります。", netWaitRound:"サバイバルは復活なし。次のラウンドから参加できます。", langNote:"言語を切り替えるとページが再読み込みされます。"
 };
@@ -1667,7 +1674,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   secretDesc:"숨겨진 배지 — 직접 찾아보세요", secretSkin:"숨겨진 스킨", secretLine:"<b>???</b> · 숨겨진 스킨이에요. 얻는 방법은 비밀!",
   fxLbl:"이펙트·애니메이션", arrowPad:"화살표 버튼", winterTitle:"겨울 축제", winterSub:d=>`맵의 ❄️를 모아 한정 스킨과 교환 · ${d}일 남음`, flakeGain:(n,t)=>`❄️ 눈송이 +${n} · 보유 ${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b> 스킨 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> 스킨은 ❄️${p}이에요. 눈송이 ${k}개가 더 필요해요.`, winterHint:"❄️ 겨울 축제 한정 스킨! 맵에 떨어진 눈송이를 모아서 교환하세요.",
   sbThrow:"던지기 (스페이스)", sbFrozenHud:"얼었어요!", sbHit:"명중! ❄️", sbFrozen:"얼었다! 🥶",
-  rulesBtn:"게임 방법", tutShort:"튜토리얼 →", theme:"테마", themeLight:"화이트", themeDark:"블랙", netConnecting:"서버에 연결하는 중…", netFail:"서버에 연결할 수 없어요.", netLost:"서버 연결이 끊겼어요.", netNoServer:"온라인 모드는 게임 서버가 필요해요. 서버 주소로 게임을 열어주세요.", netFull:"서버가 가득 찼어요. 잠시 후 다시 시도해주세요.",
+  firstHint:"처음이면 1분 튜토리얼부터 시작해요 (건너뛰기 가능)", rulesBtn:"게임 방법", tutShort:"튜토리얼 →", theme:"테마", themeLight:"화이트", themeDark:"블랙", netConnecting:"서버에 연결하는 중…", netFail:"서버에 연결할 수 없어요.", netLost:"서버 연결이 끊겼어요.", netNoServer:"온라인 모드는 게임 서버가 필요해요. 서버 주소로 게임을 열어주세요.", netFull:"서버가 가득 찼어요. 잠시 후 다시 시도해주세요.",
   playOnline:"온라인", playOffline:"오프라인 (AI와)", playWhere:"플레이 방식",
   netOffline:"서버에 연결할 수 없어서 AI와 오프라인으로 시작해요.", netNextRound:"곧 다음 판이 시작돼요.", netWaitRound:"생존전은 부활이 없어요. 다음 판부터 참가해요.", langNote:"언어를 바꾸면 페이지가 새로고침돼요."
 };
@@ -3861,6 +3868,7 @@ function showCard(o,delay=0){
   const seq=++cardSeq; setTimeout(()=>{ if(seq!==cardSeq||!$('startOv').hidden||(worldHasMe&&!spectating&&me.alive&&!ended)) return; $('overOv').hidden=false;$('againBtn').focus();},delay);   // left (or started something else) meanwhile: no card
 }
 function begin(){
+  if(firstTime()&&$('overOv').hidden&&!$('startOv').hidden){ startTutorial(); return; }
   feedMute=false;
   if(worldHasMe&&!spectating&&me.alive&&!ended&&$('startOv').hidden&&$('overOv').hidden) return;   // already playing: a stray Space/Enter must not respawn me on top of my own tail
   cardSeq++;
@@ -4129,7 +4137,7 @@ function tutTick(){
   tut.wait=true; $('tutBox').classList.add('ok'); $('tutTitle').textContent=L.nice; SFX.ach();
   setTimeout(()=>{ if(!tut) return; tut.wait=false; if(tut.step+1<TUT.length) tutEnter(tut.step+1); else finishTutorial(); },1000);
 }
-function startTutorial(){ cardSeq++; feedMute=false;
+function startTutorial(){ cardSeq++; feedMute=false; if(!settings.tutSeen){ settings.tutSeen=true; saveSettings(); }
   tutPrev=modeKey; leaveSpectate(); setSpeed(1);
   setup('tutorial',false);
   tut={step:-1,turns:0,captured:0,kills:0,wait:false,dummy:null,where:''};
@@ -4147,11 +4155,12 @@ function finishTutorial(){
     again:'play',againLabel:L.startGame,sfx:'win'},200);
 }
 let rulesOpen=false;
-function paintTutBtn(){ const done=!!achState.done.tutorial||((achState.stats&&achState.stats.games)||0)>=3, b=$('tutOpen');
+// first-timers go straight into the tutorial when they press Start (once); after that it lives under "How to play"
+const firstTime=()=>!achState.done.tutorial&&!settings.tutSeen&&!((achState.stats&&achState.stats.games)>0);
+function paintTutBtn(){ const done=!!achState.done.tutorial, b=$('tutOpen');
   b.classList.toggle('done',done); b.innerHTML=done?L.tutAgain:L.tutNew;
-  // returning players get one compact row instead of the full how-to block
-  $('howRow').hidden=!done; b.hidden=done; $('startLede').hidden=done&&!rulesOpen; $('startRules').hidden=done&&!rulesOpen;
-  $('rulesTgl').textContent=L.rulesBtn+(rulesOpen?' ▴':' ▾'); $('rulesTgl').setAttribute('aria-expanded',String(done&&rulesOpen)); $('tutMini').textContent=L.tutShort; }
+  $('howBox').hidden=!rulesOpen; $('startLede').hidden=false; const fh=$('firstHint'); if(fh){ fh.hidden=!firstTime(); fh.textContent=L.firstHint; }
+  $('rulesTgl').textContent=L.rulesBtn+(rulesOpen?' ▴':' ▾'); $('rulesTgl').setAttribute('aria-expanded',String(rulesOpen)); }
 $('rulesTgl').onclick=()=>{ rulesOpen=!rulesOpen; paintTutBtn(); };
 $('tutMini').onclick=()=>startTutorial();
 $('tutOpen').onclick=startTutorial;
@@ -5441,7 +5450,7 @@ for(const b of document.querySelectorAll('.sndBtn')) b.onclick=toggleSound;
   tx('#size-normal',L.normalMap); tx('#size-big',L.hugeMap); at('#teamRow','aria-label',L.numTeams); tx('#teams-2',L.teams2); tx('#teams-4',L.teams4);
   tx('label[for=nameIn]',L.yourName); at('#nameIn','placeholder',GUEST);
   tx('label[for=skinOpen]',L.skin); at('#startOv .coinBadge','title',L.yourCoins); tx('#startOv .skinGo',L.chooseSkin);
-  tx('#startBtn',L.play); tx('#watchStartBtn',L.watchAI);
+  tx('#startBtn',L.play); try{ $('firstHint').hidden=!firstTime(); $('firstHint').textContent=L.firstHint; }catch(e){} tx('#watchStartBtn',L.watchAI);
   const KBD=k=>`<kbd>${k}</kbd>`;
   ht('#startOv .keys',`${KBD('↑')} ${KBD('←')} ${KBD('↓')} ${KBD('→')} ${L.or} ${KBD('W')}${KBD('A')}${KBD('S')}${KBD('D')} · ${L.onPhones}`);
   ht('#overOv .keys',`${KBD('Space')} ${L.or} ${KBD('Enter')} ${L.toPlayAgain}`);
