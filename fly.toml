@@ -1,5 +1,5 @@
 # Loopclaim.io on Fly.io: one app, a copy in each region below; players reach the nearest one.
-app = "loopclaim"
+app = "loopclaim-io-game"
 primary_region = "nrt"
 
 [env]
