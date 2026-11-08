@@ -731,7 +731,9 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
 (function cgSave(){ if(!/crazygames/.test(location.host)) return;
   const KEYS=['ttang-ach','ttang-big','ttang-daily','ttang-duel','ttang-guest','ttang-mode','ttang-name','ttang-net','ttang-pass','ttang-prof','ttang-rank','ttang-settings','ttang-skin','ttang-teams','ttang-wallet','ttang-winter','ttang-zbal'];
   const T='ttang-cgt';   // when this copy was last saved: the newer copy (this device or the account) wins on start
-  let sdk=null; const P=Storage.prototype, s0=P.setItem, r0=P.removeItem, g0=P.getItem;
+  let sdk=null, pendG=null;
+  window.__cgGame=k=>{ if(sdk&&sdk.game){ try{ sdk.game[k](); }catch(e){} } else pendG=k; };   // gameplayStart / gameplayStop
+  const P=Storage.prototype, s0=P.setItem, r0=P.removeItem, g0=P.getItem;
   const LS=()=>window.localStorage;
   const put=(k,v)=>{ if(!KEYS.includes(k)) return; const now=String(Date.now()); try{ s0.call(LS(),T,now); }catch(e){}
     if(!sdk) return; try{ v==null?sdk.data.removeItem(k):sdk.data.setItem(k,v); sdk.data.setItem(T,now); }catch(e){} };
@@ -742,13 +744,14 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     const rt=+(S.data.getItem(T)||0), lt=+(g0.call(LS(),T)||0); let changed=false;
     if(rt>lt){ for(const k of KEYS){ const rv=S.data.getItem(k), lv=g0.call(LS(),k); if(rv!=null&&rv!==lv){ s0.call(LS(),k,rv); changed=true; } } s0.call(LS(),T,String(rt)); }
     else { for(const k of KEYS){ const lv=g0.call(LS(),k); if(lv!=null&&S.data.getItem(k)!==lv) S.data.setItem(k,lv); } S.data.setItem(T,String(lt||Date.now())); }
-    sdk=S;
+    sdk=S; if(pendG){ try{ S.game[pendG](); }catch(e){} pendG=null; }
     if(changed){ let again=false; try{ again=sessionStorage.getItem('cg-synced')==='1'; sessionStorage.setItem('cg-synced','1'); }catch(e){} if(!again) location.reload(); }
   }catch(e){} };
   (document.head||document.documentElement).appendChild(sc); })();
 </script>
 <script>
 (()=>{
+const cgGame=k=>{ try{ if(window.__cgGame) window.__cgGame(k); }catch(e){} };   // CrazyGames gameplay events (no-op elsewhere)
 let TICK=115; const DX=[0,1,0,-1], DY=[-1,0,1,0], INF=1e9;
 const C={ground:'#eef1f7',grid:'#dfe4ef',void:'#262b42',ink:'#1b2033',nameStroke:'rgba(255,255,255,.9)',emptyRgb:[226,231,241]};
 const NET={ws:null,state:'off',q:[],you:0,room:0,noServer:false,rtt:120,lead:2,pend:[],tick:0,pingT:0};
@@ -3839,6 +3842,7 @@ function deathSpot(p,c){ const k=c&&c.killer;
   return {x:p.x+.5,y:p.y+.5}; }
 let cutMark=null;
 function gameOver(c){
+  cgGame('gameplayStop');
   deathCam=deathSpot(me,c);
   let msg=deathMsg(c);
   if(mode.survival||mode.tron) msg+=' '+L.finished(me.place,players.length);
@@ -3897,7 +3901,7 @@ function begin(){
   if(fresh) setup(modeKey,false);
   me.name=nm;
   $('startOv').hidden=true;$('overOv').hidden=true; paintAccent();
-  queue=[];deathCam=null;spawn(me);me.respawnAt=0;$('meBox').hidden=false;$('tools').hidden=false;updateHud();SFX.start(); run={kills:0,best:0,t0:gt,paid:false}; duel=null; if(mode.duel) duelStart(); roleBanner(); addStat('games'); unlock('first');
+  queue=[];deathCam=null;spawn(me);me.respawnAt=0;$('meBox').hidden=false;$('tools').hidden=false;updateHud();SFX.start(); run={kills:0,best:0,t0:gt,paid:false}; duel=null; if(mode.duel) duelStart(); roleBanner(); addStat('games'); unlock('first'); cgGame('gameplayStart');
 }
 
 /* ---------- spectating ---------- */
@@ -3997,7 +4001,7 @@ function netBegin(){
 }
 function netEnterUI(){ $('startOv').hidden=true; $('overOv').hidden=true; $('toast').hidden=true; paintAccent();
   queue=[]; deathCam=me&&me.alive?null:{x:N/2,y:N/2}; cutMark=null; feedMute=false; $('meBox').hidden=!me.alive; $('tools').hidden=false; run={kills:0,best:0,t0:gt,paid:false}; SFX.start(); updateHud();
-  addStat('games'); unlock('first');   // online games count toward stats and badges too
+  addStat('games'); unlock('first'); cgGame('gameplayStart');   // online games count toward stats and badges too
   if(mode.zombie) roleBanner();
   if(mode.duel&&duel) setTimeout(()=>{ if(duel&&mode.duel) streakBanner(L.duelRound(duel.round),duel.round>1?L.duelScore(duel.score[0],duel.score[1]):duel.b?L.duelVs(esc(duel.b.name)):''); },200); }
 const b64u8=s=>{ const b=atob(s), a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; };
@@ -4126,7 +4130,7 @@ function netApply(m){
   if(me&&me.alive&&!NET.over){ me.sx=me.x; me.sy=me.y; me.sdir=me.dir; me.srvTrail=me.trailCells; netPredict(true); } else if(me&&me.alive){ me.sx=null; } else if(me){ me.sx=null; NET.pend=[]; }
   if(t0-NET.pingT>2000){ NET.pingT=t0; netSend({t:'ping',c:t0}); }
   updateHud(); }
-function toMenu(){ paintWinter(); cardSeq++; feedMute=false; paintNetRow();
+function toMenu(){ cgGame('gameplayStop'); paintWinter(); cardSeq++; feedMute=false; paintNetRow();
   leaveTutorial();
   if(mode.online){ netClose(); $('overOv').hidden=true; $('startOv').hidden=false; NET.over=false; setup(modeKey); buildModes(); paintAccent(); return; }
   if(spectating){ exitSpectate(); return; }
@@ -4178,7 +4182,7 @@ function tutTick(){
   setTimeout(()=>{ if(!tut) return; tut.wait=false; if(tut.step+1<TUT.length) tutEnter(tut.step+1); else finishTutorial(); },1000);
 }
 function startTutorial(){ cardSeq++; feedMute=false; if(!settings.tutSeen){ settings.tutSeen=true; saveSettings(); }
-  tutPrev=modeKey; leaveSpectate(); setSpeed(1);
+  tutPrev=modeKey; leaveSpectate(); setSpeed(1); cgGame('gameplayStart');
   setup('tutorial',false);
   tut={step:-1,turns:0,captured:0,kills:0,wait:false,dummy:null,where:''};
   $('startOv').hidden=true; $('overOv').hidden=true; $('hint').hidden=true;
