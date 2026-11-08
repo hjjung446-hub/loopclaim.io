@@ -728,6 +728,25 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
 </div>
 
 <script>
+/* CrazyGames: saves go through the SDK's Data module so progress follows the player's CrazyGames account.
+   The game keeps using localStorage; every write of a game key is mirrored to the SDK, and on start the
+   account's copy wins (the page reloads once if it brought different data). */
+(function cgSave(){ if(!/crazygames/.test(location.host)) return;
+  const KEYS=['ttang-ach','ttang-big','ttang-daily','ttang-duel','ttang-guest','ttang-mode','ttang-name','ttang-net','ttang-pass','ttang-prof','ttang-rank','ttang-settings','ttang-skin','ttang-teams','ttang-wallet','ttang-winter','ttang-zbal'];
+  let sdk=null; const P=Storage.prototype, s0=P.setItem, r0=P.removeItem;
+  const put=(k,v)=>{ if(!sdk||!KEYS.includes(k)) return; try{ v==null?sdk.data.removeItem(k):sdk.data.setItem(k,v); }catch(e){} };
+  P.setItem=function(k,v){ s0.call(this,k,v); try{ if(this===window.localStorage) put(k,String(v)); }catch(e){} };
+  P.removeItem=function(k){ r0.call(this,k); try{ if(this===window.localStorage) put(k,null); }catch(e){} };
+  const sc=document.createElement('script'); sc.src='https://sdk.crazygames.com/crazygames-sdk-v3.js';
+  sc.onload=async()=>{ try{ const S=window.CrazyGames&&window.CrazyGames.SDK; if(!S) return; await S.init(); window.__cgSDK=S; let changed=false;
+    for(const k of KEYS){ const rv=S.data.getItem(k), lv=localStorage.getItem(k);
+      if(rv!=null&&rv!==lv){ s0.call(localStorage,k,rv); changed=true; } else if(rv==null&&lv!=null) S.data.setItem(k,lv); }
+    sdk=S;
+    if(changed){ let again=false; try{ again=sessionStorage.getItem('cg-synced')==='1'; sessionStorage.setItem('cg-synced','1'); }catch(e){} if(!again) location.reload(); }
+  }catch(e){} };
+  (document.head||document.documentElement).appendChild(sc); })();
+</script>
+<script>
 (()=>{
 let TICK=115; const DX=[0,1,0,-1], DY=[-1,0,1,0], INF=1e9;
 const C={ground:'#eef1f7',grid:'#dfe4ef',void:'#262b42',ink:'#1b2033',nameStroke:'rgba(255,255,255,.9)',emptyRgb:[226,231,241]};
