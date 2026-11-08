@@ -179,6 +179,11 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 @keyframes gotPop{from{transform:scale(.7);opacity:0}}
 @media (prefers-reduced-motion:reduce){.gotCard{animation:none}}
 .bpClaimBtn{font:inherit;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(135deg,#ffd23f,#ffb020);color:#3a2700;box-shadow:0 2px 0 #c98a00}
+.bpBox{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(255,210,63,.18),rgba(185,103,255,.16));border-radius:14px;padding:10px 12px}
+.bpBoxIco{flex:none;width:40px;height:34px;border-radius:7px;background:linear-gradient(#ffcf3f 0 38%,#c98a00 38% 46%,#f2b705 46%);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);position:relative}
+.bpBoxIco::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:7px;transform:translateX(-50%);background:#e8455a}
+.bpBoxTx{flex:1;min-width:0;display:grid;gap:3px}.bpBoxTx b{font-size:14px}.bpBoxTx small{font-size:11.5px;color:var(--muted)}
+.bpBox .bpBarBox{height:6px}
 .adBtn{font:inherit;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(135deg,#7b5cff,#3d6bff);color:#fff;box-shadow:0 2px 0 #2c3fa8}
 .adBtn:disabled{background:var(--ground);color:var(--muted);box-shadow:none;cursor:default}
 .bpClaimBtn:disabled{background:var(--ground);color:var(--muted);box-shadow:none;cursor:default}
@@ -629,6 +634,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     <div class="bpHead"><b id="bpLv">Lv 0</b><div class="bpBarBox"><i id="bpBar"></i></div><small id="bpXp"></small></div>
     <button type="button" class="bpPrem" id="bpPrem"></button>
     <div class="bpTrack" id="bpTrack"></div>
+    <div class="bpBox" id="bpBox" hidden><div class="bpBoxIco" aria-hidden="true"></div><div class="bpBoxTx"><b id="bpBoxT"></b><small id="bpBoxS"></small><div class="bpBarBox"><i id="bpBoxBar"></i></div></div><button type="button" class="buyBtn" id="bpBoxOpen"></button></div>
     <p class="skinHint" id="bpHint" aria-live="polite"></p>
     <div class="btns"><button class="btn ghost" id="bpAll" type="button">Claim all</button><button class="btn" id="bpDone" type="button">Done</button></div>
   </div>
@@ -913,6 +919,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   adDouble:g=>`Watch an ad · double coins (+${g})`, adGot:n=>`+${n} coins from the ad!`, adFail:"The ad didn't play. Try again later.",
   inviteIn:n=>`You joined ${n}'s room!`, inviteCame:n=>`${n} joined through your invite!`,
   inviteFriend:"Invite a friend", invite:"Invite", inviteCopied:"Invite link copied! Send it to a friend to play in this room.", inviteJoin:"Joining your friend's room…", inviteManual:"Copy this invite link:",
+  boxTitle:"Bonus boxes", boxNote:"After the last level every 100 XP gives a bonus box.", boxOpen:n=>`Open (${n})`, boxNone:"No boxes yet", boxNext:(a,b)=>`${a} / ${b} XP to the next box`, boxGot:r=>`Bonus box: ${r}!`, boxCoins:n=>`${n} coins`, boxRp:n=>`${n} RP`, boxEmo:e=>`new emote ${e}`,
   weeklyShort:"This week", weeklyTag:d=>`Weekly mode · ${d} day${d>1?"s":""} left`,
   bossBoardN:n=>`Boss points · ${n} players`, bossHitsN:n=>`${n} hits`, bossWin:n=>`Top raider with ${n} points!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} took the boss down! 👹 Lv.${l} incoming`:`The boss fell! Lv.${l} incoming`, bossDownT:"BOSS DOWN!", bossBack:l=>`It comes back at Lv.${l}`, bossHitFeed:(k,h,m)=>`${k} hit the boss! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`back in ${s}s`,
   youZombie:"YOU'RE A ZOMBIE!", youZombieSub:"Catch the survivors before time runs out", youBoss:"YOU'RE THE BOSS!", youBossSub:"Everyone is after you. Catch raiders for points (+10 each)", youBossTag:"Boss",
@@ -1033,6 +1040,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   adDouble:g=>`Ver un anuncio · monedas x2 (+${g})`, adGot:n=>`¡+${n} monedas del anuncio!`, adFail:"El anuncio no se reprodujo. Inténtalo más tarde.",
   inviteIn:n=>`¡Entraste en la sala de ${n}!`, inviteCame:n=>`¡${n} entró con tu invitación!`,
   inviteFriend:"Invitar a un amigo", invite:"Invitar", inviteCopied:"¡Enlace copiado! Envíalo a un amigo para jugar en esta sala.", inviteJoin:"Entrando en la sala de tu amigo…", inviteManual:"Copia este enlace de invitación:",
+  boxTitle:"Cajas extra", boxNote:"Tras el último nivel, cada 100 XP da una caja extra.", boxOpen:n=>`Abrir (${n})`, boxNone:"Aún no hay cajas", boxNext:(a,b)=>`${a} / ${b} XP para la próxima caja`, boxGot:r=>`Caja extra: ¡${r}!`, boxCoins:n=>`${n} monedas`, boxRp:n=>`${n} RP`, boxEmo:e=>`nuevo emoji ${e}`,
   weeklyShort:"Semanal", weeklyTag:d=>`Modo de la semana · quedan ${d} día${d>1?"s":""}`,
   bossBoardN:n=>`Puntos de jefe · ${n} jugadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`¡Mejor asaltante con ${n} puntos!`, bossName:"JEFE", bossKO:"¡K.O.! +30", bossDownFeed:(k,l)=>k?`¡${k} derribó al jefe! 👹 Llega el nv. ${l}`:`¡El jefe cayó! Llega el nv. ${l}`, bossDownT:"¡JEFE DERROTADO!", bossBack:l=>`Vuelve en nv. ${l}`, bossHitFeed:(k,h,m)=>`¡${k} golpeó al jefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`vuelve en ${s} s`,
   youZombie:"¡ERES UN ZOMBI!", youZombieSub:"Atrapa a los supervivientes antes de que acabe el tiempo", youBoss:"¡ERES EL JEFE!", youBossSub:"Todos van a por ti. Atrapa asaltantes para sumar puntos (+10)", youBossTag:"Jefe",
@@ -1153,6 +1161,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   adDouble:g=>`Ver um anúncio · moedas x2 (+${g})`, adGot:n=>`+${n} moedas do anúncio!`, adFail:"O anúncio não rodou. Tente mais tarde.",
   inviteIn:n=>`Você entrou na sala de ${n}!`, inviteCame:n=>`${n} entrou pelo seu convite!`,
   inviteFriend:"Convidar um amigo", invite:"Convidar", inviteCopied:"Link copiado! Mande para um amigo jogar nesta sala.", inviteJoin:"Entrando na sala do seu amigo…", inviteManual:"Copie este link de convite:",
+  boxTitle:"Caixas bônus", boxNote:"Depois do último nível, cada 100 XP dá uma caixa bônus.", boxOpen:n=>`Abrir (${n})`, boxNone:"Nenhuma caixa ainda", boxNext:(a,b)=>`${a} / ${b} XP para a próxima caixa`, boxGot:r=>`Caixa bônus: ${r}!`, boxCoins:n=>`${n} moedas`, boxRp:n=>`${n} RP`, boxEmo:e=>`novo emoji ${e}`,
   weeklyShort:"Semanal", weeklyTag:d=>`Modo da semana · faltam ${d} dia${d>1?"s":""}`,
   bossBoardN:n=>`Pontos de chefe · ${n} jogadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`Melhor atacante com ${n} pontos!`, bossName:"CHEFE", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} derrubou o chefe! 👹 Vem aí o nv. ${l}`:`O chefe caiu! Vem aí o nv. ${l}`, bossDownT:"CHEFE DERROTADO!", bossBack:l=>`Ele volta no nv. ${l}`, bossHitFeed:(k,h,m)=>`${k} acertou o chefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`volta em ${s} s`,
   youZombie:"VOCÊ É UM ZUMBI!", youZombieSub:"Pegue os sobreviventes antes que o tempo acabe", youBoss:"VOCÊ É O CHEFE!", youBossSub:"Todos estão atrás de você. Pegue atacantes para ganhar pontos (+10)", youBossTag:"Chefe",
@@ -1273,6 +1282,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   adDouble:g=>`Regarder une pub · pièces x2 (+${g})`, adGot:n=>`+${n} pièces grâce à la pub !`, adFail:"La pub ne s'est pas lancée. Réessaie plus tard.",
   inviteIn:n=>`Tu as rejoint le salon de ${n} !`, inviteCame:n=>`${n} est arrivé grâce à ton invitation !`,
   inviteFriend:"Inviter un ami", invite:"Inviter", inviteCopied:"Lien copié ! Envoie-le à un ami pour jouer dans ce salon.", inviteJoin:"Tu rejoins le salon de ton ami…", inviteManual:"Copie ce lien d'invitation :",
+  boxTitle:"Coffres bonus", boxNote:"Après le dernier niveau, chaque 100 XP donne un coffre bonus.", boxOpen:n=>`Ouvrir (${n})`, boxNone:"Pas encore de coffre", boxNext:(a,b)=>`${a} / ${b} XP avant le prochain coffre`, boxGot:r=>`Coffre bonus : ${r} !`, boxCoins:n=>`${n} pièces`, boxRp:n=>`${n} RP`, boxEmo:e=>`nouvel emoji ${e}`,
   weeklyShort:"Semaine", weeklyTag:d=>`Mode de la semaine · encore ${d} jour${d>1?"s":""}`,
   bossBoardN:n=>`Points boss · ${n} joueurs`, bossHitsN:n=>`${n} coups`, bossWin:n=>`Meilleur raider avec ${n} points !`, bossName:"BOSS", bossKO:"K.O. ! +30", bossDownFeed:(k,l)=>k?`${k} a terrassé le boss ! 👹 Niv. ${l} en approche`:`Le boss est tombé ! Niv. ${l} en approche`, bossDownT:"BOSS VAINCU !", bossBack:l=>`Il revient au niv. ${l}`, bossHitFeed:(k,h,m)=>`${k} a touché le boss ! ❤ ${h}/${m}`, bossLv:n=>`Niv. ${n}`, bossRespawn:s=>`revient dans ${s} s`,
   youZombie:"TU ES UN ZOMBIE !", youZombieSub:"Attrape les survivants avant la fin du temps", youBoss:"TU ES LE BOSS !", youBossSub:"Tout le monde te traque. Attrape des raiders pour marquer (+10)", youBossTag:"Boss",
@@ -1393,6 +1403,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   adDouble:g=>`Werbung ansehen · Münzen x2 (+${g})`, adGot:n=>`+${n} Münzen durch die Werbung!`, adFail:"Die Werbung lief nicht. Versuch es später.",
   inviteIn:n=>`Du bist im Raum von ${n}!`, inviteCame:n=>`${n} ist über deine Einladung da!`,
   inviteFriend:"Freund einladen", invite:"Einladen", inviteCopied:"Link kopiert! Schick ihn einem Freund, um in diesem Raum zu spielen.", inviteJoin:"Du gehst in den Raum deines Freundes…", inviteManual:"Kopiere diesen Einladungslink:",
+  boxTitle:"Bonuskisten", boxNote:"Nach der letzten Stufe gibt es alle 100 XP eine Bonuskiste.", boxOpen:n=>`Öffnen (${n})`, boxNone:"Noch keine Kiste", boxNext:(a,b)=>`${a} / ${b} XP bis zur nächsten Kiste`, boxGot:r=>`Bonuskiste: ${r}!`, boxCoins:n=>`${n} Münzen`, boxRp:n=>`${n} RP`, boxEmo:e=>`neues Emoji ${e}`,
   weeklyShort:"Woche", weeklyTag:d=>`Wochenmodus · noch ${d} Tag${d>1?"e":""}`,
   bossBoardN:n=>`Bosspunkte · ${n} Spieler`, bossHitsN:n=>`${n} Treffer`, bossWin:n=>`Bester Raider mit ${n} Punkten!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} hat den Boss besiegt! 👹 St. ${l} kommt`:`Der Boss ist gefallen! St. ${l} kommt`, bossDownT:"BOSS BESIEGT!", bossBack:l=>`Er kommt auf St. ${l} zurück`, bossHitFeed:(k,h,m)=>`${k} hat den Boss getroffen! ❤ ${h}/${m}`, bossLv:n=>`St. ${n}`, bossRespawn:s=>`zurück in ${s} s`,
   youZombie:"DU BIST EIN ZOMBIE!", youZombieSub:"Fang die Überlebenden, bevor die Zeit abläuft", youBoss:"DU BIST DER BOSS!", youBossSub:"Alle jagen dich. Fang Raider für Punkte (+10)", youBossTag:"Boss",
@@ -1513,6 +1524,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   adDouble:g=>`看广告 · 金币翻倍（+${g}）`, adGot:n=>`广告奖励 +${n} 金币！`, adFail:"广告没有播放，请稍后再试。",
   inviteIn:n=>`你进入了 ${n} 的房间！`, inviteCame:n=>`${n} 通过你的邀请进来了！`,
   inviteFriend:"邀请朋友", invite:"邀请", inviteCopied:"邀请链接已复制！发给朋友就能来这个房间一起玩。", inviteJoin:"正在进入朋友的房间…", inviteManual:"复制这个邀请链接：",
+  boxTitle:"奖励宝箱", boxNote:"满级后每获得 100 XP 就送一个奖励宝箱。", boxOpen:n=>`打开（${n}）`, boxNone:"还没有宝箱", boxNext:(a,b)=>`距离下一个宝箱 ${a} / ${b} XP`, boxGot:r=>`奖励宝箱：${r}！`, boxCoins:n=>`${n} 金币`, boxRp:n=>`${n} RP`, boxEmo:e=>`新表情 ${e}`,
   weeklyShort:"本周", weeklyTag:d=>`本周模式 · 还剩 ${d} 天`,
   bossBoardN:n=>`首领分 · ${n} 名玩家`, bossHitsN:n=>`命中 ${n} 次`, bossWin:n=>`以 ${n} 分成为最强讨伐者！`, bossName:"首领", bossKO:"击倒！+30", bossDownFeed:(k,l)=>k?`${k} 击倒了首领！👹 ${l} 级即将来袭`:`首领倒下了！${l} 级即将来袭`, bossDownT:"首领被击倒！", bossBack:l=>`将以 ${l} 级复活`, bossHitFeed:(k,h,m)=>`${k} 击中了首领！❤ ${h}/${m}`, bossLv:n=>`${n} 级`, bossRespawn:s=>`${s} 秒后复活`,
   youZombie:"你是僵尸！", youZombieSub:"在时间结束前抓住幸存者", youBoss:"你是首领！", youBossSub:"所有人都在追你。抓住讨伐者得分（每个 +10）", youBossTag:"首领",
@@ -1633,6 +1645,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   adDouble:g=>`広告を見てコイン2倍（+${g}）`, adGot:n=>`広告で +${n} コイン！`, adFail:"広告を再生できませんでした。あとで試してね。",
   inviteIn:n=>`${n} の部屋に入りました！`, inviteCame:n=>`${n} が招待リンクから来ました！`,
   inviteFriend:"友だちを招待", invite:"招待", inviteCopied:"招待リンクをコピーしました！友だちに送るとこの部屋で一緒に遊べます。", inviteJoin:"友だちの部屋に入ります…", inviteManual:"この招待リンクをコピーしてね：",
+  boxTitle:"ボーナスボックス", boxNote:"最終レベルのあとは 100 XP ごとにボーナスボックスがもらえます。", boxOpen:n=>`開ける（${n}）`, boxNone:"まだボックスはありません", boxNext:(a,b)=>`次のボックスまで ${a} / ${b} XP`, boxGot:r=>`ボーナスボックス：${r}！`, boxCoins:n=>`${n}コイン`, boxRp:n=>`${n} RP`, boxEmo:e=>`新しいエモート ${e}`,
   weeklyShort:"今週", weeklyTag:d=>`今週のモード · 残り${d}日`,
   bossBoardN:n=>`ボスポイント · ${n}人`, bossHitsN:n=>`${n}ヒット`, bossWin:n=>`${n}ポイントでトップレイダー！`, bossName:"ボス", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}がボスを倒した！👹 Lv.${l}が来る`:`ボスが倒れた！Lv.${l}が来る`, bossDownT:"ボス撃破！", bossBack:l=>`Lv.${l}で復活`, bossHitFeed:(k,h,m)=>`${k}がボスにヒット！❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}秒後に復活`,
   youZombie:"きみはゾンビ！", youZombieSub:"時間内に生存者をつかまえよう", youBoss:"きみがボス！", youBossSub:"全員がきみを狙ってる。レイダーを倒してポイント（+10）", youBossTag:"ボス",
@@ -1753,6 +1766,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   adDouble:g=>`광고 보고 코인 2배 (+${g})`, adGot:n=>`광고 보상 +${n} 코인!`, adFail:"광고를 못 불러왔어요. 잠시 뒤에 다시 해보세요.",
   inviteIn:n=>`${n}의 방에 들어왔어요!`, inviteCame:n=>`${n} 님이 초대 링크로 들어왔어요!`,
   inviteFriend:"친구 초대", invite:"초대", inviteCopied:"초대 링크를 복사했어요! 친구에게 보내면 이 방에서 같이 할 수 있어요.", inviteJoin:"친구 방으로 들어가요…", inviteManual:"이 초대 링크를 복사하세요:",
+  boxTitle:"보너스 상자", boxNote:"마지막 레벨 이후엔 100 XP마다 보너스 상자를 받아요.", boxOpen:n=>`열기 (${n})`, boxNone:"아직 상자가 없어요", boxNext:(a,b)=>`다음 상자까지 ${a} / ${b} XP`, boxGot:r=>`보너스 상자: ${r}!`, boxCoins:n=>`${n} 코인`, boxRp:n=>`${n} RP`, boxEmo:e=>`새 이모티콘 ${e}`,
   weeklyShort:"주간", weeklyTag:d=>`이번 주 모드 · ${d}일 남음`,
   bossBoardN:n=>`보스 점수 · ${n}명`, bossHitsN:n=>`${n}번 공격`, bossWin:n=>`${n}점으로 최고의 공격대원!`, bossName:"보스", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}이(가) 보스를 쓰러뜨렸어요! 👹 Lv.${l} 등장 예정`:`보스가 쓰러졌어요! Lv.${l} 등장 예정`, bossDownT:"보스 처치!", bossBack:l=>`Lv.${l}로 돌아와요`, bossHitFeed:(k,h,m)=>`${k} 보스 공격! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}초 후 부활`,
   youZombie:"넌 좀비야!", youZombieSub:"시간 안에 생존자를 잡아요", youBoss:"넌 보스야!", youBossSub:"모두가 너를 노려요. 공격대를 잡으면 +10점", youBossTag:"보스",
@@ -2596,8 +2610,14 @@ function bpClaim(track,lv){ const arr=track==='p'?pass.cp:pass.cf; if(arr.includ
 function bpUnclaimed(){ const lv=bpLevel(); let n=0; for(let i=1;i<=lv;i++){ if(!pass.cf.includes(i)) n++; if(pass.premium&&!pass.cp.includes(i)) n++; } return n; }
 function bpClaimAll(){ let n=0; for(let lv=1;lv<=bpLevel();lv++){ if(bpClaim('f',lv)) n++; if(pass.premium&&bpClaim('p',lv)) n++; } return n; }
 let bpNote=0;
+function openBox(){ if(!(pass.boxes>0)) return null; pass.boxes--; const r=Math.random(); let txt;
+  const own=rank.rOwned||(rank.rOwned=[]), emo=EMO_SHOP.filter(e=>!own.includes(e.id));
+  if(r<.06&&emo.length){ const e=emo[Math.floor(Math.random()*emo.length)]; own.push(e.id); saveRank(); txt=L.boxEmo(e.e); }
+  else if(r<.32){ const n=40+Math.floor(Math.random()*9)*15; rank.bank=(rank.bank||0)+n; saveRank(); txt=L.boxRp(n); }
+  else { const n=60+Math.floor(Math.random()*15)*10; addCoins(n); txt=L.boxCoins(n); }
+  savePass(); return txt; }
 function bpCheckSeason(){ const cur=seasonKey(); if(!pass.season){ pass.season=cur; savePass(); return; } if(pass.season===cur) return;
-  const n=bpClaimAll(); pass={season:cur,xp:0,premium:false,cf:[],cp:[]}; savePass(); bpNote=n; }
+  const n=bpClaimAll(); while(pass.boxes>0) openBox(); pass={season:cur,xp:0,premium:false,cf:[],cp:[],bx:0,boxes:0}; savePass(); bpNote=n; }
 function bpGain(win){
   if(!run||run.xpDone||spectating||mode.tutorial) return null; run.xpDone=true; bpCheckSeason();
   const sec=(gt-run.t0)/1000, x=Math.min(120,Math.round(15+run.kills*5+run.best*1.5+Math.min(30,sec/6)+(win?25:0)));
@@ -2605,7 +2625,11 @@ function bpGain(win){
   // daily missions that count finished games
   mission('games',1); mission('mode:'+modeKey,1); if(mode.ranked) mission('ranked',1); if(win) mission('win',1);
   return {x,lv:after}; }
-function bpAddXp(x){ bpCheckSeason(); const before=bpLevel(); pass.xp=Math.min(BP_LEVELS*BP_XP,pass.xp+x); savePass(); const after=bpLevel();
+const BOX_XP=100;
+function bpAddXp(x){ bpCheckSeason(); const before=bpLevel(), cap=BP_LEVELS*BP_XP, over=Math.max(0,pass.xp+x-cap);
+  pass.xp=Math.min(cap,pass.xp+x);
+  if(over>0){ pass.bx=(pass.bx||0)+over; const nb=Math.floor(pass.bx/BOX_XP); if(nb>0){ pass.boxes=(pass.boxes||0)+nb; pass.bx-=nb*BOX_XP; } }
+  savePass(); const after=bpLevel();
   if(after>before) setTimeout(()=>{ SFX.ach(); achToast({id:'_bp',name:L.bpLevelUp(after),label:L.bpTitle}); },500);
   return after; }
 /* ---------- daily missions + attendance (reset at local midnight) ---------- */
@@ -2667,6 +2691,9 @@ function buildBp(){
   $('bpLv').textContent=L.bpLevel(lv);
   $('bpXp').textContent=max?L.bpMax:L.bpXp(into,BP_XP);
   $('bpBar').style.width=(max?100:into/BP_XP*100)+'%';
+  { const bx=$('bpBox'); bx.hidden=!max; if(max){ const n=pass.boxes||0; $('bpBoxT').textContent=L.boxTitle; $('bpBoxS').textContent=L.boxNext(pass.bx||0,BOX_XP);
+      $('bpBoxBar').style.width=((pass.bx||0)/BOX_XP*100)+'%'; const ob=$('bpBoxOpen'); ob.disabled=!n; ob.textContent=n?L.boxOpen(n):L.boxNone;
+      ob.onclick=()=>{ const t=openBox(); if(!t) return; SFX.ach(); $('bpHint').textContent=L.boxGot(t); buildBp(); paintCoins(); }; } }
   const pb=$('bpPrem'); pb.disabled=pass.premium; pb.innerHTML=pass.premium?L.bpPremOwned:`${L.bpUnlock} · ${COIN_ICO}${BP_PRICE.toLocaleString(LANG)}`;
   const cell=(track,l)=>{ const r=(track==='p'?BP.prem:BP.free)[l-1], got=(track==='p'?pass.cp:pass.cf).includes(l), open=l<=lv&&(track==='f'||pass.premium);
     const st=got?'got':open?'ready':track==='p'&&!pass.premium?'prem':'lock';
