@@ -4014,11 +4014,9 @@ function exitSpectate(){
 }
 /* ---------- online play (needs the Loopclaim server: node server.js) ---------- */
 function netBase(){ if(NET.noServer){ if(Date.now()-(NET.noServerAt||0)<20000) return ''; NET.noServer=false; } try{ const q=new URLSearchParams(location.search).get('server'); if(q) return q; const s=localStorage.getItem('ttang-server'); if(s) return s; }catch(e){}
-  if(/claude\.ai|claudeusercontent|anthropic|ttang\.test/.test(location.host)) return '';
-  // our own server serves the page itself (Render, or a local copy); anywhere else (CrazyGames and its CDNs, other
-  // portals, a file someone saved) is just a copy of the page, so it plays on the Render server
-  if(/^https?:$/.test(location.protocol)&&/onrender\.com$|^localhost(:\d+)?$|^127\.0\.0\.1(:\d+)?$/.test(location.host)) return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws';
-  return 'wss://loopclaim-io.onrender.com/ws'; }
+  if(/crazygames|poki|gamedistribution|itch\.io|itch\.zone/.test(location.host)) return 'wss://loopclaim-io.onrender.com/ws';   // game portals host only the page; play on our server
+  if(!/^https?:$/.test(location.protocol)||/claude\.ai|claudeusercontent|anthropic|ttang\.test/.test(location.host)) return '';
+  return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws'; }
 function netURL(){ return netBase(); }
 try{ if(/[?&]debug=1/.test(location.search)){ window.__lc=()=>({me,players,owner,trail,N,NET,lands,mode,snow});
 } }catch(e){}
