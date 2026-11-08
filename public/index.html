@@ -3929,6 +3929,7 @@ function exitSpectate(){
 }
 /* ---------- online play (needs the Loopclaim server: node server.js) ---------- */
 function netBase(){ if(NET.noServer) return ''; try{ const q=new URLSearchParams(location.search).get('server'); if(q) return q; const s=localStorage.getItem('ttang-server'); if(s) return s; }catch(e){}
+  if(/crazygames|poki|gamedistribution|itch\.io|itch\.zone/.test(location.host)) return 'wss://loopclaim-io.onrender.com/ws';   // game portals host only the page; play on our server
   if(!/^https?:$/.test(location.protocol)||/claude\.ai|claudeusercontent|anthropic|ttang\.test/.test(location.host)) return '';
   return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws'; }
 function netURL(){ return netBase(); }
