@@ -1698,14 +1698,14 @@ function makeMode(k){
 const descOf=k=>{ let on=false; try{ on=k==='normal'&&netCan(k); }catch(e){} return on?MODES.online.desc(makeMode('online')):MODES[k].desc(makeMode(k)); };
 const NAMES=['WhyBroWhy','SorryNotSorry','JustAFriend','DontTellMom','LastPlayer','MoveAside','ButterChicken','JustPeace','NoCursing','SwordOfWins','HappySad','SeaBreeze','SeasickClub','HeartDaydream','BestLuck','PrettyGhost','SoloKing','ShadowFighter','LoneBoy','PlayingAs4','QuackQuack','HonestlyGood','DontMissIt','OverHere','RisingChamp','NoWorkToday','SchoolKids','HotHP','CatButler','FailedMyTest','WantToGoHome','3amVibes','SpicyRiceCake','NoMoreClass','ChipLover','SleepyBear','Gonna1st','BeGentle','zl_Swordsman','ImNew','GameBoy','GameGirl','MidnightSnack','MondayBlues','CupNoodle','StrawberryMilk','o_O','o_o','*Starlight*','SkyBlue','Luna_02','Lucky_tsu','MoonBunny','CloudBread','Shadow','Void','Storm','Luna','Aura','Velvet','Aether','Onyx','Vesper','Cipher','Phantom','Echo','Nomad','Apex','Wraith','Drift','Quartz','Reverie','SoupAvenger','Mr_Salt','ToastyKnight','Captain_Snack','Lord_Ham','Bagel_Storm','Disco_Donkey','Officer_Crumb','Yogurt_Cannon','Pickle_Tactical','Cheese_Bandit','Squirrel_Patrol','nightkit','mossfox','paperkoi','redkettle','copperveil','halfsong','dustpath','hollowroot','kaiwolfsky','leobakes','noahdraws','samboards','miaforge','emmagamesim','noob123','GG_EZ','xXShadowXx','sleepy_cat','tired_student','mint_choco','lucky7','jiwoo_0412'];
 const BASE=['#ff7a2f','#14b47c','#a54be0','#e2ad00','#139fc0','#ea3d6f','#86c13a','#c41e3a','#8b5a3c','#ff85c8','#4a4f63','#7d8b23'];
-const ZDEFS=[{name:'Survivors',col:'#3d6bff'},{name:'Zombies',col:'#5f9e3a'}];
+const ZDEFS=[{name:'Survivors',col:'#3d6bff',pat:'shield'},{name:'Zombies',col:'#5f9e3a',pat:'goo'}];
 // Zombie balance: base values tuned by simulation, plus a small automatic nudge from your recent results
 const ZB={frac:.08,land:3,grace:45000,agg:.85,margin:2,time:180000};
 let zBal=0; try{ zBal=+(localStorage.getItem('ttang-zbal')||0)||0; }catch(e){}
 const zBalStep=()=>Math.max(-3,Math.min(3,Math.round(zBal)));
 const zStart=n=>Math.max(2,Math.round(n*ZB.frac));
 const zTimeNow=()=>Math.round(ZB.time*(1+.05*zBalStep())/1000)*1000;   // more time favours the zombies, less favours the survivors
-const TEAMDEFS=[{name:'Blue',col:'#3d6bff'},{name:'Red',col:'#e23b4a'},{name:'Green',col:'#1fae5b'},{name:'Yellow',col:'#e8a800'}];
+const TEAMDEFS=[{name:'Blue',col:'#3d6bff',pat:'wave'},{name:'Red',col:'#e23b4a',pat:'chevron'},{name:'Green',col:'#1fae5b',pat:'leaf'},{name:'Yellow',col:'#e8a800',pat:'star'}];
 const SPARE=['#5b8c99','#d4a373','#6d597a','#e76f51','#2a9d8f','#9c6644','#b5838d','#577590'];
 const SKINS=[
   {id:'basic',name:'Classic',col:'#3d6bff',deco:'',pat:''},
@@ -4158,9 +4158,8 @@ for(const b of $('speeds').children) b.onclick=()=>setSpeed(+b.dataset.s);
 function applySkin(sk){
   skin=sk; if(!me) return; me.skin=sk;
   if(mode.teams){ setColor(me,worldHasMe?teams[me.team-1].col:sk.col);
-    // my team wears my skin's pattern; the other teams each get a different one
-    const pool=ALL_PATS.filter(x=>x!==sk.pat).sort(()=>Math.random()-.5);
-    for(const t of teams){ t.pat=t.id===me.team?sk.pat:pool.shift(); t.fx=t.id===me.team?(sk.fx||''):''; } }
+    // every team has its own fixed pattern, whatever skins its players wear
+    const defs=mode.zombie?ZDEFS:TEAMDEFS; for(const t of teams){ t.pat=(defs[t.id-1]||{}).pat||''; t.fx=''; } }
   else {
     setColor(me,sk.col);
     if(worldHasMe) for(const b of players){ if(b===me||!b.isBot||cdist(b.col,sk.col)>=95) continue; pickBotSkin(b); }
