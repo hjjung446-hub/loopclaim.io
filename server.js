@@ -80,8 +80,7 @@ function lbHttp(req,res){
       const id=str(b.id,40), key=str(b.key,64); if(!/^[A-Za-z0-9_-]{8,40}$/.test(id)||key.length<16){ res.writeHead(400,H); return res.end('{}'); }
       const old=LB.get(id), hk=hashKey(key); if(old&&old.key!==hk){ res.writeHead(403,H); return res.end('{}'); }
       const rec=lbClean(b), low=rec.name.toLowerCase(), taken=new Set(); for(const [k,v] of LB) if(k!==id&&v.season===rec.season) taken.add(String(v.name).toLowerCase());
-      if(taken.has(low)&&isGuest(rec.name)){ const g=freeGuest(taken,rec.name.length-4); if(g) rec.name=g; }
-      if(taken.has(rec.name.toLowerCase())){ for(let n=2;n<1000;n++){ const sfx=String(n), nm=rec.name.slice(0,12-sfx.length)+sfx; if(!taken.has(nm.toLowerCase())){ rec.name=nm; break; } } }   // one name per player on the board
+      if(taken.has(low)){ for(let n=2;n<1000;n++){ const sfx=String(n), nm=rec.name.slice(0,12-sfx.length)+sfx; if(!taken.has(nm.toLowerCase())){ rec.name=nm; break; } } }   // one name per player on the board
       LB.set(id,{...rec,key:hk}); lbDirty=true; lbPrune(); res.writeHead(200,H); res.end('{"ok":1}'); });
     return; }
   res.writeHead(405,H); res.end('{}'); }
@@ -156,15 +155,11 @@ function pickRoom(cfg){ let best=null; for(const r of rooms){ if(r.cfg.key!==cfg
 function freeSlot(r){ for(let i=1;i<=r.cfg.max;i++) if(!r.slots[i]) return i; return 0; }
 // no two players in a room share a name: an AI with my name takes another one; another person with it, and I get a number
 function botName(used){ let nm; do nm=BOT_NAMES[rnd(BOT_NAMES.length)]+(Math.random()<.5?rnd(99):''); while(used.has(nm.toLowerCase())); return nm; }
-// a Guest number that's taken becomes a longer one: Guest123 → Guest4821 → Guest52917 … (still ≤ 12 characters)
-function freeGuest(used,digits){ for(let d=Math.max(4,digits);d<=7;d++){ const lo=10**(d-1); for(let t=0;t<40;t++){ const nm='Guest'+(lo+rnd(9*lo)); if(!used.has(nm.toLowerCase())) return nm; } } return null; }
-const isGuest=n=>/^guest\d+$/i.test(String(n));
 function uniqueName(r,name){
   const low=String(name).toLowerCase(), clash=r.slots.filter(q=>q&&q.name&&q.name.toLowerCase()===low);
   for(const b of clash) if(b.bot&&!b.boss){ const used=new Set(r.slots.filter(Boolean).map(q=>String(q.name).toLowerCase())); used.add(low); b.name=botName(used); r.ev.push({k:'meta',...meta(b)}); }
   const used=new Set(r.slots.filter(Boolean).map(q=>String(q.name).toLowerCase()));
   if(!used.has(low)) return name;
-  if(isGuest(name)){ const g=freeGuest(used,String(name).length-4); if(g) return g; }
   for(let n=2;n<1000;n++){ const sfx=String(n), nm=String(name).slice(0,12-sfx.length)+sfx; if(!used.has(nm.toLowerCase())) return nm; }
   return name; }
 function meta(p){ return {id:p.id,name:p.name,col:p.col,skin:p.skin,bot:!!p.bot,team:p.team,boss:!!p.boss,frame:p.frame||'',via:p.via||0}; }
