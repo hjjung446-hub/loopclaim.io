@@ -140,35 +140,63 @@ const canJoinNow=r=>!r.over&&!(r.cfg.survival&&Date.now()-r.t0>8000);
 const inb=(x,y)=>x>=0&&y>=0&&x<N&&y<N;
 function setO(r,c,v){ if(r.owner[c]!==v){ r.owner[c]=v; r.od.push(c,v); } }
 function setT(r,c,v){ if(r.trail[c]!==v){ r.trail[c]=v; r.td.push(c,v); } }
+// same spawn rules as the offline game (ttang.html spawnSpot), so a spot online is where it would be offline
 function spawnSpot(r,p){
-  if(r.cfg.duel){ const first=r.slots.find(Boolean)===p; return [first?10:N-11,Math.floor(N/2)+rnd(9)-4]; }
-  if(r.cfg.zombie&&p.team===2){ let own=0; for(let c=0;c<N*N&&own<9;c++) if(r.owner[c]===2) own++;
-    if(own<9){ // a horde with no land regroups in the quiet corner furthest from the survivors
-      const hum=r.slots.filter(q=>q&&q.alive&&q.team===1), m=8; let best=null,bv=-1;
-      for(const [cx,cy] of [[m,m],[N-1-m,m],[m,N-1-m],[N-1-m,N-1-m]]){ let near=N*2; for(const q of hum) near=Math.min(near,Math.abs(q.x-cx)+Math.abs(q.y-cy)); const v=near+Math.random()*3; if(v>bv){bv=v;best=[cx,cy];} }
-      return [best[0]+rnd(5)-2,best[1]+rnd(5)-2]; } }
-  const lo=r.lo+4, span=r.hi-r.lo-8;
-  if(r.cfg.teams||r.cfg.infect){ // back inside your team's land: deep in it (not a sliver at the edge), away from enemies and their tails
-    let best=null,bv=-1e9;
-    for(let t=0,seen=0;t<3000&&seen<60;t++){ const c=rnd(N*N); if(r.owner[c]!==p.team) continue; const x=c%N, y=(c/N)|0;
-      if(x<lo||y<lo||x>lo+span||y>lo+span) continue; seen++;
-      let inside=0, bad=0;
-      for(let dy=-3;dy<=3;dy++) for(let dx=-3;dx<=3;dx++){ const xx=x+dx, yy=y+dy; if(!inb(xx,yy)){ bad+=2; continue; } const k=xx+yy*N;
-        if(r.owner[k]===p.team) inside++; if(r.trail[k]) bad+=6; }
-      let v=inside-bad;
-      for(const q of r.slots){ if(!q||!q.alive||q===p) continue; const d=Math.abs(q.x-x)+Math.abs(q.y-y);
-        if(d<5) v-=40; else if(q.team!==p.team&&d<12) v-=(12-d)*3; }
-      if(v>bv){ bv=v; best=[x,y]; } }
-    if(best&&bv>10) return best; }
-  for(let t=0;t<300;t++){ const x=lo+rnd(Math.max(1,span)), y=lo+rnd(Math.max(1,span)); let bad=0;
-    for(let dy=-3;dy<=3&&bad<3;dy++) for(let dx=-3;dx<=3;dx++){ const c=(x+dx)+(y+dy)*N; if(r.trail[c]) bad+=9; else if(r.owner[c]&&r.owner[c]!==p.team) bad++; }
-    if(bad>=3) continue;
-    if(r.slots.some(q=>q&&q.alive&&Math.abs(q.x-x)+Math.abs(q.y-y)<(t<200?12:6))) continue;
-    return [x,y]; }
-  return [lo+rnd(Math.max(1,span)),lo+rnd(Math.max(1,span))]; }
+  const cfg=r.cfg, first=!p.spawned, ps=r.slots.filter(Boolean);
+  if(cfg.duel){ const left=r.slots.find(Boolean)===p; return [left?10:N-11,Math.floor(N/2)+rnd(9)-4]; }
+  const tm=cfg.teams||0, R=Math.floor(N/4)-6, cands=[], lo=r.lo, hi=r.hi;
+  const valid=(x,y)=>{ if(x<lo+4||y<lo+4||x>hi-4||y>hi-4) return false;
+    for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){ const c=(x+dx)+(y+dy)*N; if((r.owner[c]&&r.owner[c]!==p.team)||r.trail[c]) return false; }
+    for(const q of ps) if(q.alive&&q!==p&&q.team!==p.team&&Math.abs(q.x-x)+Math.abs(q.y-y)<8) return false;
+    return true; };
+  // 3-minute match: come back where you last stood on your own land, if it is still yours
+  if(cfg.time&&p.lastHome!=null&&r.owner[p.lastHome]===p.team){ const x=p.lastHome%N, y=(p.lastHome/N)|0;
+    if(x>=3&&y>=3&&x<=N-4&&y<=N-4&&!r.trail[p.lastHome]) return [x,y]; }
+  // zombies with no land left all regroup at one nest, in the quiet corner furthest from the survivors
+  if(cfg.zombie&&p.team===2&&!first){
+    let own=0; for(let c=0;c<N*N&&own<9;c++) if(r.owner[c]===2) own++;
+    if(own>=9) r.zNest=null;
+    else {
+      if(!r.zNest){ const m=6, span=Math.max(4,Math.floor(N*.12)), hum=ps.filter(q=>q.alive&&q.team!==2); let bv=-1e9;
+        for(const [cx,cy] of [[m,m],[N-1-m,m],[m,N-1-m],[N-1-m,N-1-m]]){
+          for(let t=0;t<30;t++){ const x=cx+(cx<N/2?1:-1)*rnd(span), y=cy+(cy<N/2?1:-1)*rnd(span); if(!valid(x,y)) continue;
+            let near=1e9; for(const q of hum) near=Math.min(near,Math.abs(q.x-x)+Math.abs(q.y-y));
+            const v=(near===1e9?N:near)+Math.random()*3; if(v>bv){ bv=v; r.zNest=[x,y]; } } }
+        if(!r.zNest){ for(let t=0;t<400&&!r.zNest;t++){ const x=4+rnd(N-8), y=4+rnd(N-8); if(valid(x,y)) r.zNest=[x,y]; } }
+        if(!r.zNest) r.zNest=[6,6]; }
+      for(let t=0;t<20;t++){ const x=r.zNest[0]+rnd(5)-2, y=r.zNest[1]+rnd(5)-2; if(x>=4&&y>=4&&x<=N-5&&y<=N-5&&!r.trail[x+y*N]) return [x,y]; }
+      return r.zNest; } }
+  // team modes (and Infection, 3-minute): come back inside your team's own land, in its main body, not on a stray island
+  if(tm||cfg.infect||cfg.time){
+    const own=[]; let mx=0,my=0;
+    for(let c=0;c<N*N;c++) if(r.owner[c]===p.team){ own.push(c); mx+=c%N; my+=(c/N)|0; }
+    if(own.length>=9){ mx/=own.length; my/=own.length; let best=null,bv=1e9;
+      for(let t=0;t<80;t++){ const c=own[rnd(own.length)], x=c%N, y=(c/N)|0;
+        if(x<3||y<3||x>N-4||y>N-4||r.trail[c]) continue;
+        let inside=0; for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++) if(r.owner[(x+dx)+(y+dy)*N]===p.team) inside++;
+        if(inside<18) continue;
+        if(ps.some(q=>q.alive&&q.team!==p.team&&Math.abs(q.x-x)+Math.abs(q.y-y)<6)) continue;
+        let v=Math.hypot(x-mx,y-my)*.5+Math.random()*8;
+        for(const q of ps) if(q!==p&&q.alive&&q.team===p.team&&Math.abs(q.x-x)+Math.abs(q.y-y)<4) v+=8;
+        if(v<bv){ bv=v; best=[x,y]; } }
+      if(best) return best; } }
+  // otherwise: each team starts in its own part of the map (quarters for 4 teams, halves for 2), everyone else anywhere,
+  // as far from others as possible and not right where you came back last time
+  for(let t=0;t<400&&cands.length<12;t++){ let x,y;
+    if(tm===2){ const q=p.team-1, cx=Math.floor(N/4+q*N/2), Ry=Math.floor(N/2)-8; x=cx-R+rnd(2*R+1); y=Math.floor(N/2)-Ry+rnd(2*Ry+1); }
+    else if(tm){ const q=p.team-1, cx=Math.floor(N/4+(q%2)*N/2), cy=Math.floor(N/4+Math.floor(q/2)*N/2); x=cx-R+rnd(2*R+1); y=cy-R+rnd(2*R+1); }
+    else { x=lo+4+rnd(Math.max(1,hi-lo-8)); y=lo+4+rnd(Math.max(1,hi-lo-8)); }
+    if(valid(x,y)) cands.push([x,y]); }
+  if(!cands.length) return [lo+4+rnd(Math.max(1,hi-lo-8)),lo+4+rnd(Math.max(1,hi-lo-8))];
+  let best=cands[0], bv=-1e9;
+  for(const [x,y] of cands){ let near=40; for(const q of ps) if(q.alive&&q!==p) near=Math.min(near,Math.abs(q.x-x)+Math.abs(q.y-y));
+    let v=near+Math.random()*6;
+    if(p.lastSpawn) v+=Math.min(30,Math.abs(p.lastSpawn[0]-x)+Math.abs(p.lastSpawn[1]-y))*.6;
+    if(v>bv){ bv=v; best=[x,y]; } }
+  return best; }
 function spawn(r,p){
   for(const c of p.trail) if(r.trail[c]===p.id) setT(r,c,0);
-  const [sx,sy]=spawnSpot(r,p), SR=r.cfg.zombie&&p.team===2?3:2;
+  const [sx,sy]=spawnSpot(r,p); p.spawned=true; p.lastSpawn=[sx,sy]; const SR=r.cfg.zombie&&p.team===2?3:2;
   for(let dy=-SR;dy<=SR;dy++) for(let dx=-SR;dx<=SR;dx++){ const x=sx+dx,y=sy+dy; if(!inb(x,y)) continue; const c=x+y*N; setO(r,c,p.team); if(r.trail[c]) killTrailAt(r,c); if(r.gold[c]) goldSet(r,c,0); }
   Object.assign(p,{x:sx,y:sy,dir:rnd(4),alive:true,trail:[],exit:-1,kills:0,q:[],ai:brain(),nd:null,bornAt:Date.now(),respawnAt:0});
   if(r.cfg.duel) p.dir=sx<N/2?1:3;
@@ -362,7 +390,7 @@ function resetRound(r,keepDuel){
   for(const p of ps){ p.alive=false; p.trail=[]; p.kills=0; p.respawnAt=0; p.gold=0; p.hill=0; p.pts=0; p.bossHits=0;
     if(p.boss){ p.level=1; p.maxHp=2; p.hp=2; } }
   r.od=[]; r.td=[]; r.ev=[];
-  for(const p of ps) spawn(r,p);
+  r.zNest=null; for(const p of ps){ p.spawned=false; p.lastHome=null; p.lastSpawn=null; spawn(r,p); }
   modeInit(r);
   r.od=[]; r.td=[]; r.ev=[]; r.gd=[];
   const msg=JSON.stringify({t:'reset',...snapshot(r)}); for(const ws of r.clients) ws.send(msg); }
@@ -413,7 +441,7 @@ function step(r){
   for(const [p,c] of dead) die(r,p,c);
   for(const p of live){ if(!p.alive) continue;
     const px=p.x,py=p.y; p.x=p.nx; p.y=p.ny; const c=p.x+p.y*N;
-    if(r.owner[c]===p.team){ if(p.trail.length) capture(r,p); }
+    if(r.owner[c]===p.team){ p.lastHome=c; if(p.trail.length) capture(r,p); }
     else { if(!p.trail.length) p.exit=px+py*N; if(!r.trail[c]) setT(r,c,p.id); p.trail.push(c); } }
   const cnt=new Int32Array(cfg.max+1); for(let c=0;c<N*N;c++) cnt[r.owner[c]]++;
   for(const p of ps){ p.area=cnt[p.team]; if(p.alive&&p.area===0) die(r,p,{type:'lost'}); }
