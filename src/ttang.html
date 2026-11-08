@@ -5425,7 +5425,8 @@ function buildSkins(){
       b.onclick=()=>{ $('skinHint').innerHTML=L.tierLockLine(sk.name,tierName(sk.tier)); };
     } else if(!ok&&sk.secret){
       const lk=document.createElement('i'); lk.className='lockBadge'; lk.innerHTML=ICON_LOCK_S; b.append(lk);
-      t.textContent='???'; b.classList.add('secret'); { const g=c.getContext('2d'); g.globalCompositeOperation='source-atop'; g.fillStyle='#2c3142'; g.fillRect(0,0,c.width,c.height); g.globalCompositeOperation='source-over';
+      t.textContent='???'; b.classList.add('secret'); { const g=c.getContext('2d'); g.globalCompositeOperation='source-atop'; g.fillStyle=document.documentElement.dataset.theme==='dark'?'#5a6178':'#2c3142';   // a silhouette that still shows on the dark theme
+      g.fillRect(0,0,c.width,c.height); g.globalCompositeOperation='source-over';
         g.fillStyle='#fff'; g.font='bold 30px system-ui,sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('?',c.width/2,c.height/2-6); }
       b.setAttribute('aria-label',L.secretSkin); b.title=L.secretSkin;
       b.onclick=()=>{ $('skinHint').innerHTML=L.secretLine; };
