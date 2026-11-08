@@ -4240,7 +4240,8 @@ $('tutOpen').onclick=startTutorial;
 $('tutSkip').onclick=()=>{ $('tools').hidden=true; $('meBox').hidden=true; toMenu(); };
 paintTutBtn();
 
-$('startBtn').onclick=begin;
+const startFromMenu=()=>firstTime()?begin():againWithAd(begin);   // Play on the menu counts toward the between-games ad too
+$('startBtn').onclick=startFromMenu;
 paintWinter();
 // spaces in a nickname show as underscores, right as you type
 $('nameIn').addEventListener('input',e=>{ const el=e.target, v=el.value; if(!/\s/.test(v)) return; const pos=el.selectionStart; el.value=v.replace(/\s/g,'_'); try{ el.setSelectionRange(pos,pos); }catch(err){} });
@@ -4296,7 +4297,7 @@ addEventListener('keydown',e=>{
   if(settings.emotes!==false&&!card&&!start&&!$('tools').hidden&&/^Digit[1-9]$/.test(e.code)){ const em=myEmotes()[+e.code.slice(5)-1]; if(em){e.preventDefault();sendEmote(em);} return; }
   if(e.code in KEY){e.preventDefault();push(KEY[e.code]);return;}
   if(tag==='BUTTON') return;
-  if(e.code==='Space'||e.code==='Enter'){ if(card){e.preventDefault();$('againBtn').click();} else if(start){e.preventDefault();begin();} }
+  if(e.code==='Space'||e.code==='Enter'){ if(card){e.preventDefault();$('againBtn').click();} else if(start){e.preventDefault();startFromMenu();} }
 });
 let ts=null;
 addEventListener('touchstart',e=>{const t=e.touches[0];ts={x:t.clientX,y:t.clientY};},{passive:true});
