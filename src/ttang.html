@@ -489,8 +489,8 @@ body.xmas .xmasHat{display:block}
 .btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .keys{margin:0;font-size:12px;color:var(--muted);text-align:center}
 .keys .nw{display:inline-block;white-space:nowrap}
-/* phones: the start menu is taller than the screen, so Play (and Invite) stay pinned to the bottom while the rest scrolls */
-@media (max-width:640px),(max-width:859px) and (max-height:520px){
+/* single-column menu: it's taller than the screen, so Play (and Invite) stay pinned to the bottom while the rest scrolls */
+@media (max-width:859px){   /* every single-column menu (phones, foldables, tablets in portrait) */
   #startOv .card>.btns{position:sticky;bottom:-16px;z-index:2;margin:0 -10px;padding:8px 10px calc(24px + env(safe-area-inset-bottom,0px));background:var(--card);border-radius:16px 16px 0 0;box-shadow:0 -10px 14px -12px rgba(27,32,51,.3);grid-template-columns:1fr 1fr;gap:8px}
   #startOv .card>.btns>#startBtn,#startOv .card>.btns>.firstHint{grid-column:1/-1}
   #startOv .card>.btns>#startBtn{padding-top:11px;padding-bottom:11px}
