@@ -42,11 +42,51 @@ const BOT_NAMES=['Mochi','Pebble','Biscuit','Nova','Comet','Pixel','Waffle','Spr
 const BOT_SKINS=['basic','cat','frog','bunny','bear','flower','phones','sprout','penguin','fox','bee','panda','ladybug','mushroom','octopus','shark','hero','dino','fire','dragon','jelly','snowman','owl','cookie','slime','ninja','cool','wizard','robot','pirate'];
 const BOT_COLS=['#e8455a','#f2994a','#f2c94c','#6fcf97','#27ae60','#2d9cdb','#56ccf2','#9b51e0','#bb6bd9','#eb5793','#8d6e63','#4f5d75','#00b894','#e17055','#6c5ce7','#fd79a8'];
 
+/* ---------------- rankings ----------------
+   Players post their Ranked numbers here; everyone reads the top 100 for this week / this season.
+   Kept in memory and saved to a file (LB_FILE). On Render's free plan the disk is wiped on every deploy,
+   so the board starts over then; the week and season reset on their own anyway. */
+const LB_FILE=process.env.LB_FILE||path.join(__dirname,'lb.json');
+const LB=new Map();   // id -> record (with a hashed key so only its owner can update it)
+try{ const j=JSON.parse(fs.readFileSync(LB_FILE,'utf8')); for(const [k,v] of Object.entries(j)) LB.set(k,v); }catch(e){}
+let lbDirty=false; setInterval(()=>{ if(!lbDirty) return; lbDirty=false; try{ fs.writeFileSync(LB_FILE,JSON.stringify(Object.fromEntries(LB))); }catch(e){} },15000).unref();
+const LB_FRAMES=['gold','silver','bronze','rainbow','flame','ice','neon','champ','legend','diamond','immortal','cosmos'];
+const hashKey=k=>crypto.createHash('sha256').update(String(k)).digest('hex').slice(0,32);
+const curSeason=()=>{ const d=new Date(); return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0'); };
+const curWeek=()=>{ const d=new Date(), t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())), day=t.getUTCDay()||7;
+  t.setUTCDate(t.getUTCDate()+4-day); const y=t.getUTCFullYear(), w=Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7); return y+'-W'+String(w).padStart(2,'0'); };
+const int=(v,lo,hi)=>{ v=Math.round(Number(v)); return isFinite(v)?Math.max(lo,Math.min(hi,v)):lo; };
+const str=(v,n)=>typeof v==='string'?v.replace(/[\u0000-\u001f<>]/g,'').slice(0,n):'';
+function lbClean(b){   // only known fields, in range: the numbers come from the player's own browser
+  const pf=b.pf&&typeof b.pf==='object'?JSON.parse(JSON.stringify(b.pf)):null;
+  return {name:str(b.name,12)||'?',season:curSeason(),rp:int(b.rp,0,20000),tier:int(b.tier,0,20),games:int(b.games,0,1e6),wins:int(b.wins,0,1e6),
+    week:curWeek(),weekRp:b.week===curWeek()?int(b.weekRp,-5000,8000):0,skin:str(b.skin,24)||'basic',frame:LB_FRAMES.includes(b.frame)?b.frame:'',
+    title:str(b.title,24),t:Date.now(),pf:pf&&JSON.stringify(pf).length<=4000?pf:null}; }
+function lbPrune(){ if(LB.size<20000) return; const old=Date.now()-40*864e5; for(const [k,v] of LB) if(v.t<old) LB.delete(k); }
+const lbHits=new Map();   // ip -> [count, windowStart]
+function lbLimited(ip){ const now=Date.now(); let h=lbHits.get(ip); if(!h||now-h[1]>60000){ h=[0,now]; lbHits.set(ip,h); } return ++h[0]>30; }
+function lbHttp(req,res,u){
+  const H={'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'*','access-control-allow-headers':'content-type','access-control-allow-methods':'GET,POST,OPTIONS'};
+  if(req.method==='OPTIONS'){ res.writeHead(204,H); return res.end(); }
+  if(req.method==='GET'){ const q=new URL(req.url,'http://x').searchParams, week=q.get('by')==='week';
+    const rows=[]; for(const [id,v] of LB){ if(week?v.week===curWeek():v.season===curSeason()){ const {key,...r}=v; rows.push({id,...r}); } }
+    rows.sort((a,b)=>week?(b.weekRp-a.weekRp):(b.rp-a.rp)); res.writeHead(200,H); return res.end(JSON.stringify(rows.slice(0,100))); }
+  if(req.method==='POST'){ const ip=String(req.headers['x-forwarded-for']||req.socket.remoteAddress||'').split(',')[0].trim();
+    if(lbLimited(ip)){ res.writeHead(429,H); return res.end('{}'); }
+    let body=''; req.on('data',c=>{ body+=c; if(body.length>8000){ req.destroy(); } });
+    req.on('end',()=>{ let b; try{ b=JSON.parse(body); }catch(e){ res.writeHead(400,H); return res.end('{}'); }
+      const id=str(b.id,40), key=str(b.key,64); if(!/^[A-Za-z0-9_-]{8,40}$/.test(id)||key.length<16){ res.writeHead(400,H); return res.end('{}'); }
+      const old=LB.get(id), hk=hashKey(key); if(old&&old.key!==hk){ res.writeHead(403,H); return res.end('{}'); }
+      LB.set(id,{...lbClean(b),key:hk}); lbDirty=true; lbPrune(); res.writeHead(200,H); res.end('{"ok":1}'); });
+    return; }
+  res.writeHead(405,H); res.end('{}'); }
+
 /* ---------------- static files ---------------- */
 const PUB=path.join(__dirname,'public');
 const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon','.json':'application/json'};
 const server=http.createServer((req,res)=>{
   let u=decodeURIComponent((req.url||'/').split('?')[0]); if(u==='/') u='/index.html';
+  if(u==='/lb'){ lbHttp(req,res,u); return; }
   if(u==='/healthz'){ res.writeHead(200,{'content-type':'text/plain','cache-control':'no-store','access-control-allow-origin':'*'}); res.end('ok'); return; }
   if(u==='/health'){ res.writeHead(200,{'content-type':'text/plain'}); return res.end('ok '+rooms.length+' rooms'); }
   const f=path.normalize(path.join(PUB,u)); if(!f.startsWith(PUB)){ res.writeHead(403); return res.end(); }
@@ -478,7 +518,8 @@ function onConnect(ws){
     const now=Date.now(); tokens=Math.min(20,tokens+(now-last)/50); last=now; if(tokens<1) return; tokens--; if(room) N=room.N;
     if(m.t==='join'&&!me){
       const cfg=makeCfg(String(m.mode||'normal'),!!m.big,m.teams|0);
-      room=pickRoom(cfg); N=room.N;
+      const want=Number.isInteger(m.room)?rooms.find(r=>r.id===m.room&&r.cfg.key===cfg.key&&humans(r)<r.cfg.humans):null;   // a friend's invite link
+      room=want||pickRoom(cfg); N=room.N;
       if(!freeSlot(room)){ const b=room.slots.find(p=>p&&p.bot&&!p.boss); if(b) removePlayer(room,b); }   // a person takes an AI's seat
       me=addPlayer(room,{name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),frame:['gold','silver','bronze','rainbow','flame','ice','neon','champ','legend','diamond','immortal','cosmos'].includes(m.frame)?m.frame:'',ws});
       if(!me){ ws.send({t:'full'}); ws.close(); return; }

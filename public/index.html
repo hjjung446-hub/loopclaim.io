@@ -495,7 +495,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
   <div class="pct" id="mePct">0.0<small>%</small></div>
   <div class="sub" id="meSub">Kills 0 · 0s</div>
 </div>
-<div class="tools" id="tools" hidden><button class="quit" id="quitBtn" type="button">Quit</button><button class="quit sndBtn" type="button"></button><button class="quit emoBtn" id="emoBtn" type="button" aria-expanded="false">😀</button><div class="emoBar" id="emoBar" hidden></div></div>
+<div class="tools" id="tools" hidden><button class="quit" id="quitBtn" type="button">Quit</button><button class="quit sndBtn" type="button"></button><button class="quit" id="inviteBtn" type="button" hidden>Invite</button><button class="quit emoBtn" id="emoBtn" type="button" aria-expanded="false">😀</button><div class="emoBar" id="emoBar" hidden></div></div>
 <div class="dpad" id="dpad" hidden><button type="button" data-d="0" class="du" aria-label="Up">▲</button><button type="button" data-d="3" class="dl" aria-label="Left">◀</button><button type="button" data-d="1" class="dr" aria-label="Right">▶</button><button type="button" data-d="2" class="dd" aria-label="Down">▼</button></div>
 <div class="hud board"><h2 id="boardH">Leaderboard</h2><ol id="board"></ol></div>
 <div class="hud mini"><canvas id="mini" width="256" height="256" aria-label="Minimap"></canvas></div>
@@ -718,7 +718,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
    The game keeps using localStorage; every write of a game key is mirrored to the SDK, and on start the
    account's copy wins (the page reloads once if it brought different data). */
 (function cgSave(){ if(!/crazygames/.test(location.host)) return;
-  const KEYS=['ttang-ach','ttang-big','ttang-daily','ttang-duel','ttang-guest','ttang-mode','ttang-name','ttang-net','ttang-pass','ttang-prof','ttang-rank','ttang-settings','ttang-skin','ttang-teams','ttang-wallet','ttang-winter','ttang-zbal'];
+  const KEYS=['ttang-ach','ttang-big','ttang-daily','ttang-duel','ttang-guest','ttang-mode','ttang-name','ttang-net','ttang-pass','ttang-prof','ttang-rank','ttang-settings','ttang-skin','ttang-teams','ttang-wallet','ttang-winter','ttang-zbal','ttang-lbid'];
   const T='ttang-cgt';   // when this copy was last saved: the newer copy (this device or the account) wins on start
   let sdk=null, pendG=null;
   window.__cgGame=k=>{ if(sdk&&sdk.game){ try{ sdk.game[k](); }catch(e){} } else pendG=k; };   // gameplayStart / gameplayStop
@@ -734,6 +734,8 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     if(rt>lt){ for(const k of KEYS){ const rv=S.data.getItem(k), lv=g0.call(LS(),k); if(rv!=null&&rv!==lv){ s0.call(LS(),k,rv); changed=true; } } s0.call(LS(),T,String(rt)); }
     else { for(const k of KEYS){ const lv=g0.call(LS(),k); if(lv!=null&&S.data.getItem(k)!==lv) S.data.setItem(k,lv); } S.data.setItem(T,String(lt||Date.now())); }
     try{ const g=S.game; if(g&&g.settings&&window.__cgMute) window.__cgMute(!!g.settings.muteAudio); if(g&&g.addSettingsChangeListener) g.addSettingsChangeListener(st=>{ if(window.__cgMute) window.__cgMute(!!(st&&st.muteAudio)); }); }catch(e){}
+    try{ const g=S.game; if(g&&g.addJoinRoomListener) g.addJoinRoomListener(p=>{ if(window.__cgJoin) window.__cgJoin(p); });
+      setTimeout(()=>{ if(g&&g.inviteParams&&window.__cgJoin) window.__cgJoin(g.inviteParams); else if(g&&g.isInstantMultiplayer&&window.__cgInstant) window.__cgInstant(); },400); }catch(e){}
     sdk=S; if(pendG){ try{ S.game[pendG](); }catch(e){} pendG=null; }
     if(changed){ let again=false; try{ again=sessionStorage.getItem('cg-synced')==='1'; sessionStorage.setItem('cg-synced','1'); }catch(e){} if(!again) location.reload(); }
   }catch(e){} };
@@ -894,6 +896,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   duelRoundBy:n=>`${n} takes the round!`, duelWinner:n=>`${n} wins the duel!`,
   gotNew:"New skin!", gotWear:"Wear now", gotLater:"Later", bpOverClaim:n=>`Claim pass rewards (${n})`, weeklyLeft:d=>`${d}d left`,
   adDouble:g=>`Watch an ad · double coins (+${g})`, adGot:n=>`+${n} coins from the ad!`, adFail:"The ad didn't play. Try again later.",
+  invite:"Invite", inviteCopied:"Invite link copied! Send it to a friend to play in this room.", inviteJoin:"Joining your friend's room…", inviteManual:"Copy this invite link:",
   weeklyShort:"This week", weeklyTag:d=>`Weekly mode · ${d} day${d>1?"s":""} left`,
   bossBoardN:n=>`Boss points · ${n} players`, bossHitsN:n=>`${n} hits`, bossWin:n=>`Top raider with ${n} points!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} took the boss down! 👹 Lv.${l} incoming`:`The boss fell! Lv.${l} incoming`, bossDownT:"BOSS DOWN!", bossBack:l=>`It comes back at Lv.${l}`, bossHitFeed:(k,h,m)=>`${k} hit the boss! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`back in ${s}s`,
   youZombie:"YOU'RE A ZOMBIE!", youZombieSub:"Catch the survivors before time runs out", youBoss:"YOU'RE THE BOSS!", youBossSub:"Everyone is after you. Catch raiders for points (+10 each)", youBossTag:"Boss",
@@ -1012,6 +1015,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   duelRoundBy:n=>`¡${n} gana la ronda!`, duelWinner:n=>`¡${n} gana el duelo!`,
   gotNew:"¡Nuevo aspecto!", gotWear:"Usar ya", gotLater:"Luego", bpOverClaim:n=>`Recoger premios del pase (${n})`, weeklyLeft:d=>`quedan ${d} d`,
   adDouble:g=>`Ver un anuncio · monedas x2 (+${g})`, adGot:n=>`¡+${n} monedas del anuncio!`, adFail:"El anuncio no se reprodujo. Inténtalo más tarde.",
+  invite:"Invitar", inviteCopied:"¡Enlace copiado! Envíalo a un amigo para jugar en esta sala.", inviteJoin:"Entrando en la sala de tu amigo…", inviteManual:"Copia este enlace de invitación:",
   weeklyShort:"Semanal", weeklyTag:d=>`Modo de la semana · quedan ${d} día${d>1?"s":""}`,
   bossBoardN:n=>`Puntos de jefe · ${n} jugadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`¡Mejor asaltante con ${n} puntos!`, bossName:"JEFE", bossKO:"¡K.O.! +30", bossDownFeed:(k,l)=>k?`¡${k} derribó al jefe! 👹 Llega el nv. ${l}`:`¡El jefe cayó! Llega el nv. ${l}`, bossDownT:"¡JEFE DERROTADO!", bossBack:l=>`Vuelve en nv. ${l}`, bossHitFeed:(k,h,m)=>`¡${k} golpeó al jefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`vuelve en ${s} s`,
   youZombie:"¡ERES UN ZOMBI!", youZombieSub:"Atrapa a los supervivientes antes de que acabe el tiempo", youBoss:"¡ERES EL JEFE!", youBossSub:"Todos van a por ti. Atrapa asaltantes para sumar puntos (+10)", youBossTag:"Jefe",
@@ -1130,6 +1134,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   duelRoundBy:n=>`${n} vence a rodada!`, duelWinner:n=>`${n} vence o duelo!`,
   gotNew:"Novo visual!", gotWear:"Usar agora", gotLater:"Depois", bpOverClaim:n=>`Pegar prêmios do passe (${n})`, weeklyLeft:d=>`faltam ${d} d`,
   adDouble:g=>`Ver um anúncio · moedas x2 (+${g})`, adGot:n=>`+${n} moedas do anúncio!`, adFail:"O anúncio não rodou. Tente mais tarde.",
+  invite:"Convidar", inviteCopied:"Link copiado! Mande para um amigo jogar nesta sala.", inviteJoin:"Entrando na sala do seu amigo…", inviteManual:"Copie este link de convite:",
   weeklyShort:"Semanal", weeklyTag:d=>`Modo da semana · faltam ${d} dia${d>1?"s":""}`,
   bossBoardN:n=>`Pontos de chefe · ${n} jogadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`Melhor atacante com ${n} pontos!`, bossName:"CHEFE", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} derrubou o chefe! 👹 Vem aí o nv. ${l}`:`O chefe caiu! Vem aí o nv. ${l}`, bossDownT:"CHEFE DERROTADO!", bossBack:l=>`Ele volta no nv. ${l}`, bossHitFeed:(k,h,m)=>`${k} acertou o chefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`volta em ${s} s`,
   youZombie:"VOCÊ É UM ZUMBI!", youZombieSub:"Pegue os sobreviventes antes que o tempo acabe", youBoss:"VOCÊ É O CHEFE!", youBossSub:"Todos estão atrás de você. Pegue atacantes para ganhar pontos (+10)", youBossTag:"Chefe",
@@ -1248,6 +1253,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   duelRoundBy:n=>`${n} remporte la manche !`, duelWinner:n=>`${n} remporte le duel !`,
   gotNew:"Nouvelle apparence !", gotWear:"Porter", gotLater:"Plus tard", bpOverClaim:n=>`Récupérer les récompenses du passe (${n})`, weeklyLeft:d=>`encore ${d} j`,
   adDouble:g=>`Regarder une pub · pièces x2 (+${g})`, adGot:n=>`+${n} pièces grâce à la pub !`, adFail:"La pub ne s'est pas lancée. Réessaie plus tard.",
+  invite:"Inviter", inviteCopied:"Lien copié ! Envoie-le à un ami pour jouer dans ce salon.", inviteJoin:"Tu rejoins le salon de ton ami…", inviteManual:"Copie ce lien d'invitation :",
   weeklyShort:"Semaine", weeklyTag:d=>`Mode de la semaine · encore ${d} jour${d>1?"s":""}`,
   bossBoardN:n=>`Points boss · ${n} joueurs`, bossHitsN:n=>`${n} coups`, bossWin:n=>`Meilleur raider avec ${n} points !`, bossName:"BOSS", bossKO:"K.O. ! +30", bossDownFeed:(k,l)=>k?`${k} a terrassé le boss ! 👹 Niv. ${l} en approche`:`Le boss est tombé ! Niv. ${l} en approche`, bossDownT:"BOSS VAINCU !", bossBack:l=>`Il revient au niv. ${l}`, bossHitFeed:(k,h,m)=>`${k} a touché le boss ! ❤ ${h}/${m}`, bossLv:n=>`Niv. ${n}`, bossRespawn:s=>`revient dans ${s} s`,
   youZombie:"TU ES UN ZOMBIE !", youZombieSub:"Attrape les survivants avant la fin du temps", youBoss:"TU ES LE BOSS !", youBossSub:"Tout le monde te traque. Attrape des raiders pour marquer (+10)", youBossTag:"Boss",
@@ -1366,6 +1372,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   duelRoundBy:n=>`${n} holt die Runde!`, duelWinner:n=>`${n} gewinnt das Duell!`,
   gotNew:"Neuer Skin!", gotWear:"Jetzt tragen", gotLater:"Später", bpOverClaim:n=>`Pass-Belohnungen abholen (${n})`, weeklyLeft:d=>`noch ${d} T.`,
   adDouble:g=>`Werbung ansehen · Münzen x2 (+${g})`, adGot:n=>`+${n} Münzen durch die Werbung!`, adFail:"Die Werbung lief nicht. Versuch es später.",
+  invite:"Einladen", inviteCopied:"Link kopiert! Schick ihn einem Freund, um in diesem Raum zu spielen.", inviteJoin:"Du gehst in den Raum deines Freundes…", inviteManual:"Kopiere diesen Einladungslink:",
   weeklyShort:"Woche", weeklyTag:d=>`Wochenmodus · noch ${d} Tag${d>1?"e":""}`,
   bossBoardN:n=>`Bosspunkte · ${n} Spieler`, bossHitsN:n=>`${n} Treffer`, bossWin:n=>`Bester Raider mit ${n} Punkten!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} hat den Boss besiegt! 👹 St. ${l} kommt`:`Der Boss ist gefallen! St. ${l} kommt`, bossDownT:"BOSS BESIEGT!", bossBack:l=>`Er kommt auf St. ${l} zurück`, bossHitFeed:(k,h,m)=>`${k} hat den Boss getroffen! ❤ ${h}/${m}`, bossLv:n=>`St. ${n}`, bossRespawn:s=>`zurück in ${s} s`,
   youZombie:"DU BIST EIN ZOMBIE!", youZombieSub:"Fang die Überlebenden, bevor die Zeit abläuft", youBoss:"DU BIST DER BOSS!", youBossSub:"Alle jagen dich. Fang Raider für Punkte (+10)", youBossTag:"Boss",
@@ -1484,6 +1491,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   duelRoundBy:n=>`${n} 赢下本局！`, duelWinner:n=>`${n} 赢得决斗！`,
   gotNew:"新皮肤！", gotWear:"立即装备", gotLater:"稍后", bpOverClaim:n=>`领取通行证奖励（${n}）`, weeklyLeft:d=>`剩${d}天`,
   adDouble:g=>`看广告 · 金币翻倍（+${g}）`, adGot:n=>`广告奖励 +${n} 金币！`, adFail:"广告没有播放，请稍后再试。",
+  invite:"邀请", inviteCopied:"邀请链接已复制！发给朋友就能来这个房间一起玩。", inviteJoin:"正在进入朋友的房间…", inviteManual:"复制这个邀请链接：",
   weeklyShort:"本周", weeklyTag:d=>`本周模式 · 还剩 ${d} 天`,
   bossBoardN:n=>`首领分 · ${n} 名玩家`, bossHitsN:n=>`命中 ${n} 次`, bossWin:n=>`以 ${n} 分成为最强讨伐者！`, bossName:"首领", bossKO:"击倒！+30", bossDownFeed:(k,l)=>k?`${k} 击倒了首领！👹 ${l} 级即将来袭`:`首领倒下了！${l} 级即将来袭`, bossDownT:"首领被击倒！", bossBack:l=>`将以 ${l} 级复活`, bossHitFeed:(k,h,m)=>`${k} 击中了首领！❤ ${h}/${m}`, bossLv:n=>`${n} 级`, bossRespawn:s=>`${s} 秒后复活`,
   youZombie:"你是僵尸！", youZombieSub:"在时间结束前抓住幸存者", youBoss:"你是首领！", youBossSub:"所有人都在追你。抓住讨伐者得分（每个 +10）", youBossTag:"首领",
@@ -1602,6 +1610,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   duelRoundBy:n=>`${n}がラウンド獲得！`, duelWinner:n=>`${n}がデュエルに勝利！`,
   gotNew:"新しいスキン！", gotWear:"すぐ装備", gotLater:"あとで", bpOverClaim:n=>`パス報酬を受け取る（${n}）`, weeklyLeft:d=>`残り${d}日`,
   adDouble:g=>`広告を見てコイン2倍（+${g}）`, adGot:n=>`広告で +${n} コイン！`, adFail:"広告を再生できませんでした。あとで試してね。",
+  invite:"招待", inviteCopied:"招待リンクをコピーしました！友だちに送るとこの部屋で一緒に遊べます。", inviteJoin:"友だちの部屋に入ります…", inviteManual:"この招待リンクをコピーしてね：",
   weeklyShort:"今週", weeklyTag:d=>`今週のモード · 残り${d}日`,
   bossBoardN:n=>`ボスポイント · ${n}人`, bossHitsN:n=>`${n}ヒット`, bossWin:n=>`${n}ポイントでトップレイダー！`, bossName:"ボス", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}がボスを倒した！👹 Lv.${l}が来る`:`ボスが倒れた！Lv.${l}が来る`, bossDownT:"ボス撃破！", bossBack:l=>`Lv.${l}で復活`, bossHitFeed:(k,h,m)=>`${k}がボスにヒット！❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}秒後に復活`,
   youZombie:"きみはゾンビ！", youZombieSub:"時間内に生存者をつかまえよう", youBoss:"きみがボス！", youBossSub:"全員がきみを狙ってる。レイダーを倒してポイント（+10）", youBossTag:"ボス",
@@ -1720,6 +1729,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   duelRoundBy:n=>`${n} 라운드 승리!`, duelWinner:n=>`${n} 결투 승리!`,
   gotNew:"새 스킨!", gotWear:"바로 착용", gotLater:"나중에", bpOverClaim:n=>`패스 보상 받기 (${n})`, weeklyLeft:d=>`${d}일 남음`,
   adDouble:g=>`광고 보고 코인 2배 (+${g})`, adGot:n=>`광고 보상 +${n} 코인!`, adFail:"광고를 못 불러왔어요. 잠시 뒤에 다시 해보세요.",
+  invite:"초대", inviteCopied:"초대 링크를 복사했어요! 친구에게 보내면 이 방에서 같이 할 수 있어요.", inviteJoin:"친구 방으로 들어가요…", inviteManual:"이 초대 링크를 복사하세요:",
   weeklyShort:"주간", weeklyTag:d=>`이번 주 모드 · ${d}일 남음`,
   bossBoardN:n=>`보스 점수 · ${n}명`, bossHitsN:n=>`${n}번 공격`, bossWin:n=>`${n}점으로 최고의 공격대원!`, bossName:"보스", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}이(가) 보스를 쓰러뜨렸어요! 👹 Lv.${l} 등장 예정`:`보스가 쓰러졌어요! Lv.${l} 등장 예정`, bossDownT:"보스 처치!", bossBack:l=>`Lv.${l}로 돌아와요`, bossHitFeed:(k,h,m)=>`${k} 보스 공격! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}초 후 부활`,
   youZombie:"넌 좀비야!", youZombieSub:"시간 안에 생존자를 잡아요", youBoss:"넌 보스야!", youBossSub:"모두가 너를 노려요. 공격대를 잡으면 +10점", youBossTag:"보스",
@@ -2288,8 +2298,25 @@ async function postRank(){
   try{ await RK.db.collection('lb').doc(RK.uid).set(body); rank.posted=rank.games; rank.postedName=body.name; saveRank(); }
   catch(e){ if(e&&(e.code==='invalid_argument'||e.code==='transform_error')) RK.canPost=false; }
 }
+// on our own site (and game portals) the rankings live on the game server: same shape as the Claude store above
+function lbServer(http,key){ const q={by:'season'};
+  const col={ doc:id=>({ set:async body=>{ const r=await fetch(http+'/lb',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({id,key},body))}); if(!r.ok) throw {code:r.status===403||r.status===400?'invalid_argument':'http'}; } }),
+    where:(f,op,v)=>{ q.by=f==='week'?'week':'season'; return col; }, orderBy:()=>col, limit:()=>col,
+    onSnapshot:(cb,err)=>{ let stop=false; const by=q.by;
+      const pull=async()=>{ try{ const r=await fetch(http+'/lb?by='+by,{cache:'no-store'}); if(!r.ok) throw 0; const rows=await r.json(); if(!stop) cb({metadata:{fromCache:false},docs:(Array.isArray(rows)?rows:[]).map(d=>({id:String(d.id),data:()=>d}))}); }
+        catch(e){ if(!stop&&err) err(e); } };
+      pull(); const t=setInterval(pull,15000); return ()=>{ stop=true; clearInterval(t); }; } };
+  return { collection:()=>{ q.by='season'; return col; } }; }
+function lbServerInit(){ const b=netBase(); if(!b||!/^wss?:\/\//.test(b)) return false;
+  const http=b.replace(/^ws/,'http').replace(/\/ws(\?.*)?$/,'');
+  let me=null; try{ me=JSON.parse(localStorage.getItem('ttang-lbid')||'null'); }catch(e){}
+  const rid=n=>{ const a=new Uint8Array(n); crypto.getRandomValues(a); return Array.from(a,x=>'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[x%62]).join(''); };
+  if(!me||!me.id||!me.key){ me={id:rid(16),key:rid(28)}; try{ localStorage.setItem('ttang-lbid',JSON.stringify(me)); }catch(e){} }
+  RK.db=lbServer(http,me.key); RK.uid=me.id; RK.ready=true;
+  if(rank.games>0&&(rank.posted!==rank.games||rank.postedName!==String(myName).slice(0,12))) postRank();
+  if(!$('rkOv').hidden) rkSub(); return true; }
 (async()=>{ try{
-  if(!window.claude||typeof claude.use!=='function') return;
+  if(!window.claude||typeof claude.use!=='function'){ setTimeout(()=>{ try{ lbServerInit(); }catch(e){} },0); return; }
   const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
   RK.db=db||null; RK.uid=user?await user.id():null; RK.ready=true;
   if(user&&typeof user.can==='function'){ const c=await user.can('data.write'); if(c===false) RK.canPost=false; }
@@ -3959,7 +3986,7 @@ function netPlay(now){ const q=NET.q; if(!NET.buf) NET.buf=1;
     else { NET.playing=false; NET.under=(NET.under||0)+1; NET.underT=now;   // ran dry: hold a bit more from now on
       if(NET.buf<3) { NET.buf++; netLeadUpdate(); } } }
   if(NET.buf>1&&now-(NET.underT||0)>20000){ NET.buf--; NET.underT=now; } }   // smooth for a while: tighten again
-function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; if(ws) try{ ws.close(); }catch(e){} }
+function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; try{ $('inviteBtn').hidden=true; const S=window.__cgSDK; if(S&&S.game&&S.game.leftRoom) S.game.leftRoom(); }catch(e){} if(ws) try{ ws.close(); }catch(e){} }
 function netSkinId(){ return skin===PHOTO_SKIN||!skin?'basic':skin.id; }
 const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie','gold','hill','duel','boss'];
 let netWant=true; try{ netWant=localStorage.getItem('ttang-net')!=='off'; }catch(e){}
@@ -3978,7 +4005,7 @@ function netBegin(){
   const url=netURL(); if(!url){ toast(L.netNoServer); return; }
   let ws; try{ ws=new WebSocket(url); }catch(e){ toast(L.netFail); return; }
   NET.ws=ws; NET.state='connecting'; NET.q=[]; NET.leadAt=0; toast(L.netConnecting);
-  ws.onopen=()=>ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId(),frame:myFrame()||'',big:!!bigMap,mode:modeKey,teams:teamCount}));
+  ws.onopen=()=>{ const inv=NET.invite&&NET.invite.mode===modeKey?NET.invite.room:undefined; NET.invite=null; ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId(),frame:myFrame()||'',big:!!bigMap,mode:modeKey,teams:teamCount,room:inv})); };
   ws.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(err){ return; }
     if(m.t==='hello'){ netHello(m); netEnterUI(); if(m.wait) toast(mode.survival&&!m.over?L.netWaitRound:L.netNextRound); }
     else if(m.t==='reset'){ if(NET.state!=='on') return; NET.q=[]; netHello({...m,you:NET.you}); if($('startOv').hidden) netEnterUI(); }
@@ -4006,8 +4033,26 @@ function netDuelScore(s){ if(!duel) return; const g=id=>{ const r=(s||[]).find(x
 function netPlayer(m){ const sk=netSkinOf(m.skin,m.col), p=mkPlayer(m.id,m.name,sk.col,!!m.bot); p.skin=sk; p.netOn=true; p.team=m.team||m.id; p.frame=FRAME_COL[m.frame]?m.frame:null; netBossLook(p,m.boss);
   const tid=m.team||m.id; if(mode.infect&&(!lands[tid-1]||!lands[tid-1].name||!players.some(q=>q.team===tid))){ const t={id:tid,name:L.teamOf(m.name),area:0,pat:sk.pat||''}; setColor(t,sk.col); lands[tid-1]=t; }
   netTint(p); return p; }
+function inviteParams(){ return {room:String(NET.room),mode:modeKey,big:bigMap?'1':'',teams:modeKey==='team'?String(teamCount):''}; }
+function inviteLink(){ const p=inviteParams(), S=window.__cgSDK;
+  if(S&&S.game&&S.game.inviteLink){ try{ return S.game.inviteLink(p); }catch(e){} }
+  const u=new URL(location.href); u.search=''; u.hash=''; for(const k in p) if(p[k]) u.searchParams.set(k,p[k]); return u.toString(); }
+function paintInvite(){ const b=$('inviteBtn'); if(!b) return; b.textContent=L.invite; b.hidden=!(mode&&mode.online&&NET.state==='on'&&NET.room);
+  const S=window.__cgSDK; if(S&&S.game&&S.game.updateRoom){ try{ if(!b.hidden) S.game.updateRoom({roomId:modeKey+'-'+NET.room,isJoinable:true,inviteParams:inviteParams()}); }catch(e){} } }
+$('inviteBtn').onclick=async e=>{ e.stopPropagation(); const link=inviteLink();
+  try{ await navigator.clipboard.writeText(link); toast(L.inviteCopied); }catch(err){ toast(L.inviteManual+' '+link); } };
+// arriving from an invite (a ?room= link, or CrazyGames' invite / instant multiplayer): go straight into that room
+function joinInvite(p){ if(!p||!p.room) return; const k=String(p.mode||'normal'); if(!ONLINE_MODES.includes(k)||!MODES[k]) return;
+  const room=parseInt(p.room,10); if(!(room>0)) return;
+  NET.invite={room,mode:k}; netWant=true; bigMap=p.big==='1'; if(p.teams) teamCount=parseInt(p.teams,10)||teamCount;
+  if(mode&&mode.online&&NET.state!=='off'){ netClose(); }
+  setup(k); try{ buildModes(); }catch(e){}
+  settings.tutSeen=true; saveSettings(); toast(L.inviteJoin);
+  for(const id of ['startOv','overOv']) $(id).hidden=true; begin(); }
+window.__cgJoin=p=>{ try{ joinInvite(p); }catch(e){} };
+window.__cgInstant=()=>{ try{ if(!$('startOv').hidden&&!NET.invite){ settings.tutSeen=true; saveSettings(); netWant=true; if(!ONLINE_MODES.includes(modeKey)) setup('normal'); $('startOv').hidden=true; begin(); } }catch(e){} };
 function netHello(m){
-  NET.state='on'; NET.you=m.you; NET.room=m.room; NET.over=!!m.over; TICK=m.tick; N=m.N;
+  NET.state='on'; NET.you=m.you; NET.room=m.room; setTimeout(()=>{ try{ paintInvite(); }catch(e){} },0); NET.over=!!m.over; TICK=m.tick; N=m.N;
   mode={...makeMode(m.mode),online:true,N:m.N}; if(m.teams) mode.teams=m.teams; if(m.time) mode.time=m.time; if(m.zTime) mode.zTime=m.zTime; if(m.duelRound) DUEL_ROUND=m.duelRound;
   capT=new Float64Array(N*N); floats=[]; owner=b64u8(m.owner); trail=b64u8(m.trail); gold=m.gold?b64u8(m.gold):new Uint8Array(N*N); goldN=0; for(let c=0;c<N*N;c++) if(gold[c]) goldN++;
   snow=new Map(); hill=null; hillNext=null; boss=null; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
@@ -5509,6 +5554,10 @@ checkSeason(); bpCheckSeason(); dailyRoll(); paintDailyDot();
 // a new day can start while the page stays open
 setInterval(()=>{ if(daily&&daily.day!==dayKey()){ dailyRoll(); paintDailyDot(); if(!$('dailyOv').hidden) buildDaily(); } },60000);
 buildSkins(); paintSkinCur(); buildModes(); renderAch(); paintCoins();
+// opened from a friend's invite link (?room=…&mode=…): straight into their room (CrazyGames passes these through its SDK instead)
+try{ const q=new URLSearchParams(location.search); if(q.get('room')&&!/crazygames/.test(location.host)){ const p={room:q.get('room'),mode:q.get('mode'),big:q.get('big'),teams:q.get('teams')};
+  for(const k of ['room','mode','big','teams']) q.delete(k); history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
+  setTimeout(()=>joinInvite(p),300); } }catch(e){}
 if(bpNote) setTimeout(()=>achToast({id:'_bp',name:L.bpAuto(bpNote),label:L.bpTitle}),1600);
 try{ tourSettle(); paintTour(); }catch(e){}
 if(seasonNote){ const n=seasonNote; setTimeout(()=>achToast({id:'_season',name:L.seasonOver(tierName(n.tier),n.rp,n.pay),label:L.seasonDone}),900); }
