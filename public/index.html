@@ -63,6 +63,17 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .card>*{min-width:0}
 @media (max-width:440px){.cardTop{flex-wrap:wrap}.card{padding:22px 18px 20px}.cardTop h1{font-size:38px}.mode{font-size:15px;padding:10px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .card{margin:auto}
+/* PC: the start menu goes two columns so Play fits on a laptop screen without scrolling */
+@media (min-width:860px){
+  #startOv:not(.newbie) .card{max-width:800px;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);column-gap:28px;align-items:start}
+  #startOv:not(.newbie) .card>*{grid-column:1/-1}
+  #startOv:not(.newbie) .card>.fMode{grid-column:1;grid-row:5/span 5}
+  #startOv:not(.newbie) .card>.fName{grid-column:2;grid-row:5}
+  #startOv:not(.newbie) .card>.fSkin{grid-column:2;grid-row:6}
+  #startOv:not(.newbie) .card>.btns{grid-column:2;grid-row:7}
+  #startOv:not(.newbie) .card>.keys{grid-column:2;grid-row:8;margin-top:0;text-wrap:balance}
+  #startOv:not(.newbie) .card>.howBox{grid-row:4}
+}
 .skins{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
 .card.wide{max-width:600px}
 .skinNote{font-size:12.5px;color:var(--muted);padding-top:8px;text-align:right}
@@ -550,7 +561,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     </ul>
     <button class="tutBtn" id="tutOpen" type="button"><span>New here?</span> Try the tutorial →</button>
     </div>
-    <div class="field">
+    <div class="field fMode">
       <div class="modeHead"><label id="modeLbl">Mode</label>
       <div class="netSw" id="netRow" role="group" aria-label="Where to play" hidden>
         <button type="button" class="netOpt" id="net-on" aria-pressed="true">Online</button>
@@ -569,11 +580,11 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
       <p class="newbieNote" id="newbieNote" hidden></p>
       <div class="rankBox" id="rankBox" hidden></div>
     </div>
-    <div class="field">
+    <div class="field fName">
       <label for="nameIn">Your name</label>
       <input id="nameIn" type="text" maxlength="12" placeholder="You" autocomplete="off" spellcheck="false">
     </div>
-    <div class="field">
+    <div class="field fSkin">
       <div class="lblRow"><label for="skinOpen">Skin</label><span class="badges"><span class="coinBadge flakeBadge" id="flakeBadge" hidden><i aria-hidden="true">❄️</i><b id="flakeNum">0</b></span><span class="coinBadge" title="Your coins"><i class="coin" aria-hidden="true"></i><b class="coinNum">0</b></span></span></div>
       <button class="skinPick" id="skinOpen" type="button"><canvas id="skinCur" width="120" height="96"></canvas><span class="skinName" id="skinCurName"></span><span class="skinGo">Choose skin</span></button>
     </div>
