@@ -2621,7 +2621,8 @@ function bpCheckSeason(){ const cur=seasonKey(); if(!pass.season){ pass.season=c
   const n=bpClaimAll(); while(pass.boxes>0) openBox(); pass={season:cur,xp:0,premium:false,cf:[],cp:[],bx:0,boxes:0}; savePass(); bpNote=n; }
 function bpGain(win){
   if(!run||run.xpDone||spectating||mode.tutorial) return null; run.xpDone=true; bpCheckSeason();
-  const sec=(gt-run.t0)/1000, x=Math.min(120,Math.round(15+run.kills*5+run.best*1.5+Math.min(30,sec/6)+(win?25:0)));
+  // about half what it used to be: a quick game ~10 XP, a long good one ~40, at most 60
+  const sec=(gt-run.t0)/1000, x=Math.min(60,Math.round(8+run.kills*2.5+run.best*.75+Math.min(15,sec/12)+(win?12:0)));
   const after=bpAddXp(x);
   // daily missions that count finished games
   mission('games',1); mission('mode:'+modeKey,1); if(mode.ranked) mission('ranked',1); if(win) mission('win',1);
