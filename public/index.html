@@ -4158,8 +4158,8 @@ for(const b of $('speeds').children) b.onclick=()=>setSpeed(+b.dataset.s);
 function applySkin(sk){
   skin=sk; if(!me) return; me.skin=sk;
   if(mode.teams){ setColor(me,worldHasMe?teams[me.team-1].col:sk.col);
-    // every team has its own fixed pattern, whatever skins its players wear
-    const defs=mode.zombie?ZDEFS:TEAMDEFS; for(const t of teams){ t.pat=(defs[t.id-1]||{}).pat||''; t.fx=''; } }
+    // team lands are plain team colors, whatever skins the players wear
+    for(const t of teams){ t.pat=''; t.fx=''; } }
   else {
     setColor(me,sk.col);
     if(worldHasMe) for(const b of players){ if(b===me||!b.isBot||cdist(b.col,sk.col)>=95) continue; pickBotSkin(b); }
