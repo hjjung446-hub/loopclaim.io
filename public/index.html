@@ -4079,7 +4079,7 @@ function netEnterUI(){ $('startOv').hidden=true; $('overOv').hidden=true; $('toa
   if(mode.zombie) roleBanner();
   if(mode.duel&&duel) setTimeout(()=>{ if(duel&&mode.duel) streakBanner(L.duelRound(duel.round),duel.round>1?L.duelScore(duel.score[0],duel.score[1]):duel.b?L.duelVs(esc(duel.b.name)):''); },200); }
 const b64u8=s=>{ const b=atob(s), a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; };
-function netSkinOf(id,col){ const sk=SKINS.find(k=>k.id===id&&!k.secret)||SKINS[0]; return sk.id==='basic'?{...sk,col}:sk; }
+function netSkinOf(id,col){ const sk=SKINS.find(k=>k.id===id&&k.id!=='photo')||SKINS[0]; return sk.id==='basic'?{...sk,col}:sk; }
 function netDummy(id){ const o={id,name:'',area:0,pat:'',skin:null}; setColor(o,'#c8cdd8'); return o; }
 // land colour: your team's in Teams / Infection, your skin's otherwise
 function netTint(p){ if(p.boss){ setColor(p,BOSS_LOOK.col); p.trailCol='rgba(214,40,80,.85)'; return; } if(mode.teams||mode.infect){ const l=lands[p.team-1]; if(l) setColor(p,l.col); } else setColor(p,p.skin.col); }
