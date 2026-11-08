@@ -5148,7 +5148,7 @@ function drawSkinPreview(c,sk){
   drawHead(g,c.width/2,Y0-14,34,col,dark,1,sk.deco,sk);
 }
 function paintSkinCur(){ drawSkinPreview($('skinCur'),skin); $('skinCurName').textContent=skin.name; }
-function openSkins(){ $('startOv').hidden=true; $('skinOv').hidden=false; const b=$('skin-'+skin.id); if(b) b.focus(); }
+function openSkins(){ buildSkins(); $('startOv').hidden=true; $('skinOv').hidden=false; const b=$('skin-'+skin.id); if(b) b.focus(); }
 function closeSkins(){ $('skinOv').hidden=true; $('startOv').hidden=false; $('skinOpen').focus(); }
 $('skinOpen').onclick=openSkins; $('skinDone').onclick=closeSkins;
 const ICON_LOCK_S='<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="currentColor" stroke-width="2.6" fill="none"/></svg>';
