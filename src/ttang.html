@@ -3957,7 +3957,7 @@ function netBase(){ if(NET.noServer) return ''; try{ const q=new URLSearchParams
   if(!/^https?:$/.test(location.protocol)||/claude\.ai|claudeusercontent|anthropic|ttang\.test/.test(location.host)) return '';
   return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws'; }
 function netURL(){ return netBase(); }
-try{ if(/[?&]debug=1/.test(location.search)){ window.__lc=()=>({me,players,owner,trail,N,NET,lands,mode});
+try{ if(/[?&]debug=1/.test(location.search)){ window.__lc=()=>({me,players,owner,trail,N,NET,lands,mode,snow});
 } }catch(e){}
 function netSend(o){ if(NET.ws&&NET.ws.readyState===1) NET.ws.send(JSON.stringify(o)); }
 // jitter buffer: keep a tick or two in hand and play them out at a steady pace, speeding up or slowing down a little
@@ -4023,7 +4023,7 @@ function netHello(m){
   mode={...makeMode(m.mode),online:true,N:m.N}; if(m.teams) mode.teams=m.teams; if(m.time) mode.time=m.time; if(m.zTime) mode.zTime=m.zTime; if(m.duelRound) DUEL_ROUND=m.duelRound;
   capT=new Float64Array(N*N); floats=[]; owner=b64u8(m.owner); trail=b64u8(m.trail); gold=m.gold?b64u8(m.gold):new Uint8Array(N*N); goldN=0; for(let c=0;c<N*N;c++) if(gold[c]) goldN++;
   snow=new Map(); hill=null; hillNext=null; boss=null; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
-  off.width=off.height=N; img=ox2.createImageData(N,N); lo=m.lo||0; hi=m.hi!=null?m.hi:N-1; gt=m.g||0; ended=!!m.over; worldHasMe=true; paused=false; nextShrink=1e15;
+  off.width=off.height=N; img=ox2.createImageData(N,N); lo=m.lo||0; hi=m.hi!=null?m.hi:N-1; gt=m.g||0; snow.clear(); snowNext=0; ended=!!m.over; worldHasMe=true; paused=false; nextShrink=1e15;
   if(mode.teams){ teams=(mode.zombie?ZDEFS:TEAMDEFS).slice(0,mode.teams).map((t,i)=>{ const o={id:i+1,name:t.name,area:0}; setColor(o,t.col); return o; }); lands=teams; }
   else { lands=[]; for(let i=1;i<=Math.max(32,m.slots||32);i++) lands.push(netDummy(i)); teams=mode.infect?lands:[]; }
   players=[]; NET.byId=[];
@@ -4082,7 +4082,8 @@ function netPredFill(T,loop){
   const el=$('mePct'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
   if(me.skin&&me.skin.spark) passBurst(me,me.x+.5,me.y+.5,Math.min(9,2.5+Math.sqrt(got)/2),null); }
 function netApply(m){
-  gt=m.g!=null?m.g:gt+TICK; NET.tick++; const t0=performance.now(), dirty=new Set();
+  gt=m.g!=null?m.g:gt+TICK; NET.tick++; try{ snowTick(); }catch(e){}   // Winter Festival flakes online too (each player's own, like offline)
+  const t0=performance.now(), dirty=new Set();
   // a predicted capture the server never confirmed (we died first, say): put those cells back
   if(NET.predCap&&NET.tick-NET.predCap.tick>NET.lead+6){ const T=me&&me.team; for(const [c,o,t] of NET.predCap.cells){ if(owner[c]===T) owner[c]=o; if(!trail[c]&&t) trail[c]=t; } NET.predCap=null; }
   const predDone=NET.predCap&&m.e.some(e=>e.k==='cap'&&e.id===NET.you);
