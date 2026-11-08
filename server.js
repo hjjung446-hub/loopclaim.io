@@ -145,13 +145,15 @@ function spawnSpot(r,p){
   const cfg=r.cfg, first=!p.spawned, ps=r.slots.filter(Boolean);
   if(cfg.duel){ const left=r.slots.find(Boolean)===p; return [left?10:N-11,Math.floor(N/2)+rnd(9)-4]; }
   const tm=cfg.teams||0, R=Math.floor(N/4)-6, cands=[], lo=r.lo, hi=r.hi;
+  // the new home patch must not land on anyone's tail (online that would cut them, by nobody)
+  const clearAt=(x,y,k=3)=>{ for(let dy=-k;dy<=k;dy++) for(let dx=-k;dx<=k;dx++){ const xx=x+dx, yy=y+dy; if(inb(xx,yy)&&r.trail[xx+yy*N]) return false; } return true; };
   const valid=(x,y)=>{ if(x<lo+4||y<lo+4||x>hi-4||y>hi-4) return false;
     for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){ const c=(x+dx)+(y+dy)*N; if((r.owner[c]&&r.owner[c]!==p.team)||r.trail[c]) return false; }
     for(const q of ps) if(q.alive&&q!==p&&q.team!==p.team&&Math.abs(q.x-x)+Math.abs(q.y-y)<8) return false;
     return true; };
   // 3-minute match: come back where you last stood on your own land, if it is still yours
   if(cfg.time&&p.lastHome!=null&&r.owner[p.lastHome]===p.team){ const x=p.lastHome%N, y=(p.lastHome/N)|0;
-    if(x>=3&&y>=3&&x<=N-4&&y<=N-4&&!r.trail[p.lastHome]) return [x,y]; }
+    if(x>=3&&y>=3&&x<=N-4&&y<=N-4&&clearAt(x,y)) return [x,y]; }
   // zombies with no land left all regroup at one nest, in the quiet corner furthest from the survivors
   if(cfg.zombie&&p.team===2&&!first){
     let own=0; for(let c=0;c<N*N&&own<9;c++) if(r.owner[c]===2) own++;
@@ -164,7 +166,7 @@ function spawnSpot(r,p){
             const v=(near===1e9?N:near)+Math.random()*3; if(v>bv){ bv=v; r.zNest=[x,y]; } } }
         if(!r.zNest){ for(let t=0;t<400&&!r.zNest;t++){ const x=4+rnd(N-8), y=4+rnd(N-8); if(valid(x,y)) r.zNest=[x,y]; } }
         if(!r.zNest) r.zNest=[6,6]; }
-      for(let t=0;t<20;t++){ const x=r.zNest[0]+rnd(5)-2, y=r.zNest[1]+rnd(5)-2; if(x>=4&&y>=4&&x<=N-5&&y<=N-5&&!r.trail[x+y*N]) return [x,y]; }
+      for(let t=0;t<20;t++){ const x=r.zNest[0]+rnd(5)-2, y=r.zNest[1]+rnd(5)-2; if(x>=4&&y>=4&&x<=N-5&&y<=N-5&&clearAt(x,y,4)) return [x,y]; }
       return r.zNest; } }
   // team modes (and Infection, 3-minute): come back inside your team's own land, in its main body, not on a stray island
   if(tm||cfg.infect||cfg.time){
@@ -172,7 +174,7 @@ function spawnSpot(r,p){
     for(let c=0;c<N*N;c++) if(r.owner[c]===p.team){ own.push(c); mx+=c%N; my+=(c/N)|0; }
     if(own.length>=9){ mx/=own.length; my/=own.length; let best=null,bv=1e9;
       for(let t=0;t<80;t++){ const c=own[rnd(own.length)], x=c%N, y=(c/N)|0;
-        if(x<3||y<3||x>N-4||y>N-4||r.trail[c]) continue;
+        if(x<3||y<3||x>N-4||y>N-4||!clearAt(x,y)) continue;
         let inside=0; for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++) if(r.owner[(x+dx)+(y+dy)*N]===p.team) inside++;
         if(inside<18) continue;
         if(ps.some(q=>q.alive&&q.team!==p.team&&Math.abs(q.x-x)+Math.abs(q.y-y)<6)) continue;

@@ -2958,8 +2958,16 @@ function passBurst(p,x,y,size,cells){
     particles.push({x:px,y:py,vx:Math.cos(a)*v,vy:Math.sin(a)*v-(k==='night'||k==='champ'?.03:0)+(k==='sakura'?.01:0),life:1,col:k==='champ'&&i%3===0?hsl(Math.random()*360,85,60):colOf(),sz:k==='sakura'?.34:.24,round:k!=='champ'&&k!=='crystal'&&k!=='glitch'&&k!=='hacker',a:.95}); } }
 // battle-pass tails: Midnight a glowing night ribbon studded with twinkling stars, Sakura a pink ribbon with
 // blossoms along it, Aurora a ribbon whose colors flow from the head backwards
+// the cells a tail's line runs through (exit, then the tail up to the head). Online a teammate crossing our tail can
+// take a corner cell on the server's grid; put that corner back so the line never cuts a diagonal
+function tailPath(p){ const out=[p.exitCell], tc=p.trailCells;
+  for(let i=0;i<tc.length-1;i++){ const a=out[out.length-1], b=tc[i];
+    if(a!=null&&a>=0){ const ax=a%N, ay=(a/N)|0, bx=b%N, by=(b/N)|0;
+      if(ax!==bx&&ay!==by){ const c1=bx+ay*N, c2=ax+by*N; out.push(trail[c2]&&!trail[c1]?c2:c1); } }
+    out.push(b); }
+  return out; }
 function passTrail(p,pt,ip,ox,oy,S,tNow){
-  const k=p.skin.spark, pts=[pt(p.exitCell)]; for(let i=0;i<p.trailCells.length-1;i++) pts.push(pt(p.trailCells[i])); const [hx,hy]=ip(p); pts.push([ox+hx*S,oy+hy*S]);
+  const k=p.skin.spark, pts=tailPath(p).map(pt); const [hx,hy]=ip(p); pts.push([ox+hx*S,oy+hy*S]);
   const path=()=>{ ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]); };
   const t=tNow/1000; ctx.save(); ctx.lineCap='round'; ctx.lineJoin='round';
   if(k==='night'){ ctx.shadowColor='#9bb4ff'; ctx.shadowBlur=S*.7; ctx.strokeStyle='rgba(27,37,96,.85)'; ctx.lineWidth=S*.5; path(); ctx.stroke(); ctx.shadowBlur=0;
@@ -3799,7 +3807,7 @@ function updateHud(){
 }
 const ord=n=>L.ord(n);
 function deathMsg(c){
-  return {wall:L.dWall,self:mode.tron?L.dSelfTron:L.dSelf,wall2:L.dWall2(c.by),cut:L.dCut(c.by),land:L.dLand(c.by),head:L.dHead(c.by),
+  return {wall:L.dWall,self:mode.tron?L.dSelfTron:L.dSelf,wall2:L.dWall2(c.by),cut:c.by?L.dCut(c.by):L.dOut,land:c.by?L.dLand(c.by):L.dOut,head:c.by?L.dHead(c.by):L.dOut,
     zone:L.dZone,lost:mode.teams||mode.infect?L.dLostTeam:L.dLost}[c.type]||L.dOut;
 }
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2600); }
@@ -4020,6 +4028,13 @@ function netTurn(d){ if(!me||!me.alive) return;
   if(last&&last.at===at){ cur=last.d; at=(me.x+DX[cur])+(me.y+DY[cur])*N; if(!inb(me.x+DX[cur],me.y+DY[cur])) return; }
   if(d===cur||d===(cur+2)%4) return;
   NET.pend.push({d,at,tick:NET.tick}); netSend({t:'d',d,at}); netPredict(false); }
+// where a tail starts online: the cell of your own land the first tail cell stepped out of (not wherever the head
+// happened to be drawn when the server's first tail cell arrived, which is a few cells off with prediction / buffering)
+function netExit(p){ const tc=p.trailCells, f=tc[0]; if(f==null) return -1; const fx=f%N, fy=(f/N)|0;
+  let d=p.dir; if(tc.length>1){ const g=tc[1], gx=g%N, gy=(g/N)|0; d=gx>fx?1:gx<fx?3:gy>fy?2:0; }
+  const bx=fx-DX[d], by=fy-DY[d]; if(inb(bx,by)&&owner[bx+by*N]===p.team) return bx+by*N;
+  for(let k=0;k<4;k++){ const x=fx+DX[k], y=fy+DY[k]; if(inb(x,y)&&owner[x+y*N]===p.team&&!trail[x+y*N]) return x+y*N; }
+  return inb(bx,by)?bx+by*N:f; }
 function netPredict(stepped){ if(!me||!me.alive||me.sx==null){ return; }
   NET.pend=NET.pend.filter(t=>NET.tick-t.tick<=NET.lead+4);
   let x=me.sx,y=me.sy,d=me.sdir; const path=[], k=me.frozenUntil>gt?0:NET.lead;
@@ -4031,7 +4046,7 @@ function netPredict(stepped){ if(!me||!me.alive||me.sx==null){ return; }
   for(const c of path){ if(owner[c]===T){ if(out){ if(!back&&!NET.predCap) loop=tail.concat(extra); back=true; extra.length=0; out=false; } continue; } out=true; extra.push(c); }
   // our head is already back home ahead of the server: fill the loop now instead of waiting a round trip
   if(loop&&loop.length) netPredFill(T,loop);
-  me.trailCells=NET.predCap?extra.slice():tail.concat(extra); if(me.trailCells.length&&me.exitCell<0) me.exitCell=me.sx+me.sy*N; }
+  me.trailCells=NET.predCap?extra.slice():tail.concat(extra); me.exitCell=me.trailCells.length?netExit(me):-1; }
 function netPredFill(T,loop){
   const wall=new Uint8Array(N*N); let x0=N,y0=N,x1=-1,y1=-1;
   const grow=c=>{ const x=c%N,y=(c/N)|0; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; };
@@ -4084,7 +4099,7 @@ function netApply(m){
   const r=m.r; for(let i=0;i<r.length;i+=2){ const c=r[i], v=r[i+1], was=trail[c]; trail[c]=v;
     if(v){ const p=NET.byId[v]; if(p){ if(!p.trailCells.length) p.exitCell=p.px+p.py*N; p.trailCells.push(c); if(owner[c]&&owner[c]!==p.team) gnaw(p,c); } }
     else if(was) dirty.add(was); }
-  for(const id of dirty){ const p=NET.byId[id]; if(!p) continue; p.trailCells=p.trailCells.filter(c=>trail[c]===id); if(!p.trailCells.length) p.exitCell=-1; }
+  for(const id of dirty){ const p=NET.byId[id]; if(!p) continue; p.trailCells=p.trailCells.filter((c,i,a)=>trail[c]===id&&a.indexOf(c)===i); p.exitCell=p.trailCells.length?netExit(p):-1; }
   for(const e of m.e) if(e.k==='cap'){ const p=NET.byId[e.id], got=e.n; if(!p||!got) continue;
     if(p===me){ if(!predDone){ floats.push({x:p.x+.5,y:p.y,text:'+'+(got/N/N*100).toFixed(got/N/N<.001?2:1)+'%',t0,col:p.dark}); const el=$('mePct'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); SFX.capture(got); }
       if(run) run.cells=(run.cells||0)+got; mission('cells',got); mission('big',got); if(got>=100) unlock('bite'); if(got>=N*N*.05) unlock('feast'); }
@@ -5054,8 +5069,7 @@ function render(now){
   for(const p of players){ if((!p.alive&&!mode.tron)||!p.trailCells.length||p.exitCell<0) continue;
     if(!mode.tron&&p.skin&&p.skin.spark&&!p.skin.lite&&!REDUCED){ passTrail(p,pt,ip,ox,oy,S,tNow); continue; }
     ctx.strokeStyle=mode.tron?(p.alive?p.col:'rgba(120,126,146,.45)'):p.trailCol;ctx.beginPath();
-    const [sx,sy]=pt(p.exitCell);ctx.moveTo(sx,sy);
-    for(let i=0;i<p.trailCells.length-1;i++){const [x,y]=pt(p.trailCells[i]);ctx.lineTo(x,y);}
+    { const tp=tailPath(p); const [sx,sy]=pt(tp[0]); ctx.moveTo(sx,sy); for(let i=1;i<tp.length;i++){ const [x,y]=pt(tp[i]); ctx.lineTo(x,y); } }
     const [hx,hy]=ip(p);ctx.lineTo(ox+hx*S,oy+hy*S);ctx.stroke();
     const tp=!mode.tron&&!(mode.zombie&&p.team===2)&&skinPal(p.skin); if(tp&&tp.col2&&S>=6&&isSpecialSkin(tp)){ /* plain skins keep a plain tail */ const lw=ctx.lineWidth; ctx.lineWidth=lw*.34; ctx.strokeStyle=hexA(tp.col2,.85); ctx.stroke(); ctx.lineWidth=lw; } }
 
