@@ -734,14 +734,18 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
    account's copy wins (the page reloads once if it brought different data). */
 (function cgSave(){ if(!/crazygames/.test(location.host)) return;
   const KEYS=['ttang-ach','ttang-big','ttang-daily','ttang-duel','ttang-guest','ttang-mode','ttang-name','ttang-net','ttang-pass','ttang-prof','ttang-rank','ttang-settings','ttang-skin','ttang-teams','ttang-wallet','ttang-winter','ttang-zbal'];
-  let sdk=null; const P=Storage.prototype, s0=P.setItem, r0=P.removeItem;
-  const put=(k,v)=>{ if(!sdk||!KEYS.includes(k)) return; try{ v==null?sdk.data.removeItem(k):sdk.data.setItem(k,v); }catch(e){} };
-  P.setItem=function(k,v){ s0.call(this,k,v); try{ if(this===window.localStorage) put(k,String(v)); }catch(e){} };
-  P.removeItem=function(k){ r0.call(this,k); try{ if(this===window.localStorage) put(k,null); }catch(e){} };
+  const T='ttang-cgt';   // when this copy was last saved: the newer copy (this device or the account) wins on start
+  let sdk=null; const P=Storage.prototype, s0=P.setItem, r0=P.removeItem, g0=P.getItem;
+  const LS=()=>window.localStorage;
+  const put=(k,v)=>{ if(!KEYS.includes(k)) return; const now=String(Date.now()); try{ s0.call(LS(),T,now); }catch(e){}
+    if(!sdk) return; try{ v==null?sdk.data.removeItem(k):sdk.data.setItem(k,v); sdk.data.setItem(T,now); }catch(e){} };
+  P.setItem=function(k,v){ s0.call(this,k,v); try{ if(this===LS()) put(k,String(v)); }catch(e){} };
+  P.removeItem=function(k){ r0.call(this,k); try{ if(this===LS()) put(k,null); }catch(e){} };
   const sc=document.createElement('script'); sc.src='https://sdk.crazygames.com/crazygames-sdk-v3.js';
-  sc.onload=async()=>{ try{ const S=window.CrazyGames&&window.CrazyGames.SDK; if(!S) return; await S.init(); window.__cgSDK=S; let changed=false;
-    for(const k of KEYS){ const rv=S.data.getItem(k), lv=localStorage.getItem(k);
-      if(rv!=null&&rv!==lv){ s0.call(localStorage,k,rv); changed=true; } else if(rv==null&&lv!=null) S.data.setItem(k,lv); }
+  sc.onload=async()=>{ try{ const S=window.CrazyGames&&window.CrazyGames.SDK; if(!S) return; await S.init(); window.__cgSDK=S;
+    const rt=+(S.data.getItem(T)||0), lt=+(g0.call(LS(),T)||0); let changed=false;
+    if(rt>lt){ for(const k of KEYS){ const rv=S.data.getItem(k), lv=g0.call(LS(),k); if(rv!=null&&rv!==lv){ s0.call(LS(),k,rv); changed=true; } } s0.call(LS(),T,String(rt)); }
+    else { for(const k of KEYS){ const lv=g0.call(LS(),k); if(lv!=null&&S.data.getItem(k)!==lv) S.data.setItem(k,lv); } S.data.setItem(T,String(lt||Date.now())); }
     sdk=S;
     if(changed){ let again=false; try{ again=sessionStorage.getItem('cg-synced')==='1'; sessionStorage.setItem('cg-synced','1'); }catch(e){} if(!again) location.reload(); }
   }catch(e){} };
