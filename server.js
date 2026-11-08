@@ -21,7 +21,6 @@ const MODES={
   gold:    {N:100,fill:13,time:180000,auto:5000,gold:true},
   hill:    {N:100,fill:13,time:180000,auto:5000,hill:true},
   boss:    {N:100,fill:10,time:180000,auto:5000,boss:true},
-  snowball:{N:100,fill:13,time:180000,auto:5000,snowball:true},
   duel:    {N:44,fill:2,duel:true},
 };
 let DUEL_ROUND=90000;
@@ -46,18 +45,9 @@ const BOT_COLS=['#e8455a','#f2994a','#f2c94c','#6fcf97','#27ae60','#2d9cdb','#56
 /* ---------------- static files ---------------- */
 const PUB=path.join(__dirname,'public');
 const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon','.json':'application/json'};
-/* ---------------- regional servers ----------------
-   On Fly.io one app runs a copy in several regions. Players reach the nearest one automatically; ?region=xxx asks
-   Fly's proxy to replay the request to that region instead (fly-replay). REGIONS lists the picker, e.g.
-   "na:iad,sa:gru,eu:fra,asia:nrt,sea:sin,oc:syd,af:jnb". KR_URL can point at a separate server in Korea. */
-const HERE=process.env.FLY_REGION||'';
-const REGIONS=(process.env.REGIONS||'').split(',').map(x=>x.trim()).filter(Boolean).map(x=>{ const [id,code]=x.split(':'); return {id,code}; }).filter(r=>r.id&&/^[a-z]{3}$/.test(r.code||''));
-const wantRegion=url=>{ const m=/[?&]region=([a-z]{3})\b/.exec(url||''); return m&&HERE&&m[1]!==HERE&&REGIONS.some(r=>r.code===m[1])?m[1]:''; };
 const server=http.createServer((req,res)=>{
-  { const r=wantRegion(req.url); if(r){ res.writeHead(200,{'fly-replay':'region='+r,'cache-control':'no-store'}); return res.end(); } }
   let u=decodeURIComponent((req.url||'/').split('?')[0]); if(u==='/') u='/index.html';
-  if(u==='/healthz'){ res.writeHead(200,{'content-type':'text/plain','cache-control':'no-store','access-control-allow-origin':'*'}); res.end('ok '+HERE); return; }
-  if(u==='/regions'){ res.writeHead(200,{'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'*'}); return res.end(JSON.stringify({here:HERE,list:REGIONS,kr:process.env.KR_URL||''})); }
+  if(u==='/healthz'){ res.writeHead(200,{'content-type':'text/plain','cache-control':'no-store','access-control-allow-origin':'*'}); res.end('ok'); return; }
   if(u==='/health'){ res.writeHead(200,{'content-type':'text/plain'}); return res.end('ok '+rooms.length+' rooms'); }
   const f=path.normalize(path.join(PUB,u)); if(!f.startsWith(PUB)){ res.writeHead(403); return res.end(); }
   fs.readFile(f,(e,b)=>{ if(e){ res.writeHead(404); return res.end('not found'); }
@@ -66,7 +56,6 @@ const server=http.createServer((req,res)=>{
 
 /* ---------------- minimal WebSocket (RFC 6455) ---------------- */
 server.on('upgrade',(req,sock)=>{
-  { const r=wantRegion(req.url); if(r){ sock.end('HTTP/1.1 200 OK\r\nfly-replay: region='+r+'\r\nContent-Length: 0\r\n\r\n'); return; } }
   if((req.url||'').split('?')[0]!=='/ws'||req.headers.upgrade?.toLowerCase()!=='websocket'){ sock.destroy(); return; }
   const key=req.headers['sec-websocket-key']; if(!key){ sock.destroy(); return; }
   const acc=crypto.createHash('sha1').update(key+'258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest('base64');
@@ -109,13 +98,12 @@ const okSkin=s=>/^[a-z0-9]{1,16}$/i.test(s||'')?s:'basic';
 function makeRoom(cfg){ N=cfg.N; const r={id:++roomSeq,cfg,N,owner:new Uint8Array(N*N),trail:new Uint8Array(N*N),slots:new Array(cfg.max+1).fill(null),
   clients:new Set(),od:[],td:[],ev:[],tick:0,mark:new Int32Array(N*N),stamp:0,q:new Int32Array(N*N),mk:new Int32Array(N*N),bq:new Int32Array(N*N),dq:new Int32Array(N*N),st2:0,
   t0:Date.now(),lo:0,hi:N-1,nextShrink:0,over:0,started:false,
-  gold:new Uint8Array(N*N),goldN:0,gd:[],nextGold:0,piles:new Set(),pd:[],balls:[],duel:{score:{},round:1},dNext:0};
+  gold:new Uint8Array(N*N),goldN:0,gd:[],nextGold:0,duel:{score:{},round:1},dNext:0};
   r.timer=setInterval(()=>{ const t0=process.hrtime.bigint(); try{ step(r); }catch(e){ console.error(e); } if(PROF){ PROF.ms+=Number(process.hrtime.bigint()-t0)/1e6; PROF.n++; } },TICK); rooms.push(r); fillBots(r); modeInit(r); return r; }
 // the per-round extras of the EX modes
 function modeInit(r){ const c=r.cfg; N=r.N;
   if(c.gold){ r.gold.fill(0); r.goldN=0; r.nextGold=0; goldFill(r,true); r.gd=[]; }
   if(c.hill){ r.hillZ=Math.max(7,Math.round(N*.09)); r.hill={x:Math.floor((N-r.hillZ)/2),y:Math.floor((N-r.hillZ)/2)}; r.hillNext=null; r.hillMoveAt=HILL_EVERY; }
-  if(c.snowball){ r.piles.clear(); r.balls=[]; r.pd=[]; sbPileFill(r); r.pd=[]; }
   if(c.boss) ensureBoss(r); }
 function humans(r){ let n=0; for(const p of r.slots) if(p&&!p.bot) n++; return n; }
 function count(r){ let n=0; for(const p of r.slots) if(p) n++; return n; }
@@ -174,7 +162,7 @@ function spawn(r,p){
   for(const c of p.trail) if(r.trail[c]===p.id) setT(r,c,0);
   const [sx,sy]=spawnSpot(r,p), SR=r.cfg.zombie&&p.team===2?3:2;
   for(let dy=-SR;dy<=SR;dy++) for(let dx=-SR;dx<=SR;dx++){ const x=sx+dx,y=sy+dy; if(!inb(x,y)) continue; const c=x+y*N; setO(r,c,p.team); if(r.trail[c]) killTrailAt(r,c); if(r.gold[c]) goldSet(r,c,0); }
-  Object.assign(p,{x:sx,y:sy,dir:rnd(4),alive:true,trail:[],exit:-1,kills:0,q:[],ai:brain(),nd:null,bornAt:Date.now(),respawnAt:0,balls:0,frozenUntil:0,nextThrow:0});
+  Object.assign(p,{x:sx,y:sy,dir:rnd(4),alive:true,trail:[],exit:-1,kills:0,q:[],ai:brain(),nd:null,bornAt:Date.now(),respawnAt:0});
   if(r.cfg.duel) p.dir=sx<N/2?1:3;
   if(p.boss) p.ai=bossBrain(p);
   else if(r.cfg.boss) Object.assign(p.ai,{agg:Math.max(p.ai.agg,.85),range:26});
@@ -267,26 +255,6 @@ function bossDown(r,b,cause){ const by=b.lastBy?r.slots[b.lastBy]:cause.by?r.slo
   for(let c=0;c<N*N;c++) if(r.owner[c]===b.team) setO(r,c,0);
   b.level++; b.maxHp=Math.min(6,1+b.level); b.hp=b.maxHp; b.ai=bossBrain(b);
   r.ev.push({k:'bh',by:by?by.id:0,hp:b.hp,max:b.maxHp,lv:b.level,down:1}); }
-
-/* ---------------- Snowball Fight ---------------- */
-function sbPileFill(r){ const want=Math.round(N*N/260); let g=0;
-  while(r.piles.size<want&&g++<60){ const x=2+rnd(N-4), y=2+rnd(N-4), c=x+y*N; if(r.trail[c]||r.piles.has(c)) continue; if(r.slots.some(p=>p&&p.alive&&p.x===x&&p.y===y)) continue; r.piles.add(c); r.pd.push(c,1); } }
-function throwBall(r,p,now){ if(!p||!p.alive||!(p.balls>0)||p.frozenUntil>now||now<(p.nextThrow||0)) return false;
-  p.balls--; p.nextThrow=now+350; r.balls.push({x:p.x,y:p.y,px:p.x,py:p.y,dir:p.dir,by:p,left:13}); return true; }
-function sbTick(r,ps,now){
-  if(now>=(r.nextPile||0)){ r.nextPile=now+1000; sbPileFill(r); }
-  for(const p of ps){ if(!p.alive) continue; const c=p.x+p.y*N; if(r.piles.has(c)&&(p.balls||0)<3){ r.piles.delete(c); r.pd.push(c,0); p.balls=(p.balls||0)+1; } }
-  for(const p of ps){ if(!p.bot||!p.alive||!(p.balls>0)||p.frozenUntil>now||now<(p.nextThrow||0)) continue;
-    let x=p.x,y=p.y; for(let k=0;k<10;k++){ x+=DX[p.dir]; y+=DY[p.dir]; if(!inb(x,y)) break; const c=x+y*N, t=r.trail[c], q=t?r.slots[t]:null;
-      const tgt=(t&&t!==p.id&&q&&q.alive&&q.team!==p.team)||ps.some(o=>o!==p&&o.alive&&o.team!==p.team&&o.x===x&&o.y===y);
-      if(tgt){ if(Math.random()<.55) throwBall(r,p,now); else p.nextThrow=now+600; break; } } }
-  for(let i=r.balls.length-1;i>=0;i--){ const b=r.balls[i]; b.px=b.x; b.py=b.y; let gone=false;
-    for(let k=0;k<3&&!gone;k++){ b.x+=DX[b.dir]; b.y+=DY[b.dir]; b.left--;
-      if(!inb(b.x,b.y)||b.left<=0){ gone=true; break; }
-      const c=b.x+b.y*N, t=r.trail[c], tq=t?r.slots[t]:null;
-      const q=ps.find(q=>q!==b.by&&q.alive&&q.team!==b.by.team&&q.x===b.x&&q.y===b.y)||(t&&t!==b.by.id&&tq&&tq.alive&&tq.team!==b.by.team?tq:null);
-      if(q){ q.frozenUntil=now+1700; q.q=[]; r.ev.push({k:'sh',id:q.id,by:b.by.id}); gone=true; } }
-    if(gone){ r.ev.push({k:'sx',x:b.x,y:b.y}); r.balls.splice(i,1); } } }
 
 /* ---------------- 1v1 Duel ---------------- */
 function duelRound(r,w,timeUp){ const d=r.duel; if(w) d.score[w.id]=(d.score[w.id]||0)+1;
@@ -383,25 +351,24 @@ function resetRound(r,keepDuel){
   if(r.cfg.zombie) zAssign(r);
   else if(r.cfg.teams){ const sh=ps.slice().sort(()=>Math.random()-.5); sh.forEach((p,i)=>p.team=(i%r.cfg.teams)+1); }
   else for(const p of ps) p.team=p.id;
-  for(const p of ps){ p.alive=false; p.trail=[]; p.kills=0; p.respawnAt=0; p.gold=0; p.hill=0; p.pts=0; p.bossHits=0; p.balls=0; p.frozenUntil=0;
+  for(const p of ps){ p.alive=false; p.trail=[]; p.kills=0; p.respawnAt=0; p.gold=0; p.hill=0; p.pts=0; p.bossHits=0;
     if(p.boss){ p.level=1; p.maxHp=2; p.hp=2; } }
   r.od=[]; r.td=[]; r.ev=[];
   for(const p of ps) spawn(r,p);
   modeInit(r);
-  r.od=[]; r.td=[]; r.ev=[]; r.gd=[]; r.pd=[];
+  r.od=[]; r.td=[]; r.ev=[]; r.gd=[];
   const msg=JSON.stringify({t:'reset',...snapshot(r)}); for(const ws of r.clients) ws.send(msg); }
-function stat(r,p){ const c=r.cfg; return c.gold?p.gold||0:c.hill?Math.round((p.hill||0)*10):c.boss?p.pts||0:c.snowball?p.balls||0:0; }
+function stat(r,p){ const c=r.cfg; return c.gold?p.gold||0:c.hill?Math.round((p.hill||0)*10):c.boss?p.pts||0:0; }
 function extras(r,now){ const c=r.cfg, x={};
   if(c.hill) x.h=[r.hill.x,r.hill.y,r.hillNext?r.hillNext.x:-1,r.hillNext?r.hillNext.y:-1,r.hillMoveAt,r.hillZ];
   if(c.boss){ const b=bossOf(r); x.b=b?[b.id,b.hp,b.maxHp,b.level,b.alive?0:Math.max(0,b.respawnAt-now)]:0; }
-  if(c.snowball){ x.sb=r.balls.map(b=>[b.x,b.y,b.px,b.py,b.dir]); x.f=r.slots.filter(p=>p&&p.alive&&p.frozenUntil>now).map(p=>[p.id,p.frozenUntil-now]); }
   return x; }
 function snapshot(r){ const now=Date.now(), c=r.cfg;
   return {N:r.N,tick:TICK,room:r.id,slots:c.max,mode:c.mode,teams:c.teams||0,big:r.N>=200,g:now-r.t0,lo:r.lo,hi:r.hi,over:!!r.over,
   time:c.time||0,zTime:c.zTime||0,duelRound:DUEL_ROUND,
   players:r.slots.filter(Boolean).map(p=>({...meta(p),alive:p.alive,x:p.x,y:p.y,dir:p.dir,area:p.area,kills:p.kills,trail:p.trail,s:stat(r,p),bossHits:p.bossHits||0})),
   owner:Buffer.from(r.owner).toString('base64'),trail:Buffer.from(r.trail).toString('base64'),
-  gold:c.gold?Buffer.from(r.gold).toString('base64'):'',piles:c.snowball?[...r.piles]:[],
+  gold:c.gold?Buffer.from(r.gold).toString('base64'):'',
   duel:c.duel?{round:r.duel.round,s:Object.entries(r.duel.score).map(([k,v])=>[+k,v])}:0,
   ...extras(r,now)}; }
 
@@ -414,16 +381,14 @@ function step(r){
   for(const p of ps) if(!p.alive&&p.respawnAt&&now>=p.respawnAt){ p.respawnAt=0; spawn(r,p); }
   if(cfg.survival&&g>=r.nextShrink&&r.hi-r.lo>cfg.zoneMin){ shrinkZone(r); r.nextShrink=g+cfg.zoneEvery; }
   if(cfg.gold) goldFill(r,false);
-  const live=ps.filter(p=>p.alive), frozen=p=>p.frozenUntil>now;
+  const live=ps.filter(p=>p.alive);
   for(const p of live) if(p.trail.length) computeNav(r,p);
   for(const p of live){
-    if(frozen(p)){ p.nx=p.x; p.ny=p.y; p.q=[]; continue; }
     if(p.bot) botThink(r,p,live);
     else humanTurn(p);
     p.nx=p.x+DX[p.dir]; p.ny=p.y+DY[p.dir]; }
   const dead=new Map();
   for(const p of live){
-    if(frozen(p)) continue;
     if(!inb(p.nx,p.ny)){ dead.set(p,{type:'wall'}); continue; }
     const t=r.trail[p.nx+p.ny*N];
     if(t===p.id) dead.set(p,{type:'self'});
@@ -432,18 +397,16 @@ function step(r){
     if(a.team===b.team||Math.abs(a.x-b.x)+Math.abs(a.y-b.y)>2) continue;
     if(cfg.boss&&!a.boss&&!b.boss) continue;
     const same=(a.nx===b.nx&&a.ny===b.ny)||(a.nx===b.x&&a.ny===b.y&&b.nx===a.x&&b.ny===a.y); if(!same||!inb(a.nx,a.ny)) continue;
-    { const fa=frozen(a), fb=frozen(b); if(fa!==fb){ const v=fa?a:b, k=fa?b:a; if(!dead.has(v)){ dead.set(v,{type:'cut',by:k.id}); k.kills++; } continue; } }
     const o=r.owner[a.nx+a.ny*N];
     if(o===a.team){ if(!dead.has(b)){ dead.set(b,{type:'land',by:a.id}); a.kills++; } }
     else if(o===b.team){ if(!dead.has(a)){ dead.set(a,{type:'land',by:b.id}); b.kills++; } }
     else { if(!dead.has(a)) dead.set(a,{type:'head',by:b.id}); if(!dead.has(b)) dead.set(b,{type:'head',by:a.id}); } }
   if(cfg.boss) bossHits(r,dead);
   for(const [p,c] of dead) die(r,p,c);
-  for(const p of live){ if(!p.alive||frozen(p)) continue;
+  for(const p of live){ if(!p.alive) continue;
     const px=p.x,py=p.y; p.x=p.nx; p.y=p.ny; const c=p.x+p.y*N;
     if(r.owner[c]===p.team){ if(p.trail.length) capture(r,p); }
     else { if(!p.trail.length) p.exit=px+py*N; if(!r.trail[c]) setT(r,c,p.id); p.trail.push(c); } }
-  if(cfg.snowball) sbTick(r,ps,now);
   const cnt=new Int32Array(cfg.max+1); for(let c=0;c<N*N;c++) cnt[r.owner[c]]++;
   for(const p of ps){ p.area=cnt[p.team]; if(p.alive&&p.area===0) die(r,p,{type:'lost'}); }
   if(cfg.hill) hillTick(r,ps,g);
@@ -466,8 +429,8 @@ function step(r){
   else r.emptySince=0; }
 function send(r,ps,g){
   const msg=JSON.stringify({t:'t',n:r.tick,g,p:ps.filter(p=>p.alive).map(p=>[p.id,p.x,p.y,p.dir]),a:ps.map(p=>[p.id,p.area,p.kills,p.team,stat(r,p),p.bossHits||0]),o:r.od,r:r.td,e:r.ev,z:r.cfg.survival?[r.lo,r.hi]:0,
-    gd:r.gd.length?r.gd:undefined,pd:r.pd.length?r.pd:undefined,...extras(r,Date.now())});
-  r.od=[]; r.td=[]; r.ev=[]; r.gd=[]; r.pd=[];
+    gd:r.gd.length?r.gd:undefined,...extras(r,Date.now())});
+  r.od=[]; r.td=[]; r.ev=[]; r.gd=[];
   for(const ws of r.clients) ws.send(msg); }
 
 /* ---------------- connections ---------------- */
@@ -488,7 +451,6 @@ function onConnect(ws){
     else if(!me) return;
     else if(m.t==='d'){ const d=m.d|0, at=Number.isInteger(m.at)&&m.at>=0&&m.at<N*N?m.at:-1; if(d>=0&&d<4&&me.q.length<4) me.q.push({d,at}); }
     else if(m.t==='respawn'){ if(!me.alive&&!room.cfg.auto&&!room.cfg.duel&&canJoinNow(room)) spawn(room,me); }
-    else if(m.t==='throw'){ if(room.cfg.snowball) throwBall(room,me,now); }
     else if(m.t==='ping'){ ws.send({t:'pong',c:m.c}); }
     else if(m.t==='skin'){ me.skin=okSkin(m.skin); me.col=okCol(m.col); room.ev.push({k:'meta',...meta(me)}); }
   };

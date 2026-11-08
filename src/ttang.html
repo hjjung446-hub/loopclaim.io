@@ -17,7 +17,6 @@
   color-scheme:dark;
 }
 :root[data-theme="dark"] .card,:root[data-theme="dark"] .hud{box-shadow:0 8px 0 rgba(0,0,0,.35)}
-:root[data-theme="dark"] .ballHud{background:rgba(25,30,45,.92);color:#cfe0ff}
 :root[data-theme="dark"] .flakeBadge{background:#1f3557;color:#bfe0ff}
 :root[data-theme="dark"] .topBtns .cnt,:root[data-theme="dark"] .dailyBtn.hasDot::after{box-shadow:0 0 0 2px var(--card)}
 [hidden]{display:none!important}
@@ -234,12 +233,7 @@ body.padOn .achToast{bottom:auto;top:calc(160px + env(safe-area-inset-top,0px))}
 .wbIco{font-size:24px}.wbTxt{display:flex;flex-direction:column;flex:1;min-width:0}.wbTxt b{font-size:15px}.wbTxt small{font-size:12px;opacity:.92}
 .wbNum{font-weight:700;font-size:15px;background:rgba(255,255,255,.22);padding:4px 10px;border-radius:999px;white-space:nowrap}
 .flakeTag{background:#2a6fd6!important;color:#fff!important}
-.ballHud{position:fixed;z-index:4;left:50%;transform:translateX(-50%);top:calc(72px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;padding:8px 16px;border:0;border-radius:999px;
   background:rgba(255,255,255,.92);box-shadow:0 3px 0 rgba(27,32,51,.15);color:#1f3a6b;font:inherit;font-size:14px;cursor:pointer;touch-action:manipulation}
-.ballHud .bh{display:flex;gap:5px}.ballHud .bh i{width:16px;height:16px;border-radius:50%;background:#dfe6ef;box-shadow:inset 0 -2px 0 rgba(0,0,0,.08)}
-.ballHud .bh i.on{background:#fff;box-shadow:0 0 0 2px #9fd2ff,inset 0 -3px 0 #cfe3f7}
-.ballHud:disabled{opacity:.7;cursor:default}.ballHud.frozen{background:#cfeaff;color:#1d4f9c}
-@media (max-width:640px){.ballHud{top:auto;bottom:calc(330px + env(safe-area-inset-bottom,0px))}body:not(.padOn) .ballHud{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
 .dpad{position:fixed;z-index:3;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:4px;touch-action:none;user-select:none;-webkit-user-select:none}
 .tools[hidden]~.dpad{display:none!important}
 @media (max-width:640px){.dpad{bottom:calc(150px + env(safe-area-inset-bottom,0px));grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,50px)}}
@@ -350,10 +344,6 @@ body.xmas .xmasHat{display:block}
 .setMore[open]{padding-bottom:4px}
 .setMore .field{margin-bottom:12px}
 .setMore .size,.setMore .smallBtn{background:var(--card)}
-.regionRow{display:flex;align-items:center;gap:10px;margin:2px 0 8px}
-.regionRow label{flex:none;font-size:12.5px;font-weight:700;color:var(--muted)}
-.regionRow select{flex:1;min-width:0;font:inherit;font-size:13.5px;font-weight:700;color:var(--ink);background:var(--ground);border:0;border-radius:10px;padding:8px 10px}
-#startOv.newbie .regionRow{display:none!important}
 #startOv.newbie #modes,#startOv.newbie #sizeRow,#startOv.newbie #teamRow,#startOv.newbie #netRow,#startOv.newbie #rankBox,#startOv.newbie #watchStartBtn,#startOv.newbie #modeLbl,#startOv.newbie #modeDesc{display:none!important}
 .newbieNote{margin:2px 0 0;padding:8px 12px;border-radius:10px;background:var(--ground);font-size:12.5px;font-weight:700;color:var(--muted);text-align:center}
 .firstHint{margin:-2px 0 2px;text-align:center;font-size:12.5px;font-weight:700;color:var(--me)}
@@ -461,7 +451,16 @@ body.xmas .xmasHat{display:block}
 .rules{margin:0;padding:0;list-style:none;display:grid;gap:10px;font-size:14px;line-height:1.45}
 .rules li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
 .rules b{font-family:var(--display);font-weight:400;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--ground);color:var(--me);font-size:15px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stats>div:first-child{grid-column:1/-1;background:var(--me-soft,var(--ground));padding:12px 14px}
+.stats>div:first-child strong{font-size:44px;line-height:1;color:var(--me)}
+.stats>div:not(:first-child){padding:8px 12px;display:flex;justify-content:space-between;align-items:center}
+.stats>div:not(:first-child) span{font-size:12px}
+.stats>div:not(:first-child) strong{font-size:19px}
+.rewards{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rewards:not(:has(>:not([hidden]))){display:none}
+.rewards .coinGain,.rewards .bpGain{font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px}
+.rewards .coinGain b{font-size:15px}
 .stats div{background:var(--ground);border-radius:12px;padding:10px;display:grid;gap:2px}
 .stats span{font-size:11px;color:var(--muted)}
 .stats strong{font-family:var(--display);font-weight:400;font-size:24px;font-variant-numeric:tabular-nums}
@@ -481,7 +480,6 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
   <div class="sub" id="meSub">Kills 0 · 0s</div>
 </div>
 <div class="tools" id="tools" hidden><button class="quit" id="quitBtn" type="button">Quit</button><button class="quit sndBtn" type="button"></button><button class="quit emoBtn" id="emoBtn" type="button" aria-expanded="false">😀</button><div class="emoBar" id="emoBar" hidden></div></div>
-<button class="ballHud" id="ballHud" type="button" hidden></button>
 <div class="dpad" id="dpad" hidden><button type="button" data-d="0" class="du" aria-label="Up">▲</button><button type="button" data-d="3" class="dl" aria-label="Left">◀</button><button type="button" data-d="1" class="dr" aria-label="Right">▶</button><button type="button" data-d="2" class="dd" aria-label="Down">▼</button></div>
 <div class="hud board"><h2 id="boardH">Leaderboard</h2><ol id="board"></ol></div>
 <div class="hud mini"><canvas id="mini" width="256" height="256" aria-label="Minimap"></canvas></div>
@@ -539,7 +537,6 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
         <button type="button" class="netOpt" id="net-on" aria-pressed="true">Online</button>
         <button type="button" class="netOpt" id="net-off" aria-pressed="false">Offline</button>
       </div></div>
-      <div class="regionRow" id="regionRow" hidden><label id="regLbl" for="regionSel">Server</label><select id="regionSel"></select></div>
       <div class="modes" id="modes" role="group" aria-labelledby="modeLbl"></div>
       <div class="sizes" id="sizeRow" role="group" aria-label="Map size">
         <button type="button" class="size" id="size-normal" aria-pressed="true">Normal map</button>
@@ -685,14 +682,13 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     <h1 id="overTitle">You're out!</h1>
     <p class="lede" id="overCause"></p>
     <div class="rankRes" id="rankRes" hidden></div>
-    <p class="coinGain" id="coinGain" hidden></p>
-    <p class="bpGain" id="bpGain" hidden></p>
     <div class="stats" id="stats">
       <div><span id="stBestLbl">Best share</span><strong id="stBest">0%</strong></div>
       <div><span>Kills</span><strong id="stKills">0</strong></div>
       <div><span>Survived</span><strong id="stTime">0s</strong></div>
     </div>
     <ol class="res" id="resList" hidden></ol>
+    <div class="rewards"><p class="coinGain" id="coinGain" hidden></p><p class="bpGain" id="bpGain" hidden></p></div>
     <div class="btns">
       <button class="btn" id="againBtn" type="button">Play again</button>
       <button class="btn ghost" id="skinBtn" type="button">Change mode · skin</button>
@@ -725,7 +721,6 @@ const MODES={
     desc:m=>`A crown zone sits on a ${m.N}×${m.N} map. Every second you own part of it, you score, and it moves every minute. Highest score after 3 minutes wins.`},
   duel:{name:'1v1 Duel',N:44,bots:1,teams:0,duel:true,desc:m=>`One AI, one small ${m.N}×${m.N} map. First to win 2 rounds takes the duel, and every win makes the next opponent tougher.`},
   online:{name:'Online',hidden:true,N:100,bots:0,teams:0,online:true,desc:()=>'Play live with real people on one shared map. AI players fill the room when it is quiet.'},
-  snowball:{name:'Snowball Fight',N:100,bots:12,teams:0,time:180000,snowball:true,hidden:true,desc:m=>`Snow piles are scattered across a ${m.N}×${m.N} map. Run over them to grab snowballs (up to 3) and press Space to throw. A hit freezes the target for a moment, so go cut their tail! Biggest land after 3 minutes wins.`},
   boss:{name:'Boss Raid',N:100,bots:9,teams:0,time:180000,boss:true,desc:m=>`Everyone teams up against one giant boss. Cut its tail to land a hit, and every time it goes down it comes back stronger. Most boss points after 3 minutes wins.`},
   ranked:{name:'Ranked',N:100,bots:12,teams:0,time:180000,ranked:true,desc:()=>''},
   tutorial:{name:'Tutorial',N:40,bots:0,teams:0,tutorial:true,hidden:true,desc:()=>''}
@@ -745,7 +740,7 @@ const WINTER_END=Date.UTC(2027,0,16), winterOn=()=>Date.now()<WINTER_END;
 const winterDays=()=>Math.max(1,Math.ceil((WINTER_END-Date.now())/864e5));
 let winter={flakes:0,total:0}; try{ const v=JSON.parse(localStorage.getItem('ttang-winter')||'null'); if(v&&typeof v.flakes==='number') winter=Object.assign(winter,v); }catch(e){}
 const saveWinter=()=>{ try{localStorage.setItem('ttang-winter',JSON.stringify(winter));}catch(e){} };
-let snow=new Map(), snowNext=0, piles=new Map(), sballs=[];
+let snow=new Map(), snowNext=0;
 /* ---------- languages: every visible string lives here; the chosen language is applied once at load ---------- */
 const LANGS=[['en','English'],['es','Español'],['pt','Português'],['fr','Français'],['de','Deutsch'],['zh','中文'],['ja','日本語'],['ko','한국어']];
 const STR={};
@@ -764,10 +759,9 @@ STR.en={
   sound:"Sound", gameSpeed:"Game speed", aiPlayers:"AI players", reset:"Reset", language:"Language",
   outTitle:"You're out!", bestShare:"Best share", kills:"Kills", survived:"Survived", playAgain:"Play again", changeModeSkin:"Change mode · skin",
   on:"On", off:"Off", slow:"Slow", normal:"Normal", fast:"Fast", show:"Show", hide:"Hide",
-  modes:{online:"Online",snowball:"Snowball Fight",ranked:"Ranked",normal:"Classic",team:"Teams",survival:"Survival",infect:"Infection",timed:"3-Minute",boss:"Boss Raid",duel:"1v1 Duel",hill:"King of the Hill",gold:"Gold Rush",zombie:"Zombie",tutorial:"Tutorial"},
+  modes:{online:"Online",ranked:"Ranked",normal:"Classic",team:"Teams",survival:"Survival",infect:"Infection",timed:"3-Minute",boss:"Boss Raid",duel:"1v1 Duel",hill:"King of the Hill",gold:"Gold Rush",zombie:"Zombie",tutorial:"Tutorial"},
   modeDesc:{
 online:()=>"Play live with real people on one shared map. AI players fill the room when it's quiet. Get cut and you're out — then jump right back in.",
-snowball:m=>`Snow piles are scattered across a ${m.N}×${m.N} map. Run over them to grab snowballs (up to 3) and press Space or tap the button to throw. A hit freezes the target for a moment, so go cut their tail! Biggest land after 3 minutes wins.`,
 boss:m=>`Everyone teams up against one giant boss on a ${m.N}×${m.N} map. Cut its tail to land a hit (allies can't hurt each other), and every time it falls it comes back stronger. Most boss points after 3 minutes wins.`,
 duel:m=>`One AI, one small ${m.N}×${m.N} map. First to win 2 rounds takes the duel, and every win makes the next opponent tougher.`+(m.streak?` Win streak: ${m.streak}.`:""),
 hill:m=>`A crown zone sits on a ${m.N}×${m.N} map. Every second you own part of it you score points, and the zone moves every minute. Highest score after 3 minutes wins.`,
@@ -855,17 +849,14 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   pSeason:"Ranked this season", pNoGamesOther:"No recent games to show.", profileOf:n=>`View ${n}'s profile`,
   duelRound:n=>`Round ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Round won!", duelRoundLose:"Round lost", duelDraw:"Draw!", duelTimeUp:"Time's up", duelWinT:"Duel won!", duelLoseT:"Duel lost", duelLede:(s,b,w)=>w?`Win streak ${s} · best ${b}. The next opponent will be tougher.`:`Streak over. Best streak: ${b}.`,
   duelRoundBy:n=>`${n} takes the round!`, duelWinner:n=>`${n} wins the duel!`,
-  weeklyShort:"This week", weeklyTag:d=>`Weekly mode · ${d} day${d>1?"s":""} left`, exModes:"EX modes", exBack:"Main modes", exNote:"EX modes have special rules: Zombie, Gold Rush, King of the Hill, 1v1 Duel and Boss Raid.",
-  exShort:"Modes",
+  weeklyShort:"This week", weeklyTag:d=>`Weekly mode · ${d} day${d>1?"s":""} left`,
   bossBoardN:n=>`Boss points · ${n} players`, bossHitsN:n=>`${n} hits`, bossWin:n=>`Top raider with ${n} points!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} took the boss down! 👹 Lv.${l} incoming`:`The boss fell! Lv.${l} incoming`, bossDownT:"BOSS DOWN!", bossBack:l=>`It comes back at Lv.${l}`, bossHitFeed:(k,h,m)=>`${k} hit the boss! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`back in ${s}s`,
   youZombie:"YOU'RE A ZOMBIE!", youZombieSub:"Catch the survivors before time runs out", youBoss:"YOU'RE THE BOSS!", youBossSub:"Everyone is after you. Catch raiders for points (+10 each)", youBossTag:"Boss",
   zWiped:"The zombies' land was wiped off the map!", hWiped:"The survivors' land was wiped off the map!",
   dLand:b=>`You ran into ${b} head-first on their land.`,
   secretDesc:"Hidden badge — find it yourself", secretSkin:"Hidden skin", secretLine:"<b>???</b> · a hidden skin. Its unlock condition is a secret!",
   setMore:"More settings", fxLbl:"Effects & animation", arrowPad:"Arrow buttons", winterTitle:"Winter Festival", winterSub:d=>`Grab ❄️ on the map → limited skins · ${d} days left`, flakeGain:(n,t)=>`❄️ +${n} snowflakes · ${t} total`, flakeBuyLine:(n,p)=>`<b>${n}</b> skin · ❄️${p}`, flakeNeed:(n,p,k)=>`The <b>${n}</b> skin costs ❄️${p}. You need ${k} more snowflakes.`, winterHint:"❄️ Winter Festival skins! Collect snowflakes on the map to trade for them.",
-  sbThrow:"Throw (Space)", sbFrozenHud:"Frozen!", sbHit:"Hit! ❄️", sbFrozen:"Frozen! 🥶",
   newbieNote:n=>`More modes unlock after ${n} more game${n>1?"s":""}`, newbieOpen:"New modes unlocked! Try Teams, Survival, Ranked and more.", firstHint:"First time? A 1-minute tutorial starts first (you can skip it).", rulesBtn:"How to play", tutShort:"Tutorial →", theme:"Theme", themeLight:"Light", themeDark:"Dark", netConnecting:"Connecting…", netFail:"Couldn't reach the server.", netLost:"Lost the connection to the server.", netNoServer:"Online play needs the game server. Open the game from your server's address.", netFull:"The server is full. Try again in a moment.",
-  regLbl:"Server", regAuto:"Auto", regNames:{na:"North America (US East)",sa:"South America (Brazil)",eu:"Europe (Germany)",asia:"Asia (Japan)",sea:"Southeast Asia (Singapore)",oc:"Oceania (Australia)",af:"Africa (South Africa)",kr:"Korea"},
   playOnline:"Online", playOffline:"Offline", playWhere:"Where to play",
   netOffline:"Couldn't reach the server, so this is an offline game with AI.", netNextRound:"The next round starts in a moment.", netWaitRound:"No respawns in Survival — you'll join the next round.", langNote:"The page reloads to switch language."
 };
@@ -884,10 +875,9 @@ STR.es={
   sound:"Sonido", gameSpeed:"Velocidad del juego", aiPlayers:"Jugadores IA", reset:"Restablecer", language:"Idioma",
   outTitle:"¡Eliminado!", bestShare:"Mejor %", kills:"Bajas", survived:"Vivo", playAgain:"Jugar otra vez", changeModeSkin:"Cambiar modo · aspecto",
   on:"Sí", off:"No", slow:"Lenta", normal:"Normal", fast:"Rápida", show:"Mostrar", hide:"Ocultar",
-  modes:{online:"En línea",snowball:"Guerra de nieve",ranked:"Clasificatoria",normal:"Clásico",team:"Equipos",survival:"Supervivencia",infect:"Infección",timed:"3 minutos",boss:"Asalto al jefe",duel:"Duelo 1v1",hill:"Rey de la colina",gold:"Fiebre del oro",zombie:"Zombi",tutorial:"Tutorial"},
+  modes:{online:"En línea",ranked:"Clasificatoria",normal:"Clásico",team:"Equipos",survival:"Supervivencia",infect:"Infección",timed:"3 minutos",boss:"Asalto al jefe",duel:"Duelo 1v1",hill:"Rey de la colina",gold:"Fiebre del oro",zombie:"Zombi",tutorial:"Tutorial"},
   modeDesc:{
 online:()=>"Juega en vivo con personas reales en un mismo mapa. Si hay poca gente, la IA llena la sala. Si te cortan, quedas fuera, pero puedes volver enseguida.",
-snowball:m=>`Hay montones de nieve en un mapa de ${m.N}×${m.N}. Pasa por encima para coger bolas (hasta 3) y pulsa Espacio o el botón para lanzar. Un impacto congela al rival un momento: ¡córtale la cola! Gana quien tenga más territorio a los 3 minutos.`,
 boss:m=>`Todos contra un jefe gigante en un mapa de ${m.N}×${m.N}. Corta su cola para golpearlo (los aliados no se dañan entre sí), y cada vez que cae vuelve más fuerte. Gana quien tenga más puntos a los 3 minutos.`,
 duel:m=>`Una IA y un mapa pequeño de ${m.N}×${m.N}. Quien gane 2 rondas se lleva el duelo, y cada victoria hace más fuerte al siguiente rival.`+(m.streak?` Racha: ${m.streak}.`:""),
 hill:m=>`Hay una zona corona en un mapa de ${m.N}×${m.N}. Cada segundo que tengas parte de ella sumas puntos, y la zona se mueve cada minuto. Gana la puntuación más alta a los 3 minutos.`,
@@ -975,17 +965,14 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   pSeason:"Clasificatorias esta temporada", pNoGamesOther:"No hay partidas recientes.", profileOf:n=>`Ver el perfil de ${n}`,
   duelRound:n=>`Ronda ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"¡Ronda ganada!", duelRoundLose:"Ronda perdida", duelDraw:"¡Empate!", duelTimeUp:"Se acabó el tiempo", duelWinT:"¡Duelo ganado!", duelLoseT:"Duelo perdido", duelLede:(s,b,w)=>w?`Racha de ${s} · mejor ${b}. El siguiente rival será más duro.`:`Se acabó la racha. Mejor racha: ${b}.`,
   duelRoundBy:n=>`¡${n} gana la ronda!`, duelWinner:n=>`¡${n} gana el duelo!`,
-  weeklyShort:"Semanal", weeklyTag:d=>`Modo de la semana · quedan ${d} día${d>1?"s":""}`, exModes:"Modos EX", exBack:"Modos principales", exNote:"Los modos EX tienen reglas especiales: Zombi, Fiebre del oro, Rey de la colina, Duelo 1v1 y Asalto al jefe.",
-  exShort:"Modos",
+  weeklyShort:"Semanal", weeklyTag:d=>`Modo de la semana · quedan ${d} día${d>1?"s":""}`,
   bossBoardN:n=>`Puntos de jefe · ${n} jugadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`¡Mejor asaltante con ${n} puntos!`, bossName:"JEFE", bossKO:"¡K.O.! +30", bossDownFeed:(k,l)=>k?`¡${k} derribó al jefe! 👹 Llega el nv. ${l}`:`¡El jefe cayó! Llega el nv. ${l}`, bossDownT:"¡JEFE DERROTADO!", bossBack:l=>`Vuelve en nv. ${l}`, bossHitFeed:(k,h,m)=>`¡${k} golpeó al jefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`vuelve en ${s} s`,
   youZombie:"¡ERES UN ZOMBI!", youZombieSub:"Atrapa a los supervivientes antes de que acabe el tiempo", youBoss:"¡ERES EL JEFE!", youBossSub:"Todos van a por ti. Atrapa asaltantes para sumar puntos (+10)", youBossTag:"Jefe",
   zWiped:"¡El territorio zombi fue borrado del mapa!", hWiped:"¡El territorio de los supervivientes fue borrado del mapa!",
   dLand:b=>`Chocaste de frente con ${b} en su territorio.`,
   secretDesc:"Logro oculto: descúbrelo tú", secretSkin:"Aspecto oculto", secretLine:"<b>???</b> · un aspecto oculto. ¡Su condición es secreta!",
   setMore:"Más ajustes", fxLbl:"Efectos y animación", arrowPad:"Botones de flecha", winterTitle:"Festival de Invierno", winterSub:d=>`Atrapa ❄️ en el mapa → aspectos limitados · quedan ${d} días`, flakeGain:(n,t)=>`❄️ +${n} copos · ${t} en total`, flakeBuyLine:(n,p)=>`Aspecto <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> cuesta ❄️${p}. Te faltan ${k} copos.`, winterHint:"❄️ ¡Aspectos del Festival de Invierno! Junta copos en el mapa para canjearlos.",
-  sbThrow:"Lanzar (Espacio)", sbFrozenHud:"¡Congelado!", sbHit:"¡Impacto! ❄️", sbFrozen:"¡Congelado! 🥶",
   newbieNote:n=>`Más modos tras ${n} partida${n>1?"s":""} más`, newbieOpen:"¡Nuevos modos desbloqueados! Prueba Equipos, Supervivencia, Clasificatoria y más.", firstHint:"¿Primera vez? Antes empieza un tutorial de 1 minuto (puedes saltarlo).", rulesBtn:"Cómo jugar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Oscuro", netConnecting:"Conectando…", netFail:"No se pudo conectar al servidor.", netLost:"Se perdió la conexión con el servidor.", netNoServer:"El modo en línea necesita el servidor del juego. Abre el juego desde la dirección de tu servidor.", netFull:"El servidor está lleno. Inténtalo de nuevo en un momento.",
-  regLbl:"Servidor", regAuto:"Automático (el más cercano)", regNames:{na:"Norteamérica (EE. UU. este)",sa:"Sudamérica (Brasil)",eu:"Europa (Alemania)",asia:"Asia (Japón)",sea:"Sudeste asiático (Singapur)",oc:"Oceanía (Australia)",af:"África (Sudáfrica)",kr:"Corea"},
   playOnline:"En línea", playOffline:"Sin conexión", playWhere:"Dónde jugar",
   netOffline:"No se pudo conectar al servidor: partida sin conexión con IA.", netNextRound:"La próxima ronda empieza enseguida.", netWaitRound:"En Supervivencia no se reaparece: entrarás en la próxima ronda.", langNote:"La página se recarga para cambiar de idioma."
 };
@@ -1004,10 +991,9 @@ STR.pt={
   sound:"Som", gameSpeed:"Velocidade do jogo", aiPlayers:"Jogadores IA", reset:"Redefinir", language:"Idioma",
   outTitle:"Você saiu!", bestShare:"Melhor %", kills:"Abates", survived:"Vivo", playAgain:"Jogar de novo", changeModeSkin:"Mudar modo · visual",
   on:"Ligado", off:"Desligado", slow:"Lenta", normal:"Normal", fast:"Rápida", show:"Mostrar", hide:"Ocultar",
-  modes:{online:"Online",snowball:"Guerra de neve",ranked:"Ranqueada",normal:"Clássico",team:"Times",survival:"Sobrevivência",infect:"Infecção",timed:"3 minutos",boss:"Ataque ao chefe",duel:"Duelo 1x1",hill:"Rei da colina",gold:"Corrida do ouro",zombie:"Zumbi",tutorial:"Tutorial"},
+  modes:{online:"Online",ranked:"Ranqueada",normal:"Clássico",team:"Times",survival:"Sobrevivência",infect:"Infecção",timed:"3 minutos",boss:"Ataque ao chefe",duel:"Duelo 1x1",hill:"Rei da colina",gold:"Corrida do ouro",zombie:"Zumbi",tutorial:"Tutorial"},
   modeDesc:{
 online:()=>"Jogue ao vivo com pessoas reais no mesmo mapa. Quando há pouca gente, a IA completa a sala. Se cortarem você, está fora — mas pode voltar na hora.",
-snowball:m=>`Há montes de neve num mapa de ${m.N}×${m.N}. Passe por cima para pegar bolas (até 3) e aperte Espaço ou o botão para jogar. Um acerto congela o alvo por um instante: corte a cauda dele! Vence quem tiver mais território em 3 minutos.`,
 boss:m=>`Todos contra um chefe gigante num mapa de ${m.N}×${m.N}. Corte a cauda dele para acertar (aliados não se ferem), e cada vez que cai ele volta mais forte. Vence quem tiver mais pontos após 3 minutos.`,
 duel:m=>`Uma IA e um mapa pequeno de ${m.N}×${m.N}. Quem vencer 2 rodadas leva o duelo, e cada vitória deixa o próximo rival mais forte.`+(m.streak?` Sequência: ${m.streak}.`:""),
 hill:m=>`Há uma zona da coroa num mapa de ${m.N}×${m.N}. A cada segundo que você tiver parte dela, ganha pontos, e a zona muda a cada minuto. Vence a maior pontuação após 3 minutos.`,
@@ -1095,17 +1081,14 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   pSeason:"Ranqueadas nesta temporada", pNoGamesOther:"Sem partidas recentes.", profileOf:n=>`Ver o perfil de ${n}`,
   duelRound:n=>`Rodada ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Rodada vencida!", duelRoundLose:"Rodada perdida", duelDraw:"Empate!", duelTimeUp:"Acabou o tempo", duelWinT:"Duelo vencido!", duelLoseT:"Duelo perdido", duelLede:(s,b,w)=>w?`Sequência de ${s} · melhor ${b}. O próximo rival será mais forte.`:`Sequência encerrada. Melhor: ${b}.`,
   duelRoundBy:n=>`${n} vence a rodada!`, duelWinner:n=>`${n} vence o duelo!`,
-  weeklyShort:"Semanal", weeklyTag:d=>`Modo da semana · faltam ${d} dia${d>1?"s":""}`, exModes:"Modos EX", exBack:"Modos principais", exNote:"Os modos EX têm regras especiais: Zumbi, Corrida do ouro, Rei da colina, Duelo 1x1 e Ataque ao chefe.",
-  exShort:"Modos",
+  weeklyShort:"Semanal", weeklyTag:d=>`Modo da semana · faltam ${d} dia${d>1?"s":""}`,
   bossBoardN:n=>`Pontos de chefe · ${n} jogadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`Melhor atacante com ${n} pontos!`, bossName:"CHEFE", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} derrubou o chefe! 👹 Vem aí o nv. ${l}`:`O chefe caiu! Vem aí o nv. ${l}`, bossDownT:"CHEFE DERROTADO!", bossBack:l=>`Ele volta no nv. ${l}`, bossHitFeed:(k,h,m)=>`${k} acertou o chefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`volta em ${s} s`,
   youZombie:"VOCÊ É UM ZUMBI!", youZombieSub:"Pegue os sobreviventes antes que o tempo acabe", youBoss:"VOCÊ É O CHEFE!", youBossSub:"Todos estão atrás de você. Pegue atacantes para ganhar pontos (+10)", youBossTag:"Chefe",
   zWiped:"O território zumbi foi apagado do mapa!", hWiped:"O território dos sobreviventes foi apagado do mapa!",
   dLand:b=>`Você bateu de frente com ${b} no território dele.`,
   secretDesc:"Conquista oculta — descubra sozinho", secretSkin:"Visual oculto", secretLine:"<b>???</b> · um visual oculto. A condição é segredo!",
   setMore:"Mais configurações", fxLbl:"Efeitos e animação", arrowPad:"Botões de seta", winterTitle:"Festival de Inverno", winterSub:d=>`Pegue ❄️ no mapa → visuais limitados · faltam ${d} dias`, flakeGain:(n,t)=>`❄️ +${n} flocos · ${t} no total`, flakeBuyLine:(n,p)=>`Visual <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> custa ❄️${p}. Faltam ${k} flocos.`, winterHint:"❄️ Visuais do Festival de Inverno! Junte flocos no mapa para trocar.",
-  sbThrow:"Jogar (Espaço)", sbFrozenHud:"Congelado!", sbHit:"Acertou! ❄️", sbFrozen:"Congelado! 🥶",
   newbieNote:n=>`Mais modos após mais ${n} partida${n>1?"s":""}`, newbieOpen:"Novos modos liberados! Experimente Equipes, Sobrevivência, Ranqueada e mais.", firstHint:"Primeira vez? Antes começa um tutorial de 1 minuto (dá para pular).", rulesBtn:"Como jogar", tutShort:"Tutorial →", theme:"Tema", themeLight:"Claro", themeDark:"Escuro", netConnecting:"Conectando…", netFail:"Não foi possível conectar ao servidor.", netLost:"A conexão com o servidor caiu.", netNoServer:"O modo online precisa do servidor do jogo. Abra o jogo pelo endereço do seu servidor.", netFull:"O servidor está cheio. Tente de novo daqui a pouco.",
-  regLbl:"Servidor", regAuto:"Automático (mais próximo)", regNames:{na:"América do Norte (EUA leste)",sa:"América do Sul (Brasil)",eu:"Europa (Alemanha)",asia:"Ásia (Japão)",sea:"Sudeste Asiático (Singapura)",oc:"Oceania (Austrália)",af:"África (África do Sul)",kr:"Coreia"},
   playOnline:"Online", playOffline:"Offline", playWhere:"Onde jogar",
   netOffline:"Não deu para conectar ao servidor: partida offline com IA.", netNextRound:"A próxima rodada começa já já.", netWaitRound:"Na Sobrevivência não há renascimento: você entra na próxima rodada.", langNote:"A página recarrega para trocar o idioma."
 };
@@ -1124,10 +1107,9 @@ STR.fr={
   sound:"Son", gameSpeed:"Vitesse du jeu", aiPlayers:"Joueurs IA", reset:"Par défaut", language:"Langue",
   outTitle:"Éliminé !", bestShare:"Meilleur %", kills:"Coupes", survived:"Survie", playAgain:"Rejouer", changeModeSkin:"Changer mode · apparence",
   on:"Oui", off:"Non", slow:"Lente", normal:"Normale", fast:"Rapide", show:"Afficher", hide:"Masquer",
-  modes:{online:"En ligne",snowball:"Bataille de boules de neige",ranked:"Classé",normal:"Classique",team:"Équipes",survival:"Survie",infect:"Infection",timed:"3 minutes",boss:"Raid du boss",duel:"Duel 1v1",hill:"Roi de la colline",gold:"Ruée vers l'or",zombie:"Zombie",tutorial:"Tutoriel"},
+  modes:{online:"En ligne",ranked:"Classé",normal:"Classique",team:"Équipes",survival:"Survie",infect:"Infection",timed:"3 minutes",boss:"Raid du boss",duel:"Duel 1v1",hill:"Roi de la colline",gold:"Ruée vers l'or",zombie:"Zombie",tutorial:"Tutoriel"},
   modeDesc:{
 online:()=>"Joue en direct avec de vraies personnes sur une même carte. Quand il y a peu de monde, l'IA complète la salle. Si on te coupe, tu sors — puis tu reviens aussitôt.",
-snowball:m=>`Des tas de neige parsèment une carte de ${m.N}×${m.N}. Passe dessus pour prendre des boules (3 max) et appuie sur Espace ou le bouton pour lancer. Un tir gèle la cible un instant : coupe sa queue ! Le plus grand territoire après 3 minutes gagne.`,
 boss:m=>`Tout le monde contre un boss géant sur une carte de ${m.N}×${m.N}. Coupe sa queue pour le toucher (les alliés ne se blessent pas), et chaque fois qu'il tombe il revient plus fort. Le plus de points après 3 minutes gagne.`,
 duel:m=>`Une IA, une petite carte de ${m.N}×${m.N}. Le premier à 2 manches gagne le duel, et chaque victoire rend le prochain adversaire plus coriace.`+(m.streak?` Série : ${m.streak}.`:""),
 hill:m=>`Une zone couronne se trouve sur une carte de ${m.N}×${m.N}. Chaque seconde où tu en possèdes une partie te rapporte des points, et elle se déplace chaque minute. Le meilleur score après 3 minutes gagne.`,
@@ -1215,17 +1197,14 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   pSeason:"Classées cette saison", pNoGamesOther:"Aucune partie récente.", profileOf:n=>`Voir le profil de ${n}`,
   duelRound:n=>`Manche ${n}`, duelVs:n=>`contre ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Manche gagnée !", duelRoundLose:"Manche perdue", duelDraw:"Égalité !", duelTimeUp:"Temps écoulé", duelWinT:"Duel gagné !", duelLoseT:"Duel perdu", duelLede:(s,b,w)=>w?`Série de ${s} · record ${b}. Le prochain adversaire sera plus coriace.`:`Série terminée. Record : ${b}.`,
   duelRoundBy:n=>`${n} remporte la manche !`, duelWinner:n=>`${n} remporte le duel !`,
-  weeklyShort:"Semaine", weeklyTag:d=>`Mode de la semaine · encore ${d} jour${d>1?"s":""}`, exModes:"Modes EX", exBack:"Modes principaux", exNote:"Les modes EX ont des règles spéciales : Zombie, Ruée vers l'or, Roi de la colline, Duel 1v1 et Raid du boss.",
-  exShort:"Modes",
+  weeklyShort:"Semaine", weeklyTag:d=>`Mode de la semaine · encore ${d} jour${d>1?"s":""}`,
   bossBoardN:n=>`Points boss · ${n} joueurs`, bossHitsN:n=>`${n} coups`, bossWin:n=>`Meilleur raider avec ${n} points !`, bossName:"BOSS", bossKO:"K.O. ! +30", bossDownFeed:(k,l)=>k?`${k} a terrassé le boss ! 👹 Niv. ${l} en approche`:`Le boss est tombé ! Niv. ${l} en approche`, bossDownT:"BOSS VAINCU !", bossBack:l=>`Il revient au niv. ${l}`, bossHitFeed:(k,h,m)=>`${k} a touché le boss ! ❤ ${h}/${m}`, bossLv:n=>`Niv. ${n}`, bossRespawn:s=>`revient dans ${s} s`,
   youZombie:"TU ES UN ZOMBIE !", youZombieSub:"Attrape les survivants avant la fin du temps", youBoss:"TU ES LE BOSS !", youBossSub:"Tout le monde te traque. Attrape des raiders pour marquer (+10)", youBossTag:"Boss",
   zWiped:"Le territoire zombie a été rayé de la carte !", hWiped:"Le territoire des survivants a été rayé de la carte !",
   dLand:b=>`Tu as percuté ${b} de face sur son territoire.`,
   secretDesc:"Badge caché — à toi de le trouver", secretSkin:"Apparence cachée", secretLine:"<b>???</b> · une apparence cachée. Sa condition est secrète !",
   setMore:"Plus de réglages", fxLbl:"Effets et animations", arrowPad:"Boutons fléchés", winterTitle:"Festival d'hiver", winterSub:d=>`Attrape les ❄️ sur la carte → apparences limitées · encore ${d} j`, flakeGain:(n,t)=>`❄️ +${n} flocons · ${t} au total`, flakeBuyLine:(n,p)=>`Apparence <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> coûte ❄️${p}. Il te manque ${k} flocons.`, winterHint:"❄️ Apparences du Festival d'hiver ! Ramasse des flocons sur la carte pour les échanger.",
-  sbThrow:"Lancer (Espace)", sbFrozenHud:"Gelé !", sbHit:"Touché ! ❄️", sbFrozen:"Gelé ! 🥶",
   newbieNote:n=>`D'autres modes s'ouvrent après ${n} partie${n>1?"s":""} de plus`, newbieOpen:"Nouveaux modes débloqués ! Essaie Équipes, Survie, Classé et plus.", firstHint:"Première fois ? Un tutoriel d'1 minute commence d'abord (tu peux le passer).", rulesBtn:"Comment jouer", tutShort:"Tutoriel →", theme:"Thème", themeLight:"Clair", themeDark:"Sombre", netConnecting:"Connexion…", netFail:"Impossible de joindre le serveur.", netLost:"Connexion au serveur perdue.", netNoServer:"Le mode en ligne a besoin du serveur du jeu. Ouvre le jeu depuis l'adresse de ton serveur.", netFull:"Le serveur est plein. Réessaie dans un instant.",
-  regLbl:"Serveur", regAuto:"Auto (le plus proche)", regNames:{na:"Amérique du Nord (USA Est)",sa:"Amérique du Sud (Brésil)",eu:"Europe (Allemagne)",asia:"Asie (Japon)",sea:"Asie du Sud-Est (Singapour)",oc:"Océanie (Australie)",af:"Afrique (Afrique du Sud)",kr:"Corée"},
   playOnline:"En ligne", playOffline:"Hors ligne", playWhere:"Où jouer",
   netOffline:"Serveur injoignable : partie hors ligne contre l'IA.", netNextRound:"La prochaine manche commence dans un instant.", netWaitRound:"Pas de réapparition en Survie : tu rejoindras la prochaine manche.", langNote:"La page se recharge pour changer de langue."
 };
@@ -1244,10 +1223,9 @@ STR.de={
   sound:"Ton", gameSpeed:"Spieltempo", aiPlayers:"KI-Spieler", reset:"Zurücksetzen", language:"Sprache",
   outTitle:"Raus!", bestShare:"Bester Anteil", kills:"Treffer", survived:"Überlebt", playAgain:"Nochmal", changeModeSkin:"Modus · Skin ändern",
   on:"An", off:"Aus", slow:"Langsam", normal:"Normal", fast:"Schnell", show:"Zeigen", hide:"Ausblenden",
-  modes:{online:"Online",snowball:"Schneeballschlacht",ranked:"Gewertet",normal:"Klassisch",team:"Teams",survival:"Überleben",infect:"Infektion",timed:"3 Minuten",boss:"Boss-Raid",duel:"1v1-Duell",hill:"König des Hügels",gold:"Goldrausch",zombie:"Zombie",tutorial:"Tutorial"},
+  modes:{online:"Online",ranked:"Gewertet",normal:"Klassisch",team:"Teams",survival:"Überleben",infect:"Infektion",timed:"3 Minuten",boss:"Boss-Raid",duel:"1v1-Duell",hill:"König des Hügels",gold:"Goldrausch",zombie:"Zombie",tutorial:"Tutorial"},
   modeDesc:{
 online:()=>"Spiel live mit echten Menschen auf einer gemeinsamen Karte. Ist wenig los, füllt die KI den Raum. Wirst du abgeschnitten, bist du raus – und kannst sofort wieder rein.",
-snowball:m=>`Auf einer ${m.N}×${m.N}-Karte liegen Schneehaufen. Fahr drüber, um Schneebälle zu sammeln (max. 3), und drück Leertaste oder den Knopf zum Werfen. Ein Treffer friert das Ziel kurz ein – schneid seinen Schweif ab! Das größte Land nach 3 Minuten gewinnt.`,
 boss:m=>`Alle gegen einen riesigen Boss auf einer ${m.N}×${m.N}-Karte. Schneide seinen Schwanz ab, um ihn zu treffen (Verbündete können sich nicht verletzen), und jedes Mal, wenn er fällt, kommt er stärker zurück. Die meisten Punkte nach 3 Minuten gewinnen.`,
 duel:m=>`Eine KI, eine kleine ${m.N}×${m.N}-Karte. Wer zuerst 2 Runden gewinnt, holt das Duell, und jeder Sieg macht den nächsten Gegner stärker.`+(m.streak?` Siegesserie: ${m.streak}.`:""),
 hill:m=>`Auf einer ${m.N}×${m.N}-Karte liegt eine Kronenzone. Jede Sekunde, in der dir ein Teil davon gehört, bringt Punkte, und die Zone wandert jede Minute. Die höchste Punktzahl nach 3 Minuten gewinnt.`,
@@ -1335,17 +1313,14 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   pSeason:"Ranglistenspiele diese Saison", pNoGamesOther:"Keine letzten Spiele.", profileOf:n=>`Profil von ${n} ansehen`,
   duelRound:n=>`Runde ${n}`, duelVs:n=>`gegen ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Runde gewonnen!", duelRoundLose:"Runde verloren", duelDraw:"Unentschieden!", duelTimeUp:"Zeit abgelaufen", duelWinT:"Duell gewonnen!", duelLoseT:"Duell verloren", duelLede:(s,b,w)=>w?`Serie ${s} · Bestwert ${b}. Der nächste Gegner wird härter.`:`Serie vorbei. Beste Serie: ${b}.`,
   duelRoundBy:n=>`${n} holt die Runde!`, duelWinner:n=>`${n} gewinnt das Duell!`,
-  weeklyShort:"Woche", weeklyTag:d=>`Wochenmodus · noch ${d} Tag${d>1?"e":""}`, exModes:"EX-Modi", exBack:"Hauptmodi", exNote:"EX-Modi haben besondere Regeln: Zombie, Goldrausch, König des Hügels, 1v1-Duell und Boss-Raid.",
-  exShort:"Modi",
+  weeklyShort:"Woche", weeklyTag:d=>`Wochenmodus · noch ${d} Tag${d>1?"e":""}`,
   bossBoardN:n=>`Bosspunkte · ${n} Spieler`, bossHitsN:n=>`${n} Treffer`, bossWin:n=>`Bester Raider mit ${n} Punkten!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} hat den Boss besiegt! 👹 St. ${l} kommt`:`Der Boss ist gefallen! St. ${l} kommt`, bossDownT:"BOSS BESIEGT!", bossBack:l=>`Er kommt auf St. ${l} zurück`, bossHitFeed:(k,h,m)=>`${k} hat den Boss getroffen! ❤ ${h}/${m}`, bossLv:n=>`St. ${n}`, bossRespawn:s=>`zurück in ${s} s`,
   youZombie:"DU BIST EIN ZOMBIE!", youZombieSub:"Fang die Überlebenden, bevor die Zeit abläuft", youBoss:"DU BIST DER BOSS!", youBossSub:"Alle jagen dich. Fang Raider für Punkte (+10)", youBossTag:"Boss",
   zWiped:"Das Zombie-Land wurde von der Karte gefegt!", hWiped:"Das Land der Überlebenden wurde von der Karte gefegt!",
   dLand:b=>`Du bist ${b} auf seinem Land frontal reingefahren.`,
   secretDesc:"Verstecktes Abzeichen – finde es selbst", secretSkin:"Versteckter Skin", secretLine:"<b>???</b> · ein versteckter Skin. Die Bedingung ist geheim!",
   setMore:"Weitere Einstellungen", fxLbl:"Effekte & Animation", arrowPad:"Pfeiltasten", winterTitle:"Winterfest", winterSub:d=>`Sammle ❄️ auf der Karte → limitierte Skins · noch ${d} Tage`, flakeGain:(n,t)=>`❄️ +${n} Schneeflocken · ${t} insgesamt`, flakeBuyLine:(n,p)=>`Skin <b>${n}</b> · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> kostet ❄️${p}. Dir fehlen ${k} Schneeflocken.`, winterHint:"❄️ Winterfest-Skins! Sammle Schneeflocken auf der Karte und tausche sie ein.",
-  sbThrow:"Werfen (Leertaste)", sbFrozenHud:"Eingefroren!", sbHit:"Treffer! ❄️", sbFrozen:"Eingefroren! 🥶",
   newbieNote:n=>`Weitere Modi nach ${n} weiteren Runde${n>1?"n":""}`, newbieOpen:"Neue Modi freigeschaltet! Probier Teams, Überleben, Rangliste und mehr.", firstHint:"Zum ersten Mal hier? Zuerst kommt ein 1-Minuten-Tutorial (überspringbar).", rulesBtn:"Spielregeln", tutShort:"Tutorial →", theme:"Design", themeLight:"Hell", themeDark:"Dunkel", netConnecting:"Verbinde…", netFail:"Server nicht erreichbar.", netLost:"Verbindung zum Server verloren.", netNoServer:"Online-Spiel braucht den Spielserver. Öffne das Spiel über die Adresse deines Servers.", netFull:"Der Server ist voll. Versuch es gleich noch mal.",
-  regLbl:"Server", regAuto:"Automatisch (nächster)", regNames:{na:"Nordamerika (USA Ost)",sa:"Südamerika (Brasilien)",eu:"Europa (Deutschland)",asia:"Asien (Japan)",sea:"Südostasien (Singapur)",oc:"Ozeanien (Australien)",af:"Afrika (Südafrika)",kr:"Korea"},
   playOnline:"Online", playOffline:"Offline", playWhere:"Wo spielen",
   netOffline:"Server nicht erreichbar – Offline-Spiel gegen die KI.", netNextRound:"Die nächste Runde startet gleich.", netWaitRound:"Im Überleben gibt es kein Wiedereinsteigen – du bist in der nächsten Runde dabei.", langNote:"Die Seite lädt neu, um die Sprache zu wechseln."
 };
@@ -1364,10 +1339,9 @@ STR.zh={
   sound:"音效", gameSpeed:"游戏速度", aiPlayers:"AI 数量", reset:"默认", language:"语言",
   outTitle:"出局！", bestShare:"最高占领", kills:"击杀", survived:"存活", playAgain:"再来一局", changeModeSkin:"换模式 · 皮肤",
   on:"开", off:"关", slow:"慢", normal:"普通", fast:"快", show:"显示", hide:"隐藏",
-  modes:{online:"在线",snowball:"雪球大战",ranked:"排位赛",normal:"经典",team:"团队",survival:"生存",infect:"感染",timed:"3 分钟",boss:"首领讨伐",duel:"1v1 决斗",hill:"山丘之王",gold:"淘金热",zombie:"僵尸",tutorial:"教程"},
+  modes:{online:"在线",ranked:"排位赛",normal:"经典",team:"团队",survival:"生存",infect:"感染",timed:"3 分钟",boss:"首领讨伐",duel:"1v1 决斗",hill:"山丘之王",gold:"淘金热",zombie:"僵尸",tutorial:"教程"},
   modeDesc:{
 online:()=>"和真人在同一张地图上实时对战。人少时由 AI 补位。被切断就出局，但可以马上再来。",
-snowball:m=>`${m.N}×${m.N} 的地图上散落着雪堆。经过雪堆就能拿到雪球（最多3个），按空格或点按钮投掷。被击中的对手会被冻住片刻，快去切断它的尾巴！3分钟后领地最大者获胜。`,
 boss:m=>`所有人在 ${m.N}×${m.N} 的地图上联手对抗一个巨型首领。切断它的尾巴就能造成伤害（队友之间不会互相伤害），它每次倒下都会变得更强。3 分钟后首领分最高的人获胜。`,
 duel:m=>`与一名 AI 在 ${m.N}×${m.N} 的小地图上单挑。先赢 2 局者获胜，每赢一次下一个对手就更强。`+(m.streak?` 当前连胜：${m.streak}。`:""),
 hill:m=>`${m.N}×${m.N} 的地图上有一块王冠区域。每秒占有其中一部分都能得分，区域每分钟换一次位置。3 分钟后得分最高的人获胜。`,
@@ -1455,17 +1429,14 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   pSeason:"本赛季排位", pNoGamesOther:"暂无最近对局。", profileOf:n=>`查看 ${n} 的资料`,
   duelRound:n=>`第 ${n} 局`, duelVs:n=>`对手 ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"本局获胜！", duelRoundLose:"本局失利", duelDraw:"平局！", duelTimeUp:"时间到", duelWinT:"决斗胜利！", duelLoseT:"决斗失败", duelLede:(s,b,w)=>w?`${s} 连胜 · 最佳 ${b}。下一个对手会更强。`:`连胜中断。最佳连胜：${b}。`,
   duelRoundBy:n=>`${n} 赢下本局！`, duelWinner:n=>`${n} 赢得决斗！`,
-  weeklyShort:"本周", weeklyTag:d=>`本周模式 · 还剩 ${d} 天`, exModes:"EX 模式", exBack:"基本模式", exNote:"EX 模式有特殊规则：僵尸、淘金热、山丘之王、1v1 决斗和首领讨伐。",
-  exShort:"模式",
+  weeklyShort:"本周", weeklyTag:d=>`本周模式 · 还剩 ${d} 天`,
   bossBoardN:n=>`首领分 · ${n} 名玩家`, bossHitsN:n=>`命中 ${n} 次`, bossWin:n=>`以 ${n} 分成为最强讨伐者！`, bossName:"首领", bossKO:"击倒！+30", bossDownFeed:(k,l)=>k?`${k} 击倒了首领！👹 ${l} 级即将来袭`:`首领倒下了！${l} 级即将来袭`, bossDownT:"首领被击倒！", bossBack:l=>`将以 ${l} 级复活`, bossHitFeed:(k,h,m)=>`${k} 击中了首领！❤ ${h}/${m}`, bossLv:n=>`${n} 级`, bossRespawn:s=>`${s} 秒后复活`,
   youZombie:"你是僵尸！", youZombieSub:"在时间结束前抓住幸存者", youBoss:"你是首领！", youBossSub:"所有人都在追你。抓住讨伐者得分（每个 +10）", youBossTag:"首领",
   zWiped:"僵尸的领地被彻底清除了！", hWiped:"幸存者的领地被彻底清除了！",
   dLand:b=>`你在 ${b} 的领地上和他迎头相撞。`,
   secretDesc:"隐藏徽章——自己去发现吧", secretSkin:"隐藏皮肤", secretLine:"<b>???</b> · 隐藏皮肤。解锁条件是秘密！",
   setMore:"更多设置", fxLbl:"特效与动画", arrowPad:"方向按钮", winterTitle:"冬日庆典", winterSub:d=>`在地图上收集❄️ → 兑换限定皮肤 · 剩余${d}天`, flakeGain:(n,t)=>`❄️ +${n} 雪花 · 共${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>皮肤 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>需要❄️${p}，还差${k}片雪花。`, winterHint:"❄️ 冬日庆典限定皮肤！在地图上收集雪花来兑换。",
-  sbThrow:"投掷（空格）", sbFrozenHud:"冻住了！", sbHit:"命中！❄️", sbFrozen:"冻住了！🥶",
   newbieNote:n=>`再玩 ${n} 局解锁更多模式`, newbieOpen:"新模式已解锁！试试团队、生存、排位等。", firstHint:"第一次玩？会先开始 1 分钟教程（可以跳过）。", rulesBtn:"玩法", tutShort:"教程 →", theme:"主题", themeLight:"浅色", themeDark:"深色", netConnecting:"连接中…", netFail:"无法连接服务器。", netLost:"与服务器的连接已断开。", netNoServer:"在线模式需要游戏服务器。请从你的服务器地址打开游戏。", netFull:"服务器已满，请稍后再试。",
-  regLbl:"服务器", regAuto:"自动（最近）", regNames:{na:"北美（美国东部）",sa:"南美（巴西）",eu:"欧洲（德国）",asia:"亚洲（日本）",sea:"东南亚（新加坡）",oc:"大洋洲（澳大利亚）",af:"非洲（南非）",kr:"韩国"},
   playOnline:"在线", playOffline:"离线", playWhere:"游戏方式",
   netOffline:"无法连接服务器，改为与 AI 离线对战。", netNextRound:"下一局马上开始。", netWaitRound:"生存模式不能复活，下一局再加入吧。", langNote:"切换语言时页面会重新加载。"
 };
@@ -1484,10 +1455,9 @@ STR.ja={
   sound:"効果音", gameSpeed:"ゲーム速度", aiPlayers:"AIの数", reset:"初期値", language:"言語",
   outTitle:"脱落！", bestShare:"最高占有率", kills:"キル", survived:"生存", playAgain:"もう一度", changeModeSkin:"モード · スキン変更",
   on:"オン", off:"オフ", slow:"ゆっくり", normal:"ふつう", fast:"はやい", show:"表示", hide:"非表示",
-  modes:{online:"オンライン",snowball:"雪合戦",ranked:"ランクマッチ",normal:"クラシック",team:"チーム戦",survival:"サバイバル",infect:"感染",timed:"3分勝負",boss:"ボスレイド",duel:"1対1デュエル",hill:"キング・オブ・ザ・ヒル",gold:"ゴールドラッシュ",zombie:"ゾンビ",tutorial:"チュートリアル"},
+  modes:{online:"オンライン",ranked:"ランクマッチ",normal:"クラシック",team:"チーム戦",survival:"サバイバル",infect:"感染",timed:"3分勝負",boss:"ボスレイド",duel:"1対1デュエル",hill:"キング・オブ・ザ・ヒル",gold:"ゴールドラッシュ",zombie:"ゾンビ",tutorial:"チュートリアル"},
   modeDesc:{
 online:()=>"本物のプレイヤーと同じマップでリアルタイム対戦。人が少ないときはAIが入ります。切られたら退場、でもすぐ再挑戦できます。",
-snowball:m=>`${m.N}×${m.N}のマップに雪の山があります。通ると雪玉を拾えて（最大3個）、スペースかボタンで投げられます。当たった相手は少しの間凍るので、しっぽを切りに行こう！3分後に陣地が一番広い人の勝ち。`,
 boss:m=>`${m.N}×${m.N}のマップでみんなで巨大ボスに挑みます。しっぽを切るとダメージ（味方同士は傷つけ合いません）。倒すたびにボスは強くなって復活。3分後にボスポイントが一番多い人の勝ち。`,
 duel:m=>`AI1人と${m.N}×${m.N}の小さなマップで1対1。先に2ラウンド取った方の勝ち。勝つたびに次の相手が強くなります。`+(m.streak?` 現在${m.streak}連勝。`:""),
 hill:m=>`${m.N}×${m.N}のマップに王冠エリアがあります。その一部を自分の陣地にしている間、毎秒ポイントが入ります。エリアは1分ごとに移動。3分後に最高得点の人の勝ち。`,
@@ -1575,17 +1545,14 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   pSeason:"今シーズンのランク戦", pNoGamesOther:"最近の試合はありません。", profileOf:n=>`${n}のプロフィールを見る`,
   duelRound:n=>`ラウンド${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"ラウンド勝利！", duelRoundLose:"ラウンド敗北", duelDraw:"引き分け！", duelTimeUp:"時間切れ", duelWinT:"デュエル勝利！", duelLoseT:"デュエル敗北", duelLede:(s,b,w)=>w?`${s}連勝中 · 最高${b}連勝。次の相手はもっと強いよ。`:`連勝ストップ。最高記録：${b}連勝。`,
   duelRoundBy:n=>`${n}がラウンド獲得！`, duelWinner:n=>`${n}がデュエルに勝利！`,
-  weeklyShort:"今週", weeklyTag:d=>`今週のモード · 残り${d}日`, exModes:"EXモード", exBack:"基本モード", exNote:"EXモードは特別ルールのモードです：ゾンビ、ゴールドラッシュ、キング・オブ・ザ・ヒル、1対1デュエル、ボスレイド。",
-  exShort:"モード",
+  weeklyShort:"今週", weeklyTag:d=>`今週のモード · 残り${d}日`,
   bossBoardN:n=>`ボスポイント · ${n}人`, bossHitsN:n=>`${n}ヒット`, bossWin:n=>`${n}ポイントでトップレイダー！`, bossName:"ボス", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}がボスを倒した！👹 Lv.${l}が来る`:`ボスが倒れた！Lv.${l}が来る`, bossDownT:"ボス撃破！", bossBack:l=>`Lv.${l}で復活`, bossHitFeed:(k,h,m)=>`${k}がボスにヒット！❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}秒後に復活`,
   youZombie:"きみはゾンビ！", youZombieSub:"時間内に生存者をつかまえよう", youBoss:"きみがボス！", youBossSub:"全員がきみを狙ってる。レイダーを倒してポイント（+10）", youBossTag:"ボス",
   zWiped:"ゾンビの陣地がマップから消えた！", hWiped:"生存者の陣地がマップから消えた！",
   dLand:b=>`${b}の陣地で正面衝突した。`,
   secretDesc:"隠しバッジ — 自分で見つけよう", secretSkin:"隠しスキン", secretLine:"<b>???</b> · 隠しスキン。解放条件はヒミツ！",
   setMore:"その他の設定", fxLbl:"エフェクトとアニメ", arrowPad:"矢印ボタン", winterTitle:"ウィンターフェス", winterSub:d=>`マップの❄️を集めて限定スキンと交換 · 残り${d}日`, flakeGain:(n,t)=>`❄️ +${n} 雪の結晶 · 合計${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b>スキン · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b>は❄️${p}。あと${k}個必要です。`, winterHint:"❄️ ウィンターフェス限定スキン！マップで雪の結晶を集めて交換しよう。",
-  sbThrow:"投げる（スペース）", sbFrozenHud:"凍った！", sbHit:"命中！❄️", sbFrozen:"凍った！🥶",
   newbieNote:n=>`あと${n}回遊ぶと他のモードが開きます`, newbieOpen:"新しいモードが解放！チーム戦、サバイバル、ランク戦などを遊んでみよう。", firstHint:"はじめて？先に1分のチュートリアルが始まります（スキップできます）。", rulesBtn:"遊び方", tutShort:"チュートリアル →", theme:"テーマ", themeLight:"ライト", themeDark:"ダーク", netConnecting:"接続中…", netFail:"サーバーに接続できません。", netLost:"サーバーとの接続が切れました。", netNoServer:"オンライン対戦にはゲームサーバーが必要です。サーバーのアドレスからゲームを開いてください。", netFull:"サーバーが満員です。少し待ってからもう一度どうぞ。",
-  regLbl:"サーバー", regAuto:"自動（いちばん近い）", regNames:{na:"北米（米国東部）",sa:"南米（ブラジル）",eu:"ヨーロッパ（ドイツ）",asia:"アジア（日本）",sea:"東南アジア（シンガポール）",oc:"オセアニア（オーストラリア）",af:"アフリカ（南アフリカ）",kr:"韓国"},
   playOnline:"オンライン", playOffline:"オフライン", playWhere:"プレイ方法",
   netOffline:"サーバーにつながらないので、AIとのオフライン対戦になります。", netNextRound:"次のラウンドがまもなく始まります。", netWaitRound:"サバイバルは復活なし。次のラウンドから参加できます。", langNote:"言語を切り替えるとページが再読み込みされます。"
 };
@@ -1604,10 +1571,9 @@ STR.ko={
   sound:"효과음", gameSpeed:"게임 속도", aiPlayers:"AI 수", reset:"기본값", language:"언어",
   outTitle:"탈락!", bestShare:"최고 점유율", kills:"처치", survived:"생존", playAgain:"다시 하기", changeModeSkin:"모드 · 스킨 바꾸기",
   on:"켜기", off:"끄기", slow:"느리게", normal:"보통", fast:"빠르게", show:"보이기", hide:"숨기기",
-  modes:{online:"온라인",snowball:"눈싸움",ranked:"랭크전",normal:"일반",team:"팀전",survival:"생존전",infect:"감염",timed:"3분 승부",boss:"보스전",duel:"1:1 결투",hill:"킹 오브 더 힐",gold:"골드러시",zombie:"좀비",tutorial:"튜토리얼"},
+  modes:{online:"온라인",ranked:"랭크전",normal:"일반",team:"팀전",survival:"생존전",infect:"감염",timed:"3분 승부",boss:"보스전",duel:"1:1 결투",hill:"킹 오브 더 힐",gold:"골드러시",zombie:"좀비",tutorial:"튜토리얼"},
   modeDesc:{
 online:()=>"진짜 사람들과 같은 맵에서 실시간으로 대결해요. 사람이 적으면 AI가 빈자리를 채워요. 꼬리가 잘리면 탈락이지만 바로 다시 들어갈 수 있어요.",
-snowball:m=>`${m.N}×${m.N} 맵 곳곳에 눈더미가 있어요. 지나가면 눈덩이를 주워요(최대 3개). 스페이스나 버튼으로 던지고, 맞은 상대는 잠깐 얼어붙으니 그때 꼬리를 끊으세요! 3분 뒤 땅이 제일 넓은 사람이 이겨요.`,
 boss:m=>`${m.N}×${m.N} 맵에서 모두 힘을 합쳐 거대한 보스 하나를 상대해요. 보스 꼬리를 끊으면 공격이 들어가고(아군끼리는 서로 못 잡아요), 보스는 쓰러질 때마다 더 강해져서 돌아와요. 3분 뒤 보스 점수가 가장 높은 사람이 이겨요.`,
 duel:m=>`${m.N}×${m.N} 작은 맵에서 AI 한 명과 1대1. 먼저 2라운드를 따면 승리하고, 이길 때마다 다음 상대가 더 강해져요.`+(m.streak?` 현재 ${m.streak}연승 중.`:""),
 hill:m=>`${m.N}×${m.N} 맵에 왕관 구역이 있어요. 그 구역을 내 땅으로 갖고 있는 동안 초마다 점수가 올라가고, 구역은 1분마다 옮겨가요. 3분 뒤 점수가 가장 높은 사람이 이겨요.`,
@@ -1695,17 +1661,14 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   pSeason:"이번 시즌 랭크전", pNoGamesOther:"최근 게임 기록이 없어요.", profileOf:n=>`${n} 프로필 보기`,
   duelRound:n=>`${n}라운드`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"라운드 승리!", duelRoundLose:"라운드 패배", duelDraw:"무승부!", duelTimeUp:"시간 종료", duelWinT:"결투 승리!", duelLoseT:"결투 패배", duelLede:(s,b,w)=>w?`${s}연승 · 최고 ${b}연승. 다음 상대는 더 강해요.`:`연승이 끊겼어요. 최고 기록: ${b}연승.`,
   duelRoundBy:n=>`${n} 라운드 승리!`, duelWinner:n=>`${n} 결투 승리!`,
-  weeklyShort:"주간", weeklyTag:d=>`이번 주 모드 · ${d}일 남음`, exModes:"EX 모드", exBack:"기본 모드", exNote:"EX 모드는 특별한 규칙이 있는 모드예요: 좀비, 골드러시, 킹 오브 더 힐, 1:1 결투, 보스전.",
-  exShort:"모드",
+  weeklyShort:"주간", weeklyTag:d=>`이번 주 모드 · ${d}일 남음`,
   bossBoardN:n=>`보스 점수 · ${n}명`, bossHitsN:n=>`${n}번 공격`, bossWin:n=>`${n}점으로 최고의 공격대원!`, bossName:"보스", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}이(가) 보스를 쓰러뜨렸어요! 👹 Lv.${l} 등장 예정`:`보스가 쓰러졌어요! Lv.${l} 등장 예정`, bossDownT:"보스 처치!", bossBack:l=>`Lv.${l}로 돌아와요`, bossHitFeed:(k,h,m)=>`${k} 보스 공격! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}초 후 부활`,
   youZombie:"넌 좀비야!", youZombieSub:"시간 안에 생존자를 잡아요", youBoss:"넌 보스야!", youBossSub:"모두가 너를 노려요. 공격대를 잡으면 +10점", youBossTag:"보스",
   zWiped:"좀비 땅이 맵에서 전멸했어요!", hWiped:"생존자 땅이 맵에서 전멸했어요!",
   dLand:b=>`${b}의 땅에서 머리끼리 부딪혔어요.`,
   secretDesc:"숨겨진 배지 — 직접 찾아보세요", secretSkin:"숨겨진 스킨", secretLine:"<b>???</b> · 숨겨진 스킨이에요. 얻는 방법은 비밀!",
   setMore:"설정 더보기", fxLbl:"이펙트·애니메이션", arrowPad:"화살표 버튼", winterTitle:"겨울 축제", winterSub:d=>`맵의 ❄️를 모아 한정 스킨과 교환 · ${d}일 남음`, flakeGain:(n,t)=>`❄️ 눈송이 +${n} · 보유 ${t}`, flakeBuyLine:(n,p)=>`<b>${n}</b> 스킨 · ❄️${p}`, flakeNeed:(n,p,k)=>`<b>${n}</b> 스킨은 ❄️${p}이에요. 눈송이 ${k}개가 더 필요해요.`, winterHint:"❄️ 겨울 축제 한정 스킨! 맵에 떨어진 눈송이를 모아서 교환하세요.",
-  sbThrow:"던지기 (스페이스)", sbFrozenHud:"얼었어요!", sbHit:"명중! ❄️", sbFrozen:"얼었다! 🥶",
   newbieNote:n=>`다른 모드는 ${n}판 더 하면 열려요`, newbieOpen:"새 모드가 열렸어요! 팀전, 생존전, 랭크전 등을 골라보세요.", firstHint:"처음이면 1분 튜토리얼부터 시작해요 (건너뛰기 가능)", rulesBtn:"게임 방법", tutShort:"튜토리얼 →", theme:"테마", themeLight:"화이트", themeDark:"블랙", netConnecting:"서버에 연결하는 중…", netFail:"서버에 연결할 수 없어요.", netLost:"서버 연결이 끊겼어요.", netNoServer:"온라인 모드는 게임 서버가 필요해요. 서버 주소로 게임을 열어주세요.", netFull:"서버가 가득 찼어요. 잠시 후 다시 시도해주세요.",
-  regLbl:"서버", regAuto:"자동", regNames:{na:"북아메리카 (미국 동부)",sa:"남아메리카 (브라질)",eu:"유럽 (독일)",asia:"아시아 (일본)",sea:"동남아 (싱가포르)",oc:"오세아니아 (호주)",af:"아프리카 (남아공)",kr:"한국"},
   playOnline:"온라인", playOffline:"오프라인", playWhere:"플레이 방식",
   netOffline:"서버에 연결할 수 없어서 AI와 오프라인으로 시작해요.", netNextRound:"곧 다음 판이 시작돼요.", netWaitRound:"생존전은 부활이 없어요. 다음 판부터 참가해요.", langNote:"언어를 바꾸면 페이지가 새로고침돼요."
 };
@@ -2008,7 +1971,7 @@ function mkPlayer(id,name,col,isBot){
 function setup(k,spect=false){
   duel=null; modeKey=k; mode=makeMode(k); N=mode.N;
   capT=new Float64Array(N*N); floats=[];
-  owner=new Uint8Array(N*N); trail=new Uint8Array(N*N); gold=new Uint8Array(N*N); goldN=0; nextGold=0; snow=new Map(); snowNext=0; piles=new Map(); sballs=[]; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
+  owner=new Uint8Array(N*N); trail=new Uint8Array(N*N); gold=new Uint8Array(N*N); goldN=0; nextGold=0; snow=new Map(); snowNext=0; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
   off.width=off.height=N; img=ox2.createImageData(N,N);
   zNest=null;
   lo=0;hi=N-1;gt=0;paused=false;ended=false;nextShrink=mode.zoneStart||0;worldHasMe=!spect;
@@ -2894,7 +2857,6 @@ const SFX={
   lose(){ [392,330,262].forEach((f,i)=>tone(f,.28,{type:'triangle',delay:i*.15,vol:.09})); },
   click(){ tone(700,.05,{type:'square',vol:.035}); },
   hillMove(){ [784,988,1175].forEach((f,i)=>tone(f,.18,{type:'square',delay:i*.09,vol:.035})); tone(1568,.4,{type:'triangle',delay:.27,vol:.08}); },
-  throwBall(){ noise(.12,.08); tone(520,.12,{type:'triangle',vol:.05,slide:1.6}); },
   hitBall(){ noise(.1,.12); tone(1568,.12,{type:'sine',vol:.06}); tone(2093,.16,{type:'sine',delay:.06,vol:.05}); },
   freeze(){ tone(2637,.3,{type:'sine',vol:.05,slide:.5}); noise(.2,.08); },
   flake(v){ tone(2093,.09,{type:'sine',vol:.06}); tone(2637,.14,{type:'sine',delay:.05,vol:.05}); if(v>1){ tone(3136,.22,{type:'sine',delay:.1,vol:.05}); tone(4186,.25,{type:'sine',delay:.16,vol:.035}); } },
@@ -3093,11 +3055,8 @@ function burst(p){
     particles.push({x:p.x+.5,y:p.y+.5,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,col:p.col});}
 }
 
-const CHEAT={god:false,freeze:false};   // dev switches for offline games, driven from ?debug=1
-const cheatOn=k=>CHEAT[k]&&!mode.online&&!spectating;
 function kill(p,cause){
   if(!p.alive) return;
-  if(p===me&&cheatOn('god')&&!(cause&&cause.type==='quit')) return;
   p.alive=false; burst(p);
   if(!spectating&&worldHasMe){
     if(p===me){ SFX.die(); if(cause&&cause.type==='self') unlock('oops'); }
@@ -3383,50 +3342,6 @@ function drawSnowfall(tNow,ox,oy,S,x0,x1,y0,y1){ if(!winterOn()||REDUCED) return
     const h=f.z*S*3.2, r=S*(.09+.13*f.z); ctx.globalAlpha=.95; ctx.fillStyle='#fff'; ctx.shadowColor='rgba(80,130,200,.8)'; ctx.shadowBlur=2;
     ctx.beginPath(); ctx.arc(gx,gy-h,r,0,7); ctx.fill(); ctx.shadowBlur=0; }
   ctx.restore(); }
-// ---- Snowball Fight: grab snowballs from snow piles, throw them (Space), a hit freezes the target for a moment
-function sbPileFill(){ const want=Math.round(N*N/260); let g=0;
-  while(piles.size<want&&g++<60){ const x=2+rnd(N-4), y=2+rnd(N-4), c=x+y*N; if(trail[c]||piles.has(c)) continue; if(players.some(p=>p.alive&&p.x===x&&p.y===y)) continue; piles.set(c,1); } }
-function throwBall(p){ if(!p||!p.alive||!(p.balls>0)||p.frozenUntil>gt||gt<(p.nextThrow||0)) return false;
-  p.balls--; p.nextThrow=gt+350; sballs.push({x:p.x,y:p.y,px:p.x,py:p.y,dir:p.dir,by:p,left:13,t0:gt});
-  if(p===me){ SFX.throwBall(); paintBalls(); } return true; }
-function sbHit(q,by){ q.frozenUntil=gt+1700; const t0=performance.now();
-  if(!REDUCED) for(let i=0;i<16&&particles.length<700;i++){ const a=Math.random()*6.28; particles.push({x:q.x+.5,y:q.y+.5,vx:Math.cos(a)*.06,vy:Math.sin(a)*.06,life:1,col:i%2?'#ffffff':'#bfe3ff',sz:.26,round:true,a:.95}); }
-  if(q===me&&!spectating){ floats.push({x:me.x+.5,y:me.y-.6,text:L.sbFrozen,t0,col:'#2a6fd6'}); SFX.freeze(); }
-  else if(by===me&&!spectating){ floats.push({x:q.x+.5,y:q.y-.6,text:L.sbHit,t0,col:'#2a6fd6'}); SFX.hitBall(); addStat('sbHits'); }
-  else if(q.isBot&&Math.random()<.4) botEmote(q,['🥶','😵','❄️'],1); }
-function sbTick(){
-  if(gt%1000<TICK) sbPileFill();
-  for(const p of players){ if(!p.alive) continue; const c=p.x+p.y*N; if(piles.has(c)&&(p.balls||0)<3){ piles.delete(c); p.balls=(p.balls||0)+1; if(p===me){ SFX.flake(1); paintBalls(); } } }
-  for(const p of players){ if(!p.isBot||!p.alive||!(p.balls>0)||p.frozenUntil>gt||gt<(p.nextThrow||0)) continue;
-    let x=p.x,y=p.y; for(let k=0;k<10;k++){ x+=DX[p.dir]; y+=DY[p.dir]; if(!inb(x,y)) break; const c=x+y*N, t=trail[c];
-      const tgt=(t&&t!==p.id&&players[t-1].alive&&players[t-1].team!==p.team)||players.some(q=>q!==p&&q.alive&&q.team!==p.team&&q.x===x&&q.y===y);
-      if(tgt){ if(Math.random()<.55) throwBall(p); else p.nextThrow=gt+600; break; } } }
-  for(let i=sballs.length-1;i>=0;i--){ const b=sballs[i]; b.px=b.x; b.py=b.y; let gone=false;
-    for(let k=0;k<3&&!gone;k++){ b.x+=DX[b.dir]; b.y+=DY[b.dir]; b.left--;
-      if(!inb(b.x,b.y)||b.left<=0){ gone=true; break; }
-      const c=b.x+b.y*N, t=trail[c];
-      const q=players.find(q=>q!==b.by&&q.alive&&q.team!==b.by.team&&q.x===b.x&&q.y===b.y)||(t&&t!==b.by.id&&players[t-1].alive&&players[t-1].team!==b.by.team?players[t-1]:null);
-      if(q){ sbHit(q,b.by); gone=true; } }
-    if(gone){ if(!REDUCED) for(let j=0;j<6&&particles.length<700;j++){ const a=Math.random()*6.28; particles.push({x:b.x+.5,y:b.y+.5,vx:Math.cos(a)*.04,vy:Math.sin(a)*.04,life:.7,col:'#ffffff',sz:.2,round:true,a:.9}); } sballs.splice(i,1); } }
-  paintBalls(); }
-function paintBalls(){ const el=$('ballHud'); if(!el) return; const on=!!(mode&&mode.snowball&&worldHasMe&&!spectating&&me&&me.alive&&$('startOv').hidden&&$('overOv').hidden);
-  if(el.hidden===on) el.hidden=!on; if(!on) return; const n=me.balls||0, fr=me.frozenUntil>gt;
-  const h=`<span class="bh">${[0,1,2].map(i=>`<i class="${i<n?'on':''}"></i>`).join('')}</span><b>${fr?L.sbFrozenHud:L.sbThrow}</b>`; if(el.innerHTML!==h) el.innerHTML=h; el.classList.toggle('frozen',fr); el.disabled=!n||fr; }
-function drawPiles(ox,oy,S,x0,x1,y0,y1){ if(!piles.size) return;
-  for(const [c] of piles){ const x=c%N, y=(c/N)|0; if(x<x0||x>x1||y<y0||y>y1) continue; const cx=ox+(x+.5)*S, cy=oy+(y+.5)*S, R=S*.62;
-    ctx.fillStyle='rgba(70,110,170,.22)'; ctx.beginPath(); ctx.ellipse(cx,cy+R*.42,R*1.05,R*.3,0,0,7); ctx.fill();
-    ctx.fillStyle='#ffffff'; ctx.strokeStyle='#9fc3ea'; ctx.lineWidth=Math.max(1,S*.06);
-    ctx.beginPath(); ctx.moveTo(cx-R,cy+R*.35); ctx.quadraticCurveTo(cx-R*.95,cy-R*.2,cx-R*.45,cy-R*.3); ctx.quadraticCurveTo(cx-R*.2,cy-R*.85,cx+R*.2,cy-R*.55); ctx.quadraticCurveTo(cx+R*.9,cy-R*.55,cx+R,cy+R*.35); ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.fillStyle='#ffffff'; for(const [dx,dy] of [[-.35,.05],[.3,.12],[0,.22]]){ ctx.beginPath(); ctx.arc(cx+R*dx,cy+R*dy,R*.2,0,7); ctx.fill(); ctx.strokeStyle='#cfe1f5'; ctx.lineWidth=Math.max(1,S*.04); ctx.stroke(); } } }
-function drawSballs(ox,oy,S,tNow){
-  const f=Math.min(1,(tNow-lastTick)/TICK);
-  for(const b of sballs){ const x=b.px+(b.x-b.px)*f, y=b.py+(b.y-b.py)*f, cx=ox+(x+.5)*S, cy=oy+(y+.5)*S;
-    ctx.save(); const tx=cx-DX[b.dir]*S*1.4, ty=cy-DY[b.dir]*S*1.4; const g=ctx.createLinearGradient(tx,ty,cx,cy); g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(1,'rgba(220,235,255,.8)');
-    ctx.strokeStyle=g; ctx.lineWidth=S*.36; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(cx,cy); ctx.stroke();
-    ctx.fillStyle='#fff'; ctx.shadowColor='rgba(60,100,170,.6)'; ctx.shadowBlur=S*.3; ctx.beginPath(); ctx.arc(cx,cy,S*.26,0,7); ctx.fill(); ctx.restore(); }
-  for(const p of players){ if(!p.alive||!(p.frozenUntil>gt)) continue; const cx=ox+(p.x+.5)*S, cy=oy+(p.y+.5)*S, z=S*1.25, left=(p.frozenUntil-gt)/1700;
-    ctx.save(); ctx.globalAlpha=.55+.3*left; ctx.fillStyle='rgba(170,220,255,.55)'; ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=Math.max(1.5,S*.08);
-    rrect(ctx,cx-z/2,cy-z/2,z,z,S*.18); ctx.fill(); ctx.stroke(); ctx.fillStyle='rgba(255,255,255,.75)'; ctx.fillRect(cx-z*.32,cy-z*.36,z*.12,z*.36); ctx.restore(); } }
 function goldPut(c,v){ if(gold[c]||owner[c]||trail[c]) return false; gold[c]=v; goldN++; return true; }
 function goldCluster(){
   for(let t=0;t<30;t++){ const x=3+rnd(N-6), y=3+rnd(N-6), c=x+y*N; if(owner[c]||trail[c]||gold[c]) continue;
@@ -3622,7 +3537,7 @@ function step(){
   snowTick();
   if(!mode.tron) for(const p of live) if(p.trailCells.length) computeNav(p);
   for(const p of live){
-    if(p.dummy||(p!==me&&cheatOn('freeze'))){ p.nx=p.x; p.ny=p.y; continue; }
+    if(p.dummy){ p.nx=p.x; p.ny=p.y; continue; }
     if(p.frozenUntil>gt){ p.nx=p.x; p.ny=p.y; if(p===me) queue=[]; continue; }
     if(p.isBot){ if(mode.tron) tronThink(p); else botThink(p); }
     else while(queue.length){const d=queue.shift(); if(d!==p.dir&&d!==(p.dir+2)%4){p.dir=d; if(tut) tut.turns++; break;}}
@@ -3630,8 +3545,7 @@ function step(){
   }
   const dead=new Map();
   for(const p of live){
-    if(p.dummy||p.frozenUntil>gt||(p!==me&&cheatOn('freeze'))) continue;
-    if(p===me&&cheatOn('god')&&!inb(p.nx,p.ny)){ let ok=false; for(const t of [(p.dir+1)%4,(p.dir+3)%4]){ const nx=p.x+DX[t], ny=p.y+DY[t]; if(inb(nx,ny)){ p.dir=t; p.nx=nx; p.ny=ny; ok=true; break; } } if(!ok){ p.nx=p.x; p.ny=p.y; } }
+    if(p.dummy||p.frozenUntil>gt) continue;
     if(!inb(p.nx,p.ny)){dead.set(p,{type:'wall'});continue;}
     const t=trail[p.nx+p.ny*N];
     if(mode.tron){ if(t){ const q=players[t-1];
@@ -3657,13 +3571,12 @@ function step(){
   for(const [p,c] of dead) kill(p,c);
   for(const p of live){
     if(!p.alive||p.dummy) continue;
-    if(p.frozenUntil>gt||(p!==me&&cheatOn('freeze'))||(p.nx===p.x&&p.ny===p.y)){ p.px=p.x; p.py=p.y; continue; }
+    if(p.frozenUntil>gt||(p.nx===p.x&&p.ny===p.y)){ p.px=p.x; p.py=p.y; continue; }
     p.px=p.x;p.py=p.y;p.x=p.nx;p.y=p.ny;
     const c=p.x+p.y*N;
     if(owner[c]===p.team){ p.lastHome=c; if(p.trailCells.length) capture(p); }
     else { if(!p.trailCells.length) p.exitCell=p.px+p.py*N; if(!trail[c]) trail[c]=p.id; p.trailCells.push(c); if(owner[c]) gnaw(p,c); }
   }
-  if(mode.snowball) sbTick();
   const cnt=new Int32Array(lands.length+1);
   for(let c=0;c<N*N;c++) cnt[owner[c]]++;
   for(const l of lands) l.area=cnt[l.id];
@@ -3783,7 +3696,6 @@ const pct=a=>(a/(N*N)*100);
 const score=p=>mode&&mode.boss?(p.boss&&p.isBot?-1e12:(p.pts||0)*1e6+p.area):mode&&mode.gold?(p.gold||0)*1e6+p.area:mode&&mode.hill?Math.floor(p.hill||0)*1e6+p.area:p.area;   // Gold Rush ranks by gold, land breaks ties
 const esc=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function updateHud(){
-  if(mode&&mode.snowball||!$('ballHud').hidden) paintBalls();
   { const dp=$('dpad'), want=settings.pad===true&&worldHasMe&&!spectating&&!!me&&me.alive&&!$('tools').hidden; if(dp.hidden===want){ dp.hidden=!want; document.body.classList.toggle('padOn',want); } }
   // while I'm alive and playing, my share box and the bottom tools always stay on screen
   if(worldHasMe&&!spectating&&me&&me.alive&&!ended&&$('startOv').hidden&&$('overOv').hidden){ if($('meBox').hidden) $('meBox').hidden=false; if($('tools').hidden) $('tools').hidden=false; }
@@ -3967,37 +3879,8 @@ function exitSpectate(){
 function netBase(){ if(NET.noServer) return ''; try{ const q=new URLSearchParams(location.search).get('server'); if(q) return q; const s=localStorage.getItem('ttang-server'); if(s) return s; }catch(e){}
   if(!/^https?:$/.test(location.protocol)||/claude\.ai|claudeusercontent|anthropic|ttang\.test/.test(location.host)) return '';
   return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws'; }
-// regional servers: the picker appears only when the server says it runs in several regions (see /regions)
-const REG={list:[],here:'',kr:'',ping:{},pick:''};
-try{ REG.pick=localStorage.getItem('ttang-region')||''; }catch(e){}
-function netURL(){ const b=netBase(); if(!b) return '';
-  if(REG.pick==='kr'&&REG.kr) return REG.kr;
-  const r=REG.list.find(x=>x.code===REG.pick); return r?b+(b.includes('?')?'&':'?')+'region='+r.code:b; }
-async function regionsLoad(){ const b=netBase(); if(!b||!/^wss?:\/\//.test(b)) return;
-  const http=b.replace(/^ws/,'http').replace(/\/ws(\?.*)?$/,'');
-  try{ const r=await fetch(http+'/regions',{cache:'no-store'}); if(!r.ok) return; const j=await r.json(); REG.list=Array.isArray(j.list)?j.list:[]; REG.here=j.here||''; REG.kr=j.kr||''; }catch(e){ return; }
-  if(!REG.list.length&&!REG.kr) return;
-  paintRegions();
-  const ping=async(url)=>{ let best=1e9; for(let i=0;i<2;i++){ const t=performance.now(); try{ await fetch(url,{cache:'no-store'}); best=Math.min(best,performance.now()-t); }catch(e){ return null; } } return Math.round(best); };
-  REG.ping['']=await ping(http+'/healthz'); paintRegions();
-  for(const x of REG.list){ REG.ping[x.code]=await ping(http+'/healthz?region='+x.code); paintRegions(); }
-  if(REG.kr){ REG.ping.kr=await ping(REG.kr.replace(/^ws/,'http').replace(/\/ws(\?.*)?$/,'')+'/healthz'); paintRegions(); } }
-function paintRegions(){ const row=$('regionRow'), sel=$('regionSel'); if(!row) return;
-  row.hidden=!(REG.list.length||REG.kr)||!netWant; if(row.hidden) return;
-  $('regLbl').textContent=L.regLbl; const nm=L.regNames||{}, ms=v=>v!=null&&v<1e9?` · ${v}ms`:'';
-  const here=REG.list.find(x=>x.code===REG.here);
-  const opts=[['',L.regAuto+(here?' · '+(nm[here.id]||here.id):'')+ms(REG.ping[''])]].concat(REG.list.map(x=>[x.code,(nm[x.id]||x.id)+ms(REG.ping[x.code])]));
-  if(REG.kr) opts.push(['kr',(nm.kr||'Korea')+ms(REG.ping.kr)]);
-  sel.innerHTML=opts.map(([v,t])=>`<option value="${esc(v)}"${v===REG.pick?' selected':''}>${esc(t)}</option>`).join(''); }
+function netURL(){ return netBase(); }
 try{ if(/[?&]debug=1/.test(location.search)){ window.__lc=()=>({me,players,owner,trail,N,NET,lands,mode});
-  window.__cheat=CHEAT;
-  window.__cheatDo={
-    grab(R){ if(!me||!me.alive||mode.online) return false; const T=me.team; let n=0;
-      for(let y=Math.max(0,me.y-R);y<=Math.min(N-1,me.y+R);y++) for(let x=Math.max(0,me.x-R);x<=Math.min(N-1,me.x+R);x++){ const c=x+y*N; if(owner[c]!==T){ owner[c]=T; n++; } }
-      bbGrow(T,Math.max(0,me.x-R),Math.max(0,me.y-R),Math.min(N-1,me.x+R),Math.min(N-1,me.y+R)); if(me.trailCells.length) capture(me);
-      floats.push({x:me.x+.5,y:me.y,text:'+'+n,t0:performance.now(),col:me.dark}); SFX.capture(n); return true; },
-    killAll(){ if(!me||mode.online) return false; for(const p of players) if(p!==me&&p.alive&&p.team!==me.team) kill(p,{type:'cut',by:me.name,killer:me}); return true; },
-    online:()=>!!mode.online };
 } }catch(e){}
 function netSend(o){ if(NET.ws&&NET.ws.readyState===1) NET.ws.send(JSON.stringify(o)); }
 // jitter buffer: keep a tick or two in hand and play them out at a steady pace, speeding up or slowing down a little
@@ -4017,12 +3900,10 @@ const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie
 let netWant=true; try{ netWant=localStorage.getItem('ttang-net')!=='off'; }catch(e){}
 const netCan=k=>netWant&&ONLINE_MODES.includes(k)&&!!netURL();
 // the Online / Offline switch on the menu (only where a server exists)
-function paintNetRow(){ try{ paintRegions(); }catch(e){} const row=$('netRow'); if(!row) return; const has=!NET.noServer&&!!netURL(); row.hidden=!has;
+function paintNetRow(){ const row=$('netRow'); if(!row) return; const has=!NET.noServer&&!!netURL(); row.hidden=!has;
   $('net-on').setAttribute('aria-pressed',String(netWant)); $('net-off').setAttribute('aria-pressed',String(!netWant)); }
 for(const v of [true,false]) $(v?'net-on':'net-off').onclick=()=>{ netWant=v; try{ localStorage.setItem('ttang-net',v?'on':'off'); }catch(e){} paintNetRow(); try{ $('modeDesc').textContent=descOf(modeKey); }catch(e){} };
 paintNetRow();
-$('regionSel').onchange=e=>{ REG.pick=e.target.value; try{ localStorage.setItem('ttang-region',REG.pick); }catch(err){} };
-regionsLoad();
 function netBegin(){
   if(NET.state==='on'){
     if(NET.over){ toast(L.netNextRound); return; }
@@ -4052,11 +3933,9 @@ function netDummy(id){ const o={id,name:'',area:0,pat:'',skin:null}; setColor(o,
 // land colour: your team's in Teams / Infection, your skin's otherwise
 function netTint(p){ if(p.boss){ setColor(p,BOSS_LOOK.col); p.trailCol='rgba(214,40,80,.85)'; return; } if(mode.teams||mode.infect){ const l=lands[p.team-1]; if(l) setColor(p,l.col); } else setColor(p,p.skin.col); }
 function netBossLook(p,on){ p.boss=!!on; if(!on) return; p.name=L.bossName; p.skin={id:'boss',name:'Boss',col:BOSS_LOOK.col,deco:'horns',pat:'claw',aura:'#ff3d6e'}; p.level=p.level||1; p.maxHp=p.maxHp||2; p.hp=p.hp==null?2:p.hp; }
-function netStat(p,s,h){ if(s==null) return; if(mode.gold) p.gold=s; else if(mode.hill) p.hill=s/10; else if(mode.boss){ p.pts=s; p.bossHits=h||0; } else if(mode.snowball) p.balls=s; }
-function netThrow(){ if(!me||!me.alive||!(me.balls>0)||me.frozenUntil>gt||gt<(me.nextThrow||0)) return false; me.nextThrow=gt+350; netSend({t:'throw'}); SFX.throwBall(); return true; }
+function netStat(p,s,h){ if(s==null) return; if(mode.gold) p.gold=s; else if(mode.hill) p.hill=s/10; else if(mode.boss){ p.pts=s; p.bossHits=h||0; } }
 function netHill(h){ if(!h) return; const was=hill; hill={x:h[0],y:h[1]}; hillNext=h[2]>=0?{x:h[2],y:h[3]}:null; hillMoveAt=h[4]; hillZ=h[5]; }
 function netBoss(b){ if(!b){ boss=null; return; } const p=NET.byId[b[0]]; if(!p) return; if(!p.boss){ netBossLook(p,true); netTint(p); } boss=p; p.hp=b[1]; p.maxHp=b[2]; p.level=b[3]; p.respawnAt=b[4]?gt+b[4]:0; }
-function netSnow(m){ if(m.sb) sballs=m.sb.map(([x,y,px,py,dir])=>({x,y,px,py,dir})); if(m.f){ for(const p of players) p.frozenUntil=0; for(const [id,left] of m.f){ const p=NET.byId[id]; if(p) p.frozenUntil=gt+left; } } }
 function netDuelScore(s){ if(!duel) return; const g=id=>{ const r=(s||[]).find(x=>x[0]===id); return r?r[1]:0; }; duel.score=[g(NET.you),duel.b?g(duel.b.id):0]; }
 function netPlayer(m){ const sk=netSkinOf(m.skin,m.col), p=mkPlayer(m.id,m.name,sk.col,!!m.bot); p.skin=sk; p.netOn=true; p.team=m.team||m.id; p.frame=FRAME_COL[m.frame]?m.frame:null; netBossLook(p,m.boss);
   const tid=m.team||m.id; if(mode.infect&&(!lands[tid-1]||!lands[tid-1].name||!players.some(q=>q.team===tid))){ const t={id:tid,name:L.teamOf(m.name),area:0,pat:sk.pat||''}; setColor(t,sk.col); lands[tid-1]=t; }
@@ -4065,7 +3944,7 @@ function netHello(m){
   NET.state='on'; NET.you=m.you; NET.room=m.room; NET.over=!!m.over; TICK=m.tick; N=m.N;
   mode={...makeMode(m.mode),online:true,N:m.N}; if(m.teams) mode.teams=m.teams; if(m.time) mode.time=m.time; if(m.zTime) mode.zTime=m.zTime; if(m.duelRound) DUEL_ROUND=m.duelRound;
   capT=new Float64Array(N*N); floats=[]; owner=b64u8(m.owner); trail=b64u8(m.trail); gold=m.gold?b64u8(m.gold):new Uint8Array(N*N); goldN=0; for(let c=0;c<N*N;c++) if(gold[c]) goldN++;
-  snow=new Map(); piles=new Map((m.piles||[]).map(c=>[c,1])); sballs=[]; hill=null; hillNext=null; boss=null; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
+  snow=new Map(); hill=null; hillNext=null; boss=null; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
   off.width=off.height=N; img=ox2.createImageData(N,N); lo=m.lo||0; hi=m.hi!=null?m.hi:N-1; gt=m.g||0; ended=!!m.over; worldHasMe=true; paused=false; nextShrink=1e15;
   if(mode.teams){ teams=(mode.zombie?ZDEFS:TEAMDEFS).slice(0,mode.teams).map((t,i)=>{ const o={id:i+1,name:t.name,area:0}; setColor(o,t.col); return o; }); lands=teams; }
   else { lands=[]; for(let i=1;i<=Math.max(32,m.slots||32);i++) lands.push(netDummy(i)); teams=mode.infect?lands:[]; }
@@ -4075,7 +3954,7 @@ function netHello(m){
     netStat(p,q.s,q.bossHits); }
   for(const p of players) netTint(p);
   me=NET.byId[NET.you]; me.isBot=false; applySkin(skin); NET.pend=[]; NET.playing=false; NET.predCap=null; me.sx=null; me.predX=null; me.zStart=mode.zombie&&me.team===2;
-  netHill(m.h); netBoss(m.b); netSnow(m);
+  netHill(m.h); netBoss(m.b);
   if(mode.duel){ const opp=players.find(p=>p!==me)||null; duel={score:[0,0],round:(m.duel&&m.duel.round)||1,over:false,busy:false,elapsed:0,dead:[],a:me,b:opp,look:[duelLook(me),duelLook(opp)],opp:duelLook(opp),watch:false}; netDuelScore(m.duel&&m.duel.s); } else duel=null;
   particles=[]; rings=[]; camInit=false; lastTick=performance.now(); netAreas(); }
 function netAreas(){ const cnt=new Int32Array(lands.length+2); for(let c=0;c<N*N;c++) cnt[owner[c]]++; for(const l of lands) if(l) l.area=cnt[l.id]||0; }
@@ -4141,7 +4020,6 @@ function netApply(m){
     else if(e.k==='gs'){ if(e.id===NET.you){ floats.push({x:me.x+.5,y:me.y-.6,text:L.goldSteal(e.n),t0,col:'#c98a00'}); SFX.coin(e.n); } if(e.from===NET.you) floats.push({x:me.x+.5,y:me.y-.6,text:'-'+e.n+' 🪙',t0,col:'#e23b4a'}); }
     else if(e.k==='hm'){ toast(L.hillMoved); SFX.hillMove(); }
     else if(e.k==='bh'){ const b=boss; if(!b) continue; b.hp=e.hp; b.maxHp=e.max; b.level=e.lv; const by=NET.byId[e.by]||null; if(by===me&&e.down) addStat('bossKOs'); bossFx(b,by,!!e.down); }
-    else if(e.k==='sh'){ const q=NET.byId[e.id]; if(q) sbHit(q,NET.byId[e.by]||null); }
     else if(e.k==='dround'&&duel){ const r=e.win?(e.win===NET.you?1:-1):0; netDuelScore(e.s);
       streakBanner(r===0?L.duelDraw:r>0?L.duelRoundWin:L.duelRoundLose,(e.up?L.duelTimeUp+' · ':'')+L.duelScore(duel.score[0],duel.score[1]));
       if(settings.sound) (r>0?SFX.win:r<0?SFX.lose:SFX.click)(); }
@@ -4167,8 +4045,7 @@ function netApply(m){
   for(const [id,area,k,team,st,bh] of m.a){ const p=NET.byId[id]; if(!p) continue; if(team&&p.team!==team){ p.team=team; netTint(p); if(p===me) paintAccent(); } p.area=area; p.kills=k; netStat(p,st,bh); if(p.alive) p.best=Math.max(p.best||0,area); }
   if(m.z){ lo=m.z[0]; hi=m.z[1]; } netAreas();
   if(m.gd){ const g=m.gd; for(let i=0;i<g.length;i+=2){ const c=g[i], v=g[i+1]; if(gold[c]&&!v) goldN--; else if(!gold[c]&&v) goldN++; gold[c]=v; } }
-  if(m.pd){ const g=m.pd; for(let i=0;i<g.length;i+=2){ if(g[i+1]) piles.set(g[i],1); else piles.delete(g[i]); } }
-  netHill(m.h); if(m.b!==undefined) netBoss(m.b); netSnow(m);
+  netHill(m.h); if(m.b!==undefined) netBoss(m.b);
   if(mode.hill&&hill){ const Z=hillZ, cnt=new Map(); for(let y=hill.y;y<hill.y+Z;y++) for(let x=hill.x;x<hill.x+Z;x++){ const o=owner[x+y*N]; if(o) cnt.set(o,(cnt.get(o)||0)+1); }
     for(const p of players) p.hillFrac=p.alive?(cnt.get(p.team)||0)/(Z*Z):0; }
   if(mode.gold&&me&&me.gold>=100) unlock('miner');
@@ -4322,7 +4199,6 @@ addEventListener('keydown',e=>{
   if(e.code==='Escape'&&!card&&!start&&!$('tools').hidden){e.preventDefault();if(!$('emoBar').hidden) closeEmoBar(); else quitGame();return;}
   if(settings.emotes!==false&&!card&&!start&&!$('tools').hidden&&/^Digit[1-9]$/.test(e.code)){ const em=myEmotes()[+e.code.slice(5)-1]; if(em){e.preventDefault();sendEmote(em);} return; }
   if(e.code in KEY){e.preventDefault();push(KEY[e.code]);return;}
-  if(e.code==='Space'&&!card&&!start&&mode&&mode.snowball&&worldHasMe&&!spectating){ e.preventDefault(); (mode.online?netThrow():throwBall(me)); return; }
   if(tag==='BUTTON') return;
   if(e.code==='Space'||e.code==='Enter'){ if(card){e.preventDefault();$('againBtn').click();} else if(start){e.preventDefault();begin();} }
 });
@@ -4358,8 +4234,6 @@ function paintEmoUI(){ const on=settings.emotes!==false; $('emoBtn').hidden=!on;
 $('emoBtn').onclick=e=>{ e.stopPropagation(); $('emoBar').hidden?openEmoBar():closeEmoBar(); };
 $('tools').addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
 $('dpad').addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
-$('ballHud').addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
-$('ballHud').addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); (mode.online?netThrow():throwBall(me)); });
 for(const b of $('dpad').querySelectorAll('button')){ const d=+b.dataset.d;
   b.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); if(me&&!spectating) push(d); b.classList.add('on'); });
   const off=()=>b.classList.remove('on'); b.addEventListener('pointerup',off); b.addEventListener('pointerleave',off); b.addEventListener('pointercancel',off);
@@ -5123,7 +4997,6 @@ function render(now){
   }
   if(mode.gold) drawGold(ox,oy,S,x0,x1,y0,y1,tNow,ov);
   if(!ov&&snowLive()) drawSnow(ox,oy,S,x0,x1,y0,y1,tNow);
-  if(mode.snowball&&!ov) drawPiles(ox,oy,S,x0,x1,y0,y1);
   if(mode.hill) drawHill(ox,oy,S,tNow,ov);
   // closing zone
   if(lo>0){ const z0=lo*S, zw=(hi-lo+1)*S;
@@ -5193,7 +5066,6 @@ function render(now){
     for(const f of floats){ const t=(tNow-f.t0)/1000, fx=ox+f.x*S, fy=oy+f.y*S-S*(1+1.4*t);
       ctx.globalAlpha=t<.7?1:(1-t)/.3; ctx.lineWidth=5; ctx.strokeStyle='#fff'; ctx.strokeText(f.text,fx,fy); ctx.fillStyle=f.col; ctx.fillText(f.text,fx,fy); }
     ctx.globalAlpha=1; }
-  if(mode.snowball) drawSballs(ox,oy,S,tNow);
 
   ctx.strokeStyle='rgba(27,32,51,.35)';ctx.lineWidth=3;ctx.strokeRect(ox-1.5,oy-1.5,N*S+3,N*S+3);
   if(mode.hill&&!ov) drawHillArrow(ox,oy,S,now);
@@ -5401,26 +5273,21 @@ const EX_MODES=['zombie','gold','hill','duel','boss'];
 const weeklyMode=()=>EX_MODES[((Math.floor((weekStart()-Date.UTC(2026,0,5))/(7*864e5))%EX_MODES.length)+EX_MODES.length)%EX_MODES.length];
 const weeklyDays=()=>Math.max(1,Math.ceil((weekStart()+7*864e5-Date.now())/864e5));
 const modeDescOf=k=>(k===weeklyMode()?L.weeklyTag(weeklyDays())+' · ':'')+descOf(k);
-let modeView='main';
 function buildModes(focusId){
-  const box=$('modes'); box.innerHTML=''; box.classList.toggle('exView',modeView==='ex');
+  const box=$('modes'); box.innerHTML='';
   const pick=k=>{ if(k!==modeKey) setup(k); try{localStorage.setItem('ttang-mode',k);}catch(e){}
     buildModes('mode-'+k); $('modeDesc').textContent=modeDescOf(k); $('teamRow').hidden=k!=='team'; $('sizeRow').hidden=k==='ranked'||k==='duel'||k==='online'; paintRankBox(); };
   const mk=k=>{ if(!MODES[k]||MODES[k].hidden) return; const b=document.createElement('button'); b.type='button'; b.className='mode'; b.id='mode-'+k;
     if(k==='ranked') b.innerHTML=tierBadge(tierOf(rank.rp),20)+`<span>${MODES[k].name}</span>`;
     else b.textContent=MODES[k].name;
     b.setAttribute('aria-pressed',k===modeKey?'true':'false'); b.onclick=()=>pick(k); box.append(b); };
-  if(modeView==='main'){
+  {
     ['normal','team','survival','infect','timed'].forEach(mk);
     const wk=weeklyMode(), ex=document.createElement('button'), on=modeKey===wk; ex.type='button'; ex.className='mode exBtn'; ex.id='mode-'+wk;
     ex.innerHTML=`<b>${esc(L.weeklyShort)}</b><span>${esc(MODES[wk].name)}</span>`;
     ex.setAttribute('aria-pressed',String(on)); ex.setAttribute('aria-label',L.weeklyTag(weeklyDays())+' · '+MODES[wk].name);
     ex.onclick=()=>pick(wk);
     box.append(ex); mk('ranked');
-  } else {
-    const back=document.createElement('button'); back.type='button'; back.className='mode exBack'; back.id='mode-back'; back.innerHTML=`<i aria-hidden="true">‹</i><span>${esc(L.exBack)}</span>`;
-    back.onclick=()=>{ modeView='main'; buildModes('mode-ex'); $('modeDesc').textContent=descOf(modeKey); };
-    box.append(back); EX_MODES.forEach(mk);
   }
   if(focusId&&$(focusId)) $(focusId).focus();
   $('modeDesc').textContent=modeDescOf(modeKey);
