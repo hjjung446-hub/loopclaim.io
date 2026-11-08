@@ -3982,7 +3982,7 @@ function exitSpectate(){
   paintAccent();
 }
 /* ---------- online play (needs the Loopclaim server: node server.js) ---------- */
-function netBase(){ if(NET.noServer) return ''; try{ const q=new URLSearchParams(location.search).get('server'); if(q) return q; const s=localStorage.getItem('ttang-server'); if(s) return s; }catch(e){}
+function netBase(){ if(NET.noServer){ if(Date.now()-(NET.noServerAt||0)<20000) return ''; NET.noServer=false; } try{ const q=new URLSearchParams(location.search).get('server'); if(q) return q; const s=localStorage.getItem('ttang-server'); if(s) return s; }catch(e){}
   if(/crazygames|poki|gamedistribution|itch\.io|itch\.zone/.test(location.host)) return 'wss://loopclaim-io.onrender.com/ws';   // game portals host only the page; play on our server
   if(!/^https?:$/.test(location.protocol)||/claude\.ai|claudeusercontent|anthropic|ttang\.test/.test(location.host)) return '';
   return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws'; }
@@ -4018,7 +4018,7 @@ let netWant=true; try{ netWant=localStorage.getItem('ttang-net')!=='off'; }catch
 const netCan=k=>netWant&&ONLINE_MODES.includes(k)&&!!netURL();
 // the Online / Offline switch on the menu (only where a server exists)
 function paintNetRow(){ const row=$('netRow'); if(!row) return; const has=!NET.noServer&&!!netURL(); row.hidden=!has;
-  { const ib=$('inviteStart'); if(ib){ ib.textContent=L.inviteFriend; ib.hidden=!(has&&netWant&&ONLINE_MODES.includes(modeKey)); } }
+  { const ib=$('inviteStart'); if(ib){ ib.textContent=L.inviteFriend; ib.hidden=!(has&&ONLINE_MODES.includes(modeKey)); } }
   $('net-on').setAttribute('aria-pressed',String(netWant)); $('net-off').setAttribute('aria-pressed',String(!netWant)); }
 for(const v of [true,false]) $(v?'net-on':'net-off').onclick=()=>{ netWant=v; try{ localStorage.setItem('ttang-net',v?'on':'off'); }catch(e){} paintNetRow(); try{ $('modeDesc').textContent=descOf(modeKey); }catch(e){} };
 paintNetRow();
@@ -4039,7 +4039,7 @@ function netBegin(){
     else if(m.t==='pong'){ const r=performance.now()-m.c; NET.rttDev=(NET.rttDev||0)*.75+Math.abs(r-NET.rtt)*.25; NET.rtt=NET.rtt*.7+r*.3; netLeadUpdate(); }
     else if(m.t==='full') toast(L.netFull); };
   ws.onclose=()=>{ if(NET.ws!==ws) return; const was=NET.state; NET.ws=null; NET.state='off'; NET.q=[];
-    if(was==='connecting'){ toast(L.netOffline); NET.noServer=true; mode.online=false; setup(modeKey); begin(); } else if(mode.online){ toast(L.netLost); toMenu(); } };
+    if(was==='connecting'){ toast(L.netOffline); NET.noServer=true; NET.noServerAt=Date.now(); setTimeout(()=>{ try{ paintNetRow(); }catch(e){} },20500); mode.online=false; setup(modeKey); begin(); } else if(mode.online){ toast(L.netLost); toMenu(); } };
 }
 function netEnterUI(){ $('startOv').hidden=true; $('overOv').hidden=true; $('toast').hidden=true; paintAccent();
   queue=[]; deathCam=me&&me.alive?null:{x:N/2,y:N/2}; cutMark=null; feedMute=false; $('meBox').hidden=!me.alive; $('tools').hidden=false; run={kills:0,best:0,t0:gt,paid:false}; SFX.start(); updateHud();
@@ -4284,7 +4284,7 @@ paintTutBtn();
 
 $('startBtn').onclick=begin;
 // Invite a friend (menu): play this mode online, and copy the room's invite link the moment we're in it
-$('inviteStart').onclick=()=>{ NET.wantInvite=true; netWant=true; if(!settings.tutSeen){ settings.tutSeen=true; saveSettings(); } begin(); };
+$('inviteStart').onclick=()=>{ NET.wantInvite=true; netWant=true; try{ localStorage.setItem('ttang-net','on'); }catch(e){} paintNetRow(); if(!settings.tutSeen){ settings.tutSeen=true; saveSettings(); } begin(); };
 paintWinter();
 // spaces in a nickname show as underscores, right as you type
 $('nameIn').addEventListener('input',e=>{ const el=e.target, v=el.value; if(!/\s/.test(v)) return; const pos=el.selectionStart; el.value=v.replace(/\s/g,'_'); try{ el.setSelectionRange(pos,pos); }catch(err){} });
