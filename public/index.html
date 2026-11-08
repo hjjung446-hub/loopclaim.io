@@ -2753,14 +2753,16 @@ function closeProf(){ $('profOv').hidden=true; $(profBack).hidden=false; const f
 $('profOpen').onclick=()=>openProf(null,'startOv','profOpen'); $('profDone').onclick=closeProf;
 const rewardOf=id=>SKINS.find(k=>k.ach===id)||null;
 /* ---------- new skin popup: shown once you're out of a game, with a button to wear it ---------- */
-const gotQ=[];
+const gotQ=[]; let gotCur=null;
 function gotSkin(sk){ if(!sk||gotQ.includes(sk)) return; gotQ.push(sk); gotFlush(); }
 function gotBusy(){ return !$('gotOv').hidden||![...document.querySelectorAll('.overlay')].some(o=>!o.hidden); }
-function gotFlush(){ if(!gotQ.length||gotBusy()) return; const sk=gotQ.shift();
+function gotFlush(){ if(!gotQ.length||gotBusy()) return; const sk=gotQ.shift(); gotCur=sk;
   $('gotLbl').textContent=L.gotNew; $('gotTtl').textContent=sk.name; $('gotWear').textContent=L.gotWear; $('gotLater').textContent=L.gotLater;
   drawSkinPreview($('gotCv'),sk); $('gotOv').hidden=false; SFX.ach();
   $('gotWear').onclick=()=>{ wearSkin(sk); buildSkins(); gotClose(); }; $('gotLater').onclick=gotClose; $('gotWear').focus(); }
-function gotClose(){ $('gotOv').hidden=true; setTimeout(gotFlush,250); }
+function gotClose(){ $('gotOv').hidden=true; gotCur=null; setTimeout(gotFlush,250); }
+// a game starting (Space / Play again) puts an open popup back in the queue so it never sits over play
+function gotHide(){ if($('gotOv').hidden) return; $('gotOv').hidden=true; if(gotCur) gotQ.unshift(gotCur); gotCur=null; }
 setInterval(gotFlush,600);
 function unlock(id){
   if(achState.done[id]) return; const a=ACH.find(x=>x.id===id); if(!a) return;
@@ -3901,7 +3903,7 @@ function begin(){
   if(fresh) setup(modeKey,false);
   me.name=nm;
   $('startOv').hidden=true;$('overOv').hidden=true; paintAccent();
-  queue=[];deathCam=null;spawn(me);me.respawnAt=0;$('meBox').hidden=false;$('tools').hidden=false;updateHud();SFX.start(); run={kills:0,best:0,t0:gt,paid:false}; duel=null; if(mode.duel) duelStart(); roleBanner(); addStat('games'); unlock('first'); cgGame('gameplayStart');
+  queue=[];deathCam=null;spawn(me);me.respawnAt=0;$('meBox').hidden=false;$('tools').hidden=false;updateHud();SFX.start(); run={kills:0,best:0,t0:gt,paid:false}; duel=null; if(mode.duel) duelStart(); roleBanner(); addStat('games'); unlock('first'); cgGame('gameplayStart'); try{ gotHide(); }catch(e){}
 }
 
 /* ---------- spectating ---------- */
@@ -4001,7 +4003,7 @@ function netBegin(){
 }
 function netEnterUI(){ $('startOv').hidden=true; $('overOv').hidden=true; $('toast').hidden=true; paintAccent();
   queue=[]; deathCam=me&&me.alive?null:{x:N/2,y:N/2}; cutMark=null; feedMute=false; $('meBox').hidden=!me.alive; $('tools').hidden=false; run={kills:0,best:0,t0:gt,paid:false}; SFX.start(); updateHud();
-  addStat('games'); unlock('first'); cgGame('gameplayStart');   // online games count toward stats and badges too
+  addStat('games'); unlock('first'); cgGame('gameplayStart'); try{ gotHide(); }catch(e){}   // online games count toward stats and badges too
   if(mode.zombie) roleBanner();
   if(mode.duel&&duel) setTimeout(()=>{ if(duel&&mode.duel) streakBanner(L.duelRound(duel.round),duel.round>1?L.duelScore(duel.score[0],duel.score[1]):duel.b?L.duelVs(esc(duel.b.name)):''); },200); }
 const b64u8=s=>{ const b=atob(s), a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; };
@@ -4182,7 +4184,7 @@ function tutTick(){
   setTimeout(()=>{ if(!tut) return; tut.wait=false; if(tut.step+1<TUT.length) tutEnter(tut.step+1); else finishTutorial(); },1000);
 }
 function startTutorial(){ cardSeq++; feedMute=false; if(!settings.tutSeen){ settings.tutSeen=true; saveSettings(); }
-  tutPrev=modeKey; leaveSpectate(); setSpeed(1); cgGame('gameplayStart');
+  tutPrev=modeKey; leaveSpectate(); setSpeed(1); cgGame('gameplayStart'); try{ gotHide(); }catch(e){}
   setup('tutorial',false);
   tut={step:-1,turns:0,captured:0,kills:0,wait:false,dummy:null,where:''};
   $('startOv').hidden=true; $('overOv').hidden=true; $('hint').hidden=true;
