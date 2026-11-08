@@ -148,10 +148,18 @@ function spawnSpot(r,p){
       for(const [cx,cy] of [[m,m],[N-1-m,m],[m,N-1-m],[N-1-m,N-1-m]]){ let near=N*2; for(const q of hum) near=Math.min(near,Math.abs(q.x-cx)+Math.abs(q.y-cy)); const v=near+Math.random()*3; if(v>bv){bv=v;best=[cx,cy];} }
       return [best[0]+rnd(5)-2,best[1]+rnd(5)-2]; } }
   const lo=r.lo+4, span=r.hi-r.lo-8;
-  if(r.cfg.teams){ // land near your team when it has some
-    const mine=[]; for(let t=0;t<200;t++){ const c=rnd(N*N); if(r.owner[c]===p.team) mine.push(c); if(mine.length>12) break; }
-    for(const c of mine){ const x=c%N, y=(c/N)|0; if(x<lo||y<lo||x>lo+span||y>lo+span) continue;
-      if(!r.slots.some(q=>q&&q.alive&&Math.abs(q.x-x)+Math.abs(q.y-y)<5)) return [x,y]; } }
+  if(r.cfg.teams||r.cfg.infect){ // back inside your team's land: deep in it (not a sliver at the edge), away from enemies and their tails
+    let best=null,bv=-1e9;
+    for(let t=0,seen=0;t<3000&&seen<60;t++){ const c=rnd(N*N); if(r.owner[c]!==p.team) continue; const x=c%N, y=(c/N)|0;
+      if(x<lo||y<lo||x>lo+span||y>lo+span) continue; seen++;
+      let inside=0, bad=0;
+      for(let dy=-3;dy<=3;dy++) for(let dx=-3;dx<=3;dx++){ const xx=x+dx, yy=y+dy; if(!inb(xx,yy)){ bad+=2; continue; } const k=xx+yy*N;
+        if(r.owner[k]===p.team) inside++; if(r.trail[k]) bad+=6; }
+      let v=inside-bad;
+      for(const q of r.slots){ if(!q||!q.alive||q===p) continue; const d=Math.abs(q.x-x)+Math.abs(q.y-y);
+        if(d<5) v-=40; else if(q.team!==p.team&&d<12) v-=(12-d)*3; }
+      if(v>bv){ bv=v; best=[x,y]; } }
+    if(best&&bv>10) return best; }
   for(let t=0;t<300;t++){ const x=lo+rnd(Math.max(1,span)), y=lo+rnd(Math.max(1,span)); let bad=0;
     for(let dy=-3;dy<=3&&bad<3;dy++) for(let dx=-3;dx<=3;dx++){ const c=(x+dx)+(y+dy)*N; if(r.trail[c]) bad+=9; else if(r.owner[c]&&r.owner[c]!==p.team) bad++; }
     if(bad>=3) continue;
