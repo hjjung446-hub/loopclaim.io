@@ -186,6 +186,10 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .modes .exBtn .wkTx{display:grid;justify-items:center;line-height:1.1;min-width:0}
 .modes .exBtn .wkTx>span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .modes .exBtn .wkLeft{font-size:11px;font-weight:700;opacity:.8}
+/* the "This week" tag sits on the button's top edge, so the mode name gets the whole width */
+.modes .exBtn{position:relative;overflow:visible;flex-direction:row!important}
+.modes .exBtn>b{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:11px!important;padding:1px 8px!important;white-space:nowrap;box-shadow:0 1px 0 rgba(0,0,0,.18);z-index:1}
+.modes .exBtn .wkTx>span{font-size:inherit}
 .bpGain{margin:0;font-size:14px;font-weight:700;color:var(--me);background:var(--ground);border-radius:12px;padding:8px 12px}
 .rpShopBtn{grid-column:1/-1;font:inherit;display:flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:8px 12px;background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--line);margin-top:4px}
 .rpShopBtn span{flex:1;text-align:left;font-weight:700}.rpShopBtn b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--gold-ink)}
@@ -486,6 +490,15 @@ body.xmas .xmasHat{display:block}
 .btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .keys{margin:0;font-size:12px;color:var(--muted);text-align:center}
 .keys .nw{display:inline-block;white-space:nowrap}
+/* phones: the start menu is taller than the screen, so Play (and Invite) stay pinned to the bottom while the rest scrolls */
+@media (max-width:640px),(max-width:859px) and (max-height:520px){
+  #startOv .card>.btns{position:sticky;bottom:-16px;z-index:2;margin:0 -10px;padding:8px 10px calc(24px + env(safe-area-inset-bottom,0px));background:var(--card);border-radius:16px 16px 0 0;box-shadow:0 -10px 14px -12px rgba(27,32,51,.3);grid-template-columns:1fr 1fr;gap:8px}
+  #startOv .card>.btns>#startBtn,#startOv .card>.btns>.firstHint{grid-column:1/-1}
+  #startOv .card>.btns>#startBtn{padding-top:11px;padding-bottom:11px}
+  #startOv .card>.btns>.ghost{font-size:15px;padding:9px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #startOv .card>.btns>.ghost:only-of-type,#startOv .card>.btns>#watchStartBtn:last-child:nth-child(2){grid-column:1/-1}
+}
+@media (max-width:380px){ .modes .mode{font-size:14px} .modes .exBtn .wkTx>span{font-size:13px} }
 kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radius:5px;padding:1px 6px;border-bottom:2px solid var(--grid)}
 @media (max-width:440px){.tut{top:calc(84px + env(safe-area-inset-top,0px))}.achToast{bottom:calc(140px + env(safe-area-inset-bottom,0px))}.feed{bottom:calc(64px + env(safe-area-inset-bottom,0px))}.feed div{font-size:11px;padding:4px 8px}.feed div:nth-child(n+3){display:none}.spec{width:200px}.timer{top:calc(84px + env(safe-area-inset-top,0px));left:calc(12px + env(safe-area-inset-left,0px));transform:none;font-size:15px}.mini{width:112px;height:112px}.card h1{font-size:42px}.me .pct{font-size:28px}.board{min-width:120px}.hint{display:none}}
 </style>
@@ -898,6 +911,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   duelRoundBy:n=>`${n} takes the round!`, duelWinner:n=>`${n} wins the duel!`,
   gotNew:"New skin!", gotWear:"Wear now", gotLater:"Later", bpOverClaim:n=>`Claim pass rewards (${n})`, weeklyLeft:d=>`${d}d left`,
   adDouble:g=>`Watch an ad · double coins (+${g})`, adGot:n=>`+${n} coins from the ad!`, adFail:"The ad didn't play. Try again later.",
+  inviteIn:n=>`You joined ${n}'s room!`, inviteCame:n=>`${n} joined through your invite!`,
   inviteFriend:"Invite a friend", invite:"Invite", inviteCopied:"Invite link copied! Send it to a friend to play in this room.", inviteJoin:"Joining your friend's room…", inviteManual:"Copy this invite link:",
   weeklyShort:"This week", weeklyTag:d=>`Weekly mode · ${d} day${d>1?"s":""} left`,
   bossBoardN:n=>`Boss points · ${n} players`, bossHitsN:n=>`${n} hits`, bossWin:n=>`Top raider with ${n} points!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} took the boss down! 👹 Lv.${l} incoming`:`The boss fell! Lv.${l} incoming`, bossDownT:"BOSS DOWN!", bossBack:l=>`It comes back at Lv.${l}`, bossHitFeed:(k,h,m)=>`${k} hit the boss! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`back in ${s}s`,
@@ -1017,6 +1031,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   duelRoundBy:n=>`¡${n} gana la ronda!`, duelWinner:n=>`¡${n} gana el duelo!`,
   gotNew:"¡Nuevo aspecto!", gotWear:"Usar ya", gotLater:"Luego", bpOverClaim:n=>`Recoger premios del pase (${n})`, weeklyLeft:d=>`quedan ${d} d`,
   adDouble:g=>`Ver un anuncio · monedas x2 (+${g})`, adGot:n=>`¡+${n} monedas del anuncio!`, adFail:"El anuncio no se reprodujo. Inténtalo más tarde.",
+  inviteIn:n=>`¡Entraste en la sala de ${n}!`, inviteCame:n=>`¡${n} entró con tu invitación!`,
   inviteFriend:"Invitar a un amigo", invite:"Invitar", inviteCopied:"¡Enlace copiado! Envíalo a un amigo para jugar en esta sala.", inviteJoin:"Entrando en la sala de tu amigo…", inviteManual:"Copia este enlace de invitación:",
   weeklyShort:"Semanal", weeklyTag:d=>`Modo de la semana · quedan ${d} día${d>1?"s":""}`,
   bossBoardN:n=>`Puntos de jefe · ${n} jugadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`¡Mejor asaltante con ${n} puntos!`, bossName:"JEFE", bossKO:"¡K.O.! +30", bossDownFeed:(k,l)=>k?`¡${k} derribó al jefe! 👹 Llega el nv. ${l}`:`¡El jefe cayó! Llega el nv. ${l}`, bossDownT:"¡JEFE DERROTADO!", bossBack:l=>`Vuelve en nv. ${l}`, bossHitFeed:(k,h,m)=>`¡${k} golpeó al jefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`vuelve en ${s} s`,
@@ -1136,6 +1151,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   duelRoundBy:n=>`${n} vence a rodada!`, duelWinner:n=>`${n} vence o duelo!`,
   gotNew:"Novo visual!", gotWear:"Usar agora", gotLater:"Depois", bpOverClaim:n=>`Pegar prêmios do passe (${n})`, weeklyLeft:d=>`faltam ${d} d`,
   adDouble:g=>`Ver um anúncio · moedas x2 (+${g})`, adGot:n=>`+${n} moedas do anúncio!`, adFail:"O anúncio não rodou. Tente mais tarde.",
+  inviteIn:n=>`Você entrou na sala de ${n}!`, inviteCame:n=>`${n} entrou pelo seu convite!`,
   inviteFriend:"Convidar um amigo", invite:"Convidar", inviteCopied:"Link copiado! Mande para um amigo jogar nesta sala.", inviteJoin:"Entrando na sala do seu amigo…", inviteManual:"Copie este link de convite:",
   weeklyShort:"Semanal", weeklyTag:d=>`Modo da semana · faltam ${d} dia${d>1?"s":""}`,
   bossBoardN:n=>`Pontos de chefe · ${n} jogadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`Melhor atacante com ${n} pontos!`, bossName:"CHEFE", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} derrubou o chefe! 👹 Vem aí o nv. ${l}`:`O chefe caiu! Vem aí o nv. ${l}`, bossDownT:"CHEFE DERROTADO!", bossBack:l=>`Ele volta no nv. ${l}`, bossHitFeed:(k,h,m)=>`${k} acertou o chefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`volta em ${s} s`,
@@ -1255,6 +1271,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   duelRoundBy:n=>`${n} remporte la manche !`, duelWinner:n=>`${n} remporte le duel !`,
   gotNew:"Nouvelle apparence !", gotWear:"Porter", gotLater:"Plus tard", bpOverClaim:n=>`Récupérer les récompenses du passe (${n})`, weeklyLeft:d=>`encore ${d} j`,
   adDouble:g=>`Regarder une pub · pièces x2 (+${g})`, adGot:n=>`+${n} pièces grâce à la pub !`, adFail:"La pub ne s'est pas lancée. Réessaie plus tard.",
+  inviteIn:n=>`Tu as rejoint le salon de ${n} !`, inviteCame:n=>`${n} est arrivé grâce à ton invitation !`,
   inviteFriend:"Inviter un ami", invite:"Inviter", inviteCopied:"Lien copié ! Envoie-le à un ami pour jouer dans ce salon.", inviteJoin:"Tu rejoins le salon de ton ami…", inviteManual:"Copie ce lien d'invitation :",
   weeklyShort:"Semaine", weeklyTag:d=>`Mode de la semaine · encore ${d} jour${d>1?"s":""}`,
   bossBoardN:n=>`Points boss · ${n} joueurs`, bossHitsN:n=>`${n} coups`, bossWin:n=>`Meilleur raider avec ${n} points !`, bossName:"BOSS", bossKO:"K.O. ! +30", bossDownFeed:(k,l)=>k?`${k} a terrassé le boss ! 👹 Niv. ${l} en approche`:`Le boss est tombé ! Niv. ${l} en approche`, bossDownT:"BOSS VAINCU !", bossBack:l=>`Il revient au niv. ${l}`, bossHitFeed:(k,h,m)=>`${k} a touché le boss ! ❤ ${h}/${m}`, bossLv:n=>`Niv. ${n}`, bossRespawn:s=>`revient dans ${s} s`,
@@ -1374,6 +1391,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   duelRoundBy:n=>`${n} holt die Runde!`, duelWinner:n=>`${n} gewinnt das Duell!`,
   gotNew:"Neuer Skin!", gotWear:"Jetzt tragen", gotLater:"Später", bpOverClaim:n=>`Pass-Belohnungen abholen (${n})`, weeklyLeft:d=>`noch ${d} T.`,
   adDouble:g=>`Werbung ansehen · Münzen x2 (+${g})`, adGot:n=>`+${n} Münzen durch die Werbung!`, adFail:"Die Werbung lief nicht. Versuch es später.",
+  inviteIn:n=>`Du bist im Raum von ${n}!`, inviteCame:n=>`${n} ist über deine Einladung da!`,
   inviteFriend:"Freund einladen", invite:"Einladen", inviteCopied:"Link kopiert! Schick ihn einem Freund, um in diesem Raum zu spielen.", inviteJoin:"Du gehst in den Raum deines Freundes…", inviteManual:"Kopiere diesen Einladungslink:",
   weeklyShort:"Woche", weeklyTag:d=>`Wochenmodus · noch ${d} Tag${d>1?"e":""}`,
   bossBoardN:n=>`Bosspunkte · ${n} Spieler`, bossHitsN:n=>`${n} Treffer`, bossWin:n=>`Bester Raider mit ${n} Punkten!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} hat den Boss besiegt! 👹 St. ${l} kommt`:`Der Boss ist gefallen! St. ${l} kommt`, bossDownT:"BOSS BESIEGT!", bossBack:l=>`Er kommt auf St. ${l} zurück`, bossHitFeed:(k,h,m)=>`${k} hat den Boss getroffen! ❤ ${h}/${m}`, bossLv:n=>`St. ${n}`, bossRespawn:s=>`zurück in ${s} s`,
@@ -1493,6 +1511,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   duelRoundBy:n=>`${n} 赢下本局！`, duelWinner:n=>`${n} 赢得决斗！`,
   gotNew:"新皮肤！", gotWear:"立即装备", gotLater:"稍后", bpOverClaim:n=>`领取通行证奖励（${n}）`, weeklyLeft:d=>`剩${d}天`,
   adDouble:g=>`看广告 · 金币翻倍（+${g}）`, adGot:n=>`广告奖励 +${n} 金币！`, adFail:"广告没有播放，请稍后再试。",
+  inviteIn:n=>`你进入了 ${n} 的房间！`, inviteCame:n=>`${n} 通过你的邀请进来了！`,
   inviteFriend:"邀请朋友", invite:"邀请", inviteCopied:"邀请链接已复制！发给朋友就能来这个房间一起玩。", inviteJoin:"正在进入朋友的房间…", inviteManual:"复制这个邀请链接：",
   weeklyShort:"本周", weeklyTag:d=>`本周模式 · 还剩 ${d} 天`,
   bossBoardN:n=>`首领分 · ${n} 名玩家`, bossHitsN:n=>`命中 ${n} 次`, bossWin:n=>`以 ${n} 分成为最强讨伐者！`, bossName:"首领", bossKO:"击倒！+30", bossDownFeed:(k,l)=>k?`${k} 击倒了首领！👹 ${l} 级即将来袭`:`首领倒下了！${l} 级即将来袭`, bossDownT:"首领被击倒！", bossBack:l=>`将以 ${l} 级复活`, bossHitFeed:(k,h,m)=>`${k} 击中了首领！❤ ${h}/${m}`, bossLv:n=>`${n} 级`, bossRespawn:s=>`${s} 秒后复活`,
@@ -1612,6 +1631,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   duelRoundBy:n=>`${n}がラウンド獲得！`, duelWinner:n=>`${n}がデュエルに勝利！`,
   gotNew:"新しいスキン！", gotWear:"すぐ装備", gotLater:"あとで", bpOverClaim:n=>`パス報酬を受け取る（${n}）`, weeklyLeft:d=>`残り${d}日`,
   adDouble:g=>`広告を見てコイン2倍（+${g}）`, adGot:n=>`広告で +${n} コイン！`, adFail:"広告を再生できませんでした。あとで試してね。",
+  inviteIn:n=>`${n} の部屋に入りました！`, inviteCame:n=>`${n} が招待リンクから来ました！`,
   inviteFriend:"友だちを招待", invite:"招待", inviteCopied:"招待リンクをコピーしました！友だちに送るとこの部屋で一緒に遊べます。", inviteJoin:"友だちの部屋に入ります…", inviteManual:"この招待リンクをコピーしてね：",
   weeklyShort:"今週", weeklyTag:d=>`今週のモード · 残り${d}日`,
   bossBoardN:n=>`ボスポイント · ${n}人`, bossHitsN:n=>`${n}ヒット`, bossWin:n=>`${n}ポイントでトップレイダー！`, bossName:"ボス", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}がボスを倒した！👹 Lv.${l}が来る`:`ボスが倒れた！Lv.${l}が来る`, bossDownT:"ボス撃破！", bossBack:l=>`Lv.${l}で復活`, bossHitFeed:(k,h,m)=>`${k}がボスにヒット！❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}秒後に復活`,
@@ -1731,6 +1751,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   duelRoundBy:n=>`${n} 라운드 승리!`, duelWinner:n=>`${n} 결투 승리!`,
   gotNew:"새 스킨!", gotWear:"바로 착용", gotLater:"나중에", bpOverClaim:n=>`패스 보상 받기 (${n})`, weeklyLeft:d=>`${d}일 남음`,
   adDouble:g=>`광고 보고 코인 2배 (+${g})`, adGot:n=>`광고 보상 +${n} 코인!`, adFail:"광고를 못 불러왔어요. 잠시 뒤에 다시 해보세요.",
+  inviteIn:n=>`${n}의 방에 들어왔어요!`, inviteCame:n=>`${n} 님이 초대 링크로 들어왔어요!`,
   inviteFriend:"친구 초대", invite:"초대", inviteCopied:"초대 링크를 복사했어요! 친구에게 보내면 이 방에서 같이 할 수 있어요.", inviteJoin:"친구 방으로 들어가요…", inviteManual:"이 초대 링크를 복사하세요:",
   weeklyShort:"주간", weeklyTag:d=>`이번 주 모드 · ${d}일 남음`,
   bossBoardN:n=>`보스 점수 · ${n}명`, bossHitsN:n=>`${n}번 공격`, bossWin:n=>`${n}점으로 최고의 공격대원!`, bossName:"보스", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}이(가) 보스를 쓰러뜨렸어요! 👹 Lv.${l} 등장 예정`:`보스가 쓰러졌어요! Lv.${l} 등장 예정`, bossDownT:"보스 처치!", bossBack:l=>`Lv.${l}로 돌아와요`, bossHitFeed:(k,h,m)=>`${k} 보스 공격! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}초 후 부활`,
@@ -3991,7 +4012,7 @@ function netPlay(now){ const q=NET.q; if(!NET.buf) NET.buf=1;
     else { NET.playing=false; NET.under=(NET.under||0)+1; NET.underT=now;   // ran dry: hold a bit more from now on
       if(NET.buf<3) { NET.buf++; netLeadUpdate(); } } }
   if(NET.buf>1&&now-(NET.underT||0)>20000){ NET.buf--; NET.underT=now; } }   // smooth for a while: tighten again
-function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; try{ $('inviteBtn').hidden=true; const S=window.__cgSDK; if(S&&S.game&&S.game.leftRoom) S.game.leftRoom(); }catch(e){} if(ws) try{ ws.close(); }catch(e){} }
+function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; NET.host=null; try{ $('inviteBtn').hidden=true; const S=window.__cgSDK; if(S&&S.game&&S.game.leftRoom) S.game.leftRoom(); }catch(e){} if(ws) try{ ws.close(); }catch(e){} }
 function netSkinId(){ return skin===PHOTO_SKIN||!skin?'basic':skin.id; }
 const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie','gold','hill','duel','boss'];
 let netWant=true; try{ netWant=localStorage.getItem('ttang-net')!=='off'; }catch(e){}
@@ -4011,7 +4032,7 @@ function netBegin(){
   const url=netURL(); if(!url){ toast(L.netNoServer); return; }
   let ws; try{ ws=new WebSocket(url); }catch(e){ toast(L.netFail); return; }
   NET.ws=ws; NET.state='connecting'; NET.q=[]; NET.leadAt=0; toast(L.netConnecting);
-  ws.onopen=()=>{ const inv=NET.invite&&NET.invite.mode===modeKey?NET.invite.room:undefined; NET.invite=null; ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId(),frame:myFrame()||'',big:!!bigMap,mode:modeKey,teams:teamCount,room:inv})); };
+  ws.onopen=()=>{ const I=NET.invite&&NET.invite.mode===modeKey?NET.invite:null; NET.invite=null; NET.host=I&&I.via?{id:I.via,name:I.name}:null; ws.send(JSON.stringify({t:'join',name:myName,col:skin.col,skin:netSkinId(),frame:myFrame()||'',big:!!bigMap,mode:modeKey,teams:teamCount,room:I?I.room:undefined,via:I?I.via:undefined})); };
   ws.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(err){ return; }
     if(m.t==='hello'){ netHello(m); netEnterUI(); if(m.wait) toast(mode.survival&&!m.over?L.netWaitRound:L.netNextRound); }
     else if(m.t==='reset'){ if(NET.state!=='on') return; NET.q=[]; netHello({...m,you:NET.you}); if($('startOv').hidden) netEnterUI(); }
@@ -4036,10 +4057,10 @@ function netStat(p,s,h){ if(s==null) return; if(mode.gold) p.gold=s; else if(mod
 function netHill(h){ if(!h) return; const was=hill; hill={x:h[0],y:h[1]}; hillNext=h[2]>=0?{x:h[2],y:h[3]}:null; hillMoveAt=h[4]; hillZ=h[5]; }
 function netBoss(b){ if(!b){ boss=null; return; } const p=NET.byId[b[0]]; if(!p) return; if(!p.boss){ netBossLook(p,true); netTint(p); } boss=p; p.hp=b[1]; p.maxHp=b[2]; p.level=b[3]; p.respawnAt=b[4]?gt+b[4]:0; }
 function netDuelScore(s){ if(!duel) return; const g=id=>{ const r=(s||[]).find(x=>x[0]===id); return r?r[1]:0; }; duel.score=[g(NET.you),duel.b?g(duel.b.id):0]; }
-function netPlayer(m){ const sk=netSkinOf(m.skin,m.col), p=mkPlayer(m.id,m.name,sk.col,!!m.bot); p.skin=sk; p.netOn=true; p.team=m.team||m.id; p.frame=FRAME_COL[m.frame]?m.frame:null; netBossLook(p,m.boss);
+function netPlayer(m){ const sk=netSkinOf(m.skin,m.col), p=mkPlayer(m.id,m.name,sk.col,!!m.bot); p.via=m.via|0; p.skin=sk; p.netOn=true; p.team=m.team||m.id; p.frame=FRAME_COL[m.frame]?m.frame:null; netBossLook(p,m.boss);
   const tid=m.team||m.id; if(mode.infect&&(!lands[tid-1]||!lands[tid-1].name||!players.some(q=>q.team===tid))){ const t={id:tid,name:L.teamOf(m.name),area:0,pat:sk.pat||''}; setColor(t,sk.col); lands[tid-1]=t; }
   netTint(p); return p; }
-function inviteParams(){ return {room:String(NET.room),mode:modeKey,big:bigMap?'1':'',teams:modeKey==='team'?String(teamCount):''}; }
+function inviteParams(){ return {room:String(NET.room),mode:modeKey,big:bigMap?'1':'',teams:modeKey==='team'?String(teamCount):'',f:String(NET.you||''),n:String(myName||'').slice(0,12)}; }
 function inviteLink(){ const p=inviteParams(), S=window.__cgSDK;
   if(S&&S.game&&S.game.inviteLink){ try{ return S.game.inviteLink(p); }catch(e){} }
   const u=new URL(location.href); u.search=''; u.hash=''; for(const k in p) if(p[k]) u.searchParams.set(k,p[k]); return u.toString(); }
@@ -4052,7 +4073,7 @@ $('inviteBtn').onclick=copyInvite;
 // arriving from an invite (a ?room= link, or CrazyGames' invite / instant multiplayer): go straight into that room
 function joinInvite(p){ if(!p||!p.room) return; const k=String(p.mode||'normal'); if(!ONLINE_MODES.includes(k)||!MODES[k]) return;
   const room=parseInt(p.room,10); if(!(room>0)) return;
-  NET.invite={room,mode:k}; netWant=true; bigMap=p.big==='1'; if(p.teams) teamCount=parseInt(p.teams,10)||teamCount;
+  NET.invite={room,mode:k,via:parseInt(p.f,10)||0,name:String(p.n||'').slice(0,12)}; netWant=true; bigMap=p.big==='1'; if(p.teams) teamCount=parseInt(p.teams,10)||teamCount;
   if(mode&&mode.online&&NET.state!=='off'){ netClose(); }
   setup(k); try{ buildModes(); }catch(e){}
   settings.tutSeen=true; saveSettings(); toast(L.inviteJoin);
@@ -4060,7 +4081,7 @@ function joinInvite(p){ if(!p||!p.room) return; const k=String(p.mode||'normal')
 window.__cgJoin=p=>{ try{ joinInvite(p); }catch(e){} };
 window.__cgInstant=()=>{ try{ if(!$('startOv').hidden&&!NET.invite){ settings.tutSeen=true; saveSettings(); netWant=true; if(!ONLINE_MODES.includes(modeKey)) setup('normal'); $('startOv').hidden=true; begin(); } }catch(e){} };
 function netHello(m){
-  NET.state='on'; NET.you=m.you; NET.room=m.room; setTimeout(()=>{ try{ paintInvite(); }catch(e){} },0); NET.over=!!m.over; TICK=m.tick; N=m.N;
+  NET.state='on'; NET.you=m.you; NET.room=m.room; if(NET.host){ const h=(m.players||[]).find(q=>q.id===NET.host.id); if(h){ NET.host.name=h.name; setTimeout(()=>toast(L.inviteIn(h.name)),400); } else NET.host=null; } setTimeout(()=>{ try{ paintInvite(); }catch(e){} },0); NET.over=!!m.over; TICK=m.tick; N=m.N;
   mode={...makeMode(m.mode),online:true,N:m.N}; if(m.teams) mode.teams=m.teams; if(m.time) mode.time=m.time; if(m.zTime) mode.zTime=m.zTime; if(m.duelRound) DUEL_ROUND=m.duelRound;
   capT=new Float64Array(N*N); floats=[]; owner=b64u8(m.owner); trail=b64u8(m.trail); gold=m.gold?b64u8(m.gold):new Uint8Array(N*N); goldN=0; for(let c=0;c<N*N;c++) if(gold[c]) goldN++;
   snow=new Map(); hill=null; hillNext=null; boss=null; lbb=[]; capMark=new Int32Array(N*N); capStamp=0; bfsQ=new Int32Array(N*N); mark=new Int32Array(N*N); dq=new Int32Array(N*N);
@@ -4137,6 +4158,7 @@ function netApply(m){
   const predDone=NET.predCap&&m.e.some(e=>e.k==='cap'&&e.id===NET.you);
   if(me&&me.sx!=null){ me.x=me.sx; me.y=me.sy; me.dir=me.sdir; me.trailCells=me.srvTrail||me.trailCells; }
   for(const e of m.e){
+    if(e.k==='join'&&e.via&&e.via===NET.you&&e.id!==NET.you) toast(L.inviteCame(e.name));
     if(e.k==='join'||e.k==='meta'){ const old=NET.byId[e.id];
       if(e.k==='meta'&&old){ old.skin=netSkinOf(e.skin,e.col); old.name=e.name; netBossLook(old,e.boss); netTint(old); if(e.boss) boss=old; }
       else { if(old) players.splice(players.indexOf(old),1); const p=netPlayer(e); players.push(p); NET.byId[e.id]=p; if(!mode.teams&&!mode.infect) lands[e.id-1]=p;
@@ -5161,7 +5183,8 @@ function render(now){
       particles.push({x:hx-DX[p.dir]*.4+(Math.random()-.5)*.6,y:hy-DY[p.dir]*.4+(Math.random()-.5)*.6,vx:Math.cos(a)*v,vy:Math.sin(a)*v+(sk.spark==='sakura'?.006:0),life:.75,col,sz:sk.spark==='sakura'?.26:.18,round:true,a:.9}); }
     const top=drawHead(ctx,cx,cy,hs,p.col,p.dark,p.dir,zom?'zombie':(sk?sk.deco:''),zom?null:sk);
     if(ov&&p!==fol) continue;
-    const nmT=p.boss?`${p.name} Lv.${p.level}`:p.name;
+    const fr=mode.online&&p!==me&&((NET.you&&p.via===NET.you)||(NET.host&&p.id===NET.host.id)||(me&&me.via&&p.id===me.via));   // my friend from an invite
+    const nmT=p.boss?`${p.name} Lv.${p.level}`:fr?'♥ '+p.name:p.name;
     ctx.lineWidth=4;ctx.strokeStyle=C.nameStroke;ctx.strokeText(nmT,cx,top-4);
     ctx.fillStyle=p.boss?'#c81e3a':p===me||p===fol?p.dark:C.ink;ctx.fillText(nmT,cx,top-4);
     const bt=badgeOf(p); if(bt>=0){ const fs=Math.max(11,S*.5), bh=fs*1.05, tw=ctx.measureText(nmT).width; drawShield(ctx,cx-tw/2-bh*.95,top-4-fs*.98,bh,bt); }
@@ -5565,8 +5588,8 @@ checkSeason(); bpCheckSeason(); dailyRoll(); paintDailyDot();
 setInterval(()=>{ if(daily&&daily.day!==dayKey()){ dailyRoll(); paintDailyDot(); if(!$('dailyOv').hidden) buildDaily(); } },60000);
 buildSkins(); paintSkinCur(); buildModes(); renderAch(); paintCoins(); try{ paintNetRow(); }catch(e){}
 // opened from a friend's invite link (?room=…&mode=…): straight into their room (CrazyGames passes these through its SDK instead)
-try{ const q=new URLSearchParams(location.search); if(q.get('room')&&!/crazygames/.test(location.host)){ const p={room:q.get('room'),mode:q.get('mode'),big:q.get('big'),teams:q.get('teams')};
-  for(const k of ['room','mode','big','teams']) q.delete(k); history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
+try{ const q=new URLSearchParams(location.search); if(q.get('room')&&!/crazygames/.test(location.host)){ const p={room:q.get('room'),mode:q.get('mode'),big:q.get('big'),teams:q.get('teams'),f:q.get('f'),n:q.get('n')};
+  for(const k of ['room','mode','big','teams','f','n']) q.delete(k); history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
   setTimeout(()=>joinInvite(p),300); } }catch(e){}
 if(bpNote) setTimeout(()=>achToast({id:'_bp',name:L.bpAuto(bpNote),label:L.bpTitle}),1600);
 try{ tourSettle(); paintTour(); }catch(e){}

@@ -151,7 +151,7 @@ function humans(r){ let n=0; for(const p of r.slots) if(p&&!p.bot) n++; return n
 function count(r){ let n=0; for(const p of r.slots) if(p) n++; return n; }
 function pickRoom(cfg){ let best=null; for(const r of rooms){ if(r.cfg.key!==cfg.key) continue; const h=humans(r); if(h<r.cfg.humans&&(!best||h>humans(best))) best=r; } return best||makeRoom(cfg); }
 function freeSlot(r){ for(let i=1;i<=r.cfg.max;i++) if(!r.slots[i]) return i; return 0; }
-function meta(p){ return {id:p.id,name:p.name,col:p.col,skin:p.skin,bot:!!p.bot,team:p.team,boss:!!p.boss,frame:p.frame||''}; }
+function meta(p){ return {id:p.id,name:p.name,col:p.col,skin:p.skin,bot:!!p.bot,team:p.team,boss:!!p.boss,frame:p.frame||'',via:p.via||0}; }
 // Zombie: the first few in become zombies, latecomers join the horde
 const zStart=n=>Math.max(2,Math.round(n*.08));
 function zJoinTeam(r){ let z=0,n=0; for(const q of r.slots) if(q){ n++; if(q.team===2) z++; }
@@ -160,8 +160,9 @@ function zAssign(r){ const ps=r.slots.filter(Boolean).sort(()=>Math.random()-.5)
 function smallestTeam(r){ const n=new Array(r.cfg.teams+1).fill(0); for(const q of r.slots) if(q) n[q.team]++; let b=1; for(let t=2;t<=r.cfg.teams;t++) if(n[t]<n[b]||(n[t]===n[b]&&Math.random()<.5)) b=t; return b; }
 function addPlayer(r,o){ const id=freeSlot(r); if(!id) return null;
   const p={id,name:o.name,col:o.col,skin:o.skin,frame:o.frame||'',bot:!!o.bot,ws:o.ws||null,alive:false,x:0,y:0,dir:0,trail:[],exit:-1,kills:0,area:0,respawnAt:0,q:[],ai:{},team:id};
+  const host=o.via?r.slots[o.via]:null; if(host&&!host.bot) p.via=o.via;   // came in through this player's invite link
   if(r.cfg.zombie) p.team=zJoinTeam(r);
-  else if(r.cfg.teams) p.team=smallestTeam(r);
+  else if(r.cfg.teams) p.team=host&&!host.bot?host.team:smallestTeam(r);   // friends play on the same team
   else if(r.slots.some(q=>q&&q.team===id)){ // Infection: this slot's team colour is still in use, so take a free one
     const used=new Set(r.slots.filter(Boolean).map(q=>q.team)); for(let t=1;t<=r.cfg.max;t++) if(!used.has(t)){ p.team=t; break; } }
   r.slots[id]=p; r.ev.push({k:'join',...meta(p)}); return p; }
@@ -523,7 +524,7 @@ function onConnect(ws){
       const want=Number.isInteger(m.room)?rooms.find(r=>r.id===m.room&&r.cfg.key===cfg.key&&humans(r)<r.cfg.humans):null;   // a friend's invite link
       room=want||pickRoom(cfg); N=room.N;
       if(!freeSlot(room)){ const b=room.slots.find(p=>p&&p.bot&&!p.boss); if(b) removePlayer(room,b); }   // a person takes an AI's seat
-      me=addPlayer(room,{name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),frame:['gold','silver','bronze','rainbow','flame','ice','neon','champ','legend','diamond','immortal','cosmos'].includes(m.frame)?m.frame:'',ws});
+      me=addPlayer(room,{via:want&&Number.isInteger(m.via)?m.via:0,name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),frame:['gold','silver','bronze','rainbow','flame','ice','neon','champ','legend','diamond','immortal','cosmos'].includes(m.frame)?m.frame:'',ws});
       if(!me){ ws.send({t:'full'}); ws.close(); return; }
       fillBots(room); room.clients.add(ws);
       ws.send({t:'hello',you:me.id,wait:!canJoinNow(room),...snapshot(room)});
