@@ -3941,10 +3941,12 @@ function netSend(o){ if(NET.ws&&NET.ws.readyState===1) NET.ws.send(JSON.stringif
 // to hold that depth, so late or bunched packets from the server don't make everyone stutter
 function netPlay(now){ const q=NET.q; if(!NET.buf) NET.buf=1;
   while(q.length>NET.buf+4) netApply(q.shift());
-  if(!NET.playing){ if(q.length>=NET.buf){ NET.playing=true; lastTick=now-TICK; } else return; }
-  const rate=q.length>NET.buf+1?.82:q.length>NET.buf?.93:q.length<NET.buf?1.12:1;
-  if(now-lastTick>=TICK*rate){
-    if(q.length){ netApply(q.shift()); lastTick=Math.max(lastTick+TICK*rate,now-TICK*.5); }
+  if(!NET.playing){ if(q.length>=NET.buf){ NET.playing=true; lastTick=now-TICK; NET.dur=TICK; } else return; }
+  // each tick is shown for NET.dur ms, nudged a little faster or slower to keep the buffer at its target; the drawing
+  // interpolates over that same duration, so the head glides at an even pace instead of hitching at every tick
+  if(now-lastTick>=(NET.dur||TICK)){
+    if(q.length){ lastTick=Math.max(lastTick+(NET.dur||TICK),now-TICK*.5); netApply(q.shift());
+      const k=q.length-NET.buf; NET.dur=TICK*(k>=2?.88:k===1?.95:k<0?1.08:1); }
     else { NET.playing=false; NET.under=(NET.under||0)+1; NET.underT=now;   // ran dry: hold a bit more from now on
       if(NET.buf<3) { NET.buf++; NET.lead=Math.max(1,Math.min(6,Math.ceil((NET.rtt+TICK*.5)/TICK)+NET.buf-1)); } } }
   if(NET.buf>1&&now-(NET.underT||0)>20000){ NET.buf--; NET.underT=now; } }   // smooth for a while: tighten again
@@ -4968,9 +4970,10 @@ const fitS=()=>Math.min(W,H)*.9/N;
 const viewS=()=>!spectating?cellSize():free?freeCam.S:overview?fitS():cellSize();
 function render(now){
   const tNow=performance.now();
-  const a=paused?1:Math.min(1,(now-lastTick)/(TICK/speed));
+  const a=paused?1:Math.min(1,(now-lastTick)/(mode&&mode.online?(NET.dur||TICK):TICK/speed));
   const S=viewS(), ov=spectating&&(free?S<10:overview), fol=spectating&&!free?specTarget():null;
   const ip=p=>[p.px+(p.x-p.px)*a+.5,p.py+(p.y-p.py)*a+.5];
+  if(window.__lc&&me&&me.alive) window.__hp=ip(me);   // debug only: where my head is drawn this frame
   let target,k=.06;
   if(spectating){ if(free){target=[freeCam.x,freeCam.y];k=1;} else if(overview){target=[N/2,N/2];k=1;} else if(fol){target=ip(fol);k=.16;} else target=[camX,camY]; }
   else if(me.alive){target=ip(me);k=.25;}
