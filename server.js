@@ -79,7 +79,9 @@ function lbHttp(req,res){
     req.on('end',()=>{ let b; try{ b=JSON.parse(body); }catch(e){ res.writeHead(400,H); return res.end('{}'); }
       const id=str(b.id,40), key=str(b.key,64); if(!/^[A-Za-z0-9_-]{8,40}$/.test(id)||key.length<16){ res.writeHead(400,H); return res.end('{}'); }
       const old=LB.get(id), hk=hashKey(key); if(old&&old.key!==hk){ res.writeHead(403,H); return res.end('{}'); }
-      LB.set(id,{...lbClean(b),key:hk}); lbDirty=true; lbPrune(); res.writeHead(200,H); res.end('{"ok":1}'); });
+      const rec=lbClean(b), low=rec.name.toLowerCase(), taken=new Set(); for(const [k,v] of LB) if(k!==id&&v.season===rec.season) taken.add(String(v.name).toLowerCase());
+      if(taken.has(low)){ for(let n=2;n<1000;n++){ const sfx=String(n), nm=rec.name.slice(0,12-sfx.length)+sfx; if(!taken.has(nm.toLowerCase())){ rec.name=nm; break; } } }   // one name per player on the board
+      LB.set(id,{...rec,key:hk}); lbDirty=true; lbPrune(); res.writeHead(200,H); res.end('{"ok":1}'); });
     return; }
   res.writeHead(405,H); res.end('{}'); }
 
@@ -151,6 +153,15 @@ function humans(r){ let n=0; for(const p of r.slots) if(p&&!p.bot) n++; return n
 function count(r){ let n=0; for(const p of r.slots) if(p) n++; return n; }
 function pickRoom(cfg){ let best=null; for(const r of rooms){ if(r.cfg.key!==cfg.key) continue; const h=humans(r); if(h<r.cfg.humans&&(!best||h>humans(best))) best=r; } return best||makeRoom(cfg); }
 function freeSlot(r){ for(let i=1;i<=r.cfg.max;i++) if(!r.slots[i]) return i; return 0; }
+// no two players in a room share a name: an AI with my name takes another one; another person with it, and I get a number
+function botName(used){ let nm; do nm=BOT_NAMES[rnd(BOT_NAMES.length)]+(Math.random()<.5?rnd(99):''); while(used.has(nm.toLowerCase())); return nm; }
+function uniqueName(r,name){
+  const low=String(name).toLowerCase(), clash=r.slots.filter(q=>q&&q.name&&q.name.toLowerCase()===low);
+  for(const b of clash) if(b.bot&&!b.boss){ const used=new Set(r.slots.filter(Boolean).map(q=>String(q.name).toLowerCase())); used.add(low); b.name=botName(used); r.ev.push({k:'meta',...meta(b)}); }
+  const used=new Set(r.slots.filter(Boolean).map(q=>String(q.name).toLowerCase()));
+  if(!used.has(low)) return name;
+  for(let n=2;n<1000;n++){ const sfx=String(n), nm=String(name).slice(0,12-sfx.length)+sfx; if(!used.has(nm.toLowerCase())) return nm; }
+  return name; }
 function meta(p){ return {id:p.id,name:p.name,col:p.col,skin:p.skin,bot:!!p.bot,team:p.team,boss:!!p.boss,frame:p.frame||'',via:p.via||0}; }
 // Zombie: the first few in become zombies, latecomers join the horde
 const zStart=n=>Math.max(2,Math.round(n*.08));
@@ -171,7 +182,7 @@ function removePlayer(r,p){ if(p.alive) die(r,p,{type:'left'},true);
   r.slots[p.id]=null; r.ev.push({k:'leave',id:p.id}); }
 function fillBots(r){ if(process.env.NOBOTS) return;   // testing only
   N=r.N; const h=humans(r), FILL_TO=r.cfg.fill;
-  while(count(r)<FILL_TO&&count(r)<r.cfg.max){ const used=new Set(r.slots.filter(Boolean).map(p=>p.name)); let nm; do nm=BOT_NAMES[rnd(BOT_NAMES.length)]+(Math.random()<.5?rnd(99):''); while(used.has(nm));
+  while(count(r)<FILL_TO&&count(r)<r.cfg.max){ const used=new Set(r.slots.filter(Boolean).map(p=>p.name)); let nm; do nm=BOT_NAMES[rnd(BOT_NAMES.length)]+(Math.random()<.5?rnd(99):''); while(used.has(nm)||[...used].some(u=>String(u).toLowerCase()===nm.toLowerCase()));
     const b=addPlayer(r,{name:nm,col:BOT_COLS[rnd(BOT_COLS.length)],skin:BOT_SKINS[rnd(BOT_SKINS.length)],bot:true}); if(!b) break;
     if(canJoinNow(r)) b.respawnAt=Date.now()+rnd(1500); }
   while(count(r)>Math.max(FILL_TO,h)&&r.slots.some(p=>p&&p.bot&&!p.boss)){ const b=r.slots.find(p=>p&&p.bot&&!p.boss&&!p.alive)||r.slots.find(p=>p&&p.bot&&!p.boss); removePlayer(r,b); }
@@ -524,7 +535,7 @@ function onConnect(ws){
       const want=Number.isInteger(m.room)?rooms.find(r=>r.id===m.room&&r.cfg.key===cfg.key&&humans(r)<r.cfg.humans):null;   // a friend's invite link
       room=want||pickRoom(cfg); N=room.N;
       if(!freeSlot(room)){ const b=room.slots.find(p=>p&&p.bot&&!p.boss); if(b) removePlayer(room,b); }   // a person takes an AI's seat
-      me=addPlayer(room,{via:want&&Number.isInteger(m.via)?m.via:0,name:clean(m.name),col:okCol(m.col),skin:okSkin(m.skin),frame:['gold','silver','bronze','rainbow','flame','ice','neon','champ','legend','diamond','immortal','cosmos'].includes(m.frame)?m.frame:'',ws});
+      me=addPlayer(room,{via:want&&Number.isInteger(m.via)?m.via:0,name:uniqueName(room,clean(m.name)),col:okCol(m.col),skin:okSkin(m.skin),frame:['gold','silver','bronze','rainbow','flame','ice','neon','champ','legend','diamond','immortal','cosmos'].includes(m.frame)?m.frame:'',ws});
       if(!me){ ws.send({t:'full'}); ws.close(); return; }
       fillBots(room); room.clients.add(ws);
       ws.send({t:'hello',you:me.id,wait:!canJoinNow(room),...snapshot(room)});

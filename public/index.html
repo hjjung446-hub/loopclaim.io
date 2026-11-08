@@ -2445,7 +2445,9 @@ function rkRender(rows){
   RK.map=new Map();
   const li=(d,i)=>{ RK.map.set(String(d.id),d); return `<li class="rkRow ${d.id===mine?'you':''} ${i<3?'top'+(i+1):''}" tabindex="0" role="button" data-rk="${esc(String(d.id))}" aria-label="${esc(L.profileOf(String(d.name||'?')))}"><b>${i+1}</b>${tierBadge(Math.max(0,Math.min(TIERS.length-1,d.tier|0)),16)}${rkAv(d)}<span class="nm">${esc(String(d.name||'?'))}${(t=>t?`<small class="ttl">${esc(titleName(t))}</small>`:'')(rkTitle(d))}</span><span class="v">${val(d)}</span></li>`; };
   const key=week?'weekRp':'rp';
-  rows=rows.concat(rkBots()).sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,100);
+  { const real=new Set(rows.map(d=>String(d.name||'').toLowerCase()).concat(String(myName||'').toLowerCase()));   // an AI never shares a real player's name on the board
+    rows=rows.concat(rkBots().map(d=>real.has(String(d.name).toLowerCase())?Object.assign({},d,{name:String(d.name).slice(0,11)+'2'}):d)); }
+  rows=rows.sort((a,b)=>(b[key]||0)-(a[key]||0)).slice(0,100);
   let html=rows.map(li).join('');
   if(rank.games>0&&!rows.some(d=>d.id===mine)) html+=`<li class="gap">⋯</li><li class="rkRow you" tabindex="0" role="button" data-rk="_me"><b>–</b>${tierBadge(tierOf(rank.rp),16)}${rkAv({id:mine,_me:1})}<span class="nm">${esc(myName)}</span><span class="v">${week?L.rpGain(rank.week===wk?(rank.weekRp||0):0):rank.rp+' RP'}</span></li>`;
   box.innerHTML=html;
