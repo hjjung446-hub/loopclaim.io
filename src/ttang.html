@@ -4000,6 +4000,7 @@ function netBegin(){
 }
 function netEnterUI(){ $('startOv').hidden=true; $('overOv').hidden=true; $('toast').hidden=true; paintAccent();
   queue=[]; deathCam=me&&me.alive?null:{x:N/2,y:N/2}; cutMark=null; feedMute=false; $('meBox').hidden=!me.alive; $('tools').hidden=false; run={kills:0,best:0,t0:gt,paid:false}; SFX.start(); updateHud();
+  addStat('games'); unlock('first');   // online games count toward unlocks too (newbie menu, badges)
   if(mode.zombie) roleBanner();
   if(mode.duel&&duel) setTimeout(()=>{ if(duel&&mode.duel) streakBanner(L.duelRound(duel.round),duel.round>1?L.duelScore(duel.score[0],duel.score[1]):duel.b?L.duelVs(esc(duel.b.name)):''); },200); }
 const b64u8=s=>{ const b=atob(s), a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; };
@@ -4199,7 +4200,7 @@ function finishTutorial(){
 let rulesOpen=false;
 // first-timers go straight into the tutorial when they press Start (once); after that it lives under "How to play"
 // brand-new players see just Classic + Play; the other modes, map size, Ranked and Watch open after a few games
-const NEWBIE_GAMES=3, gamesPlayed=()=>(achState.stats&&achState.stats.games)||0;
+const NEWBIE_GAMES=0, gamesPlayed=()=>(achState.stats&&achState.stats.games)||0;
 let wasNewbie=null;
 function paintNewbie(){ const nb=gamesPlayed()<NEWBIE_GAMES, card=$('startOv'); if(!card) return;
   card.classList.toggle('newbie',nb);
