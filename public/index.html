@@ -4241,14 +4241,13 @@ $('tutOpen').onclick=startTutorial;
 $('tutSkip').onclick=()=>{ $('tools').hidden=true; $('meBox').hidden=true; toMenu(); };
 paintTutBtn();
 
-const startFromMenu=()=>firstTime()?begin():againWithAd(begin);   // Play on the menu counts toward the between-games ad too
-$('startBtn').onclick=startFromMenu;
+$('startBtn').onclick=begin;
 paintWinter();
 // spaces in a nickname show as underscores, right as you type
 $('nameIn').addEventListener('input',e=>{ const el=e.target, v=el.value; if(!/\s/.test(v)) return; const pos=el.selectionStart; el.value=v.replace(/\s/g,'_'); try{ el.setSelectionRange(pos,pos); }catch(err){} });
 $('watchStartBtn').onclick=()=>startSpectate(true);
 $('againBtn').onclick=()=>againAction==='watch'?startSpectate(true):againWithAd(begin);
-$('skinBtn').onclick=toMenu;
+$('skinBtn').onclick=()=>againWithAd(toMenu);   // leaving the result card counts toward the between-games ad, like Play again
 $('specPrev').onclick=()=>specCycle(-1); $('specNext').onclick=()=>specCycle(1);
 $('specAuto').onclick=specAuto; $('specMap').onclick=toggleMap; $('specExit').onclick=exitSpectate;
 for(const b of $('speeds').children) b.onclick=()=>setSpeed(+b.dataset.s);
@@ -4298,7 +4297,7 @@ addEventListener('keydown',e=>{
   if(settings.emotes!==false&&!card&&!start&&!$('tools').hidden&&/^Digit[1-9]$/.test(e.code)){ const em=myEmotes()[+e.code.slice(5)-1]; if(em){e.preventDefault();sendEmote(em);} return; }
   if(e.code in KEY){e.preventDefault();push(KEY[e.code]);return;}
   if(tag==='BUTTON') return;
-  if(e.code==='Space'||e.code==='Enter'){ if(card){e.preventDefault();$('againBtn').click();} else if(start){e.preventDefault();startFromMenu();} }
+  if(e.code==='Space'||e.code==='Enter'){ if(card){e.preventDefault();$('againBtn').click();} else if(start){e.preventDefault();begin();} }
 });
 let ts=null;
 addEventListener('touchstart',e=>{const t=e.touches[0];ts={x:t.clientX,y:t.clientY};},{passive:true});
