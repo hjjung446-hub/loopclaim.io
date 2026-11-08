@@ -187,6 +187,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 @keyframes gotPop{from{transform:scale(.7);opacity:0}}
 @media (prefers-reduced-motion:reduce){.gotCard{animation:none}}
 .bpClaimBtn{font:inherit;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(135deg,#ffd23f,#ffb020);color:#3a2700;box-shadow:0 2px 0 #c98a00}
+.adBtn{font:inherit;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(135deg,#7b5cff,#3d6bff);color:#fff;box-shadow:0 2px 0 #2c3fa8}
+.adBtn:disabled{background:var(--ground);color:var(--muted);box-shadow:none;cursor:default}
 .bpClaimBtn:disabled{background:var(--ground);color:var(--muted);box-shadow:none;cursor:default}
 .modes .exBtn .wkTx{display:grid;justify-items:center;line-height:1.1;min-width:0}
 .modes .exBtn .wkTx>span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -715,7 +717,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
       <div><span>Survived</span><strong id="stTime">0s</strong></div>
     </div>
     <ol class="res" id="resList" hidden></ol>
-    <div class="rewards"><p class="coinGain" id="coinGain" hidden></p><p class="bpGain" id="bpGain" hidden></p><button class="bpClaimBtn" id="overClaim" type="button" hidden></button></div>
+    <div class="rewards"><p class="coinGain" id="coinGain" hidden></p><p class="bpGain" id="bpGain" hidden></p><button class="bpClaimBtn" id="overClaim" type="button" hidden></button><button class="adBtn" id="adDouble" type="button" hidden></button></div>
     <div class="btns">
       <button class="btn" id="againBtn" type="button">Play again</button>
       <button class="btn ghost" id="skinBtn" type="button">Change mode · skin</button>
@@ -744,6 +746,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     const rt=+(S.data.getItem(T)||0), lt=+(g0.call(LS(),T)||0); let changed=false;
     if(rt>lt){ for(const k of KEYS){ const rv=S.data.getItem(k), lv=g0.call(LS(),k); if(rv!=null&&rv!==lv){ s0.call(LS(),k,rv); changed=true; } } s0.call(LS(),T,String(rt)); }
     else { for(const k of KEYS){ const lv=g0.call(LS(),k); if(lv!=null&&S.data.getItem(k)!==lv) S.data.setItem(k,lv); } S.data.setItem(T,String(lt||Date.now())); }
+    try{ const g=S.game; if(g&&g.settings&&window.__cgMute) window.__cgMute(!!g.settings.muteAudio); if(g&&g.addSettingsChangeListener) g.addSettingsChangeListener(st=>{ if(window.__cgMute) window.__cgMute(!!(st&&st.muteAudio)); }); }catch(e){}
     sdk=S; if(pendG){ try{ S.game[pendG](); }catch(e){} pendG=null; }
     if(changed){ let again=false; try{ again=sessionStorage.getItem('cg-synced')==='1'; sessionStorage.setItem('cg-synced','1'); }catch(e){} if(!again) location.reload(); }
   }catch(e){} };
@@ -903,6 +906,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   duelRound:n=>`Round ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Round won!", duelRoundLose:"Round lost", duelDraw:"Draw!", duelTimeUp:"Time's up", duelWinT:"Duel won!", duelLoseT:"Duel lost", duelLede:(s,b,w)=>w?`Win streak ${s} · best ${b}. The next opponent will be tougher.`:`Streak over. Best streak: ${b}.`,
   duelRoundBy:n=>`${n} takes the round!`, duelWinner:n=>`${n} wins the duel!`,
   gotNew:"New skin!", gotWear:"Wear now", gotLater:"Later", bpOverClaim:n=>`Claim pass rewards (${n})`, weeklyLeft:d=>`${d}d left`,
+  adDouble:g=>`Watch an ad · double coins (+${g})`, adGot:n=>`+${n} coins from the ad!`, adFail:"The ad didn't play. Try again later.",
   weeklyShort:"This week", weeklyTag:d=>`Weekly mode · ${d} day${d>1?"s":""} left`,
   bossBoardN:n=>`Boss points · ${n} players`, bossHitsN:n=>`${n} hits`, bossWin:n=>`Top raider with ${n} points!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} took the boss down! 👹 Lv.${l} incoming`:`The boss fell! Lv.${l} incoming`, bossDownT:"BOSS DOWN!", bossBack:l=>`It comes back at Lv.${l}`, bossHitFeed:(k,h,m)=>`${k} hit the boss! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`back in ${s}s`,
   youZombie:"YOU'RE A ZOMBIE!", youZombieSub:"Catch the survivors before time runs out", youBoss:"YOU'RE THE BOSS!", youBossSub:"Everyone is after you. Catch raiders for points (+10 each)", youBossTag:"Boss",
@@ -1020,6 +1024,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   duelRound:n=>`Ronda ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"¡Ronda ganada!", duelRoundLose:"Ronda perdida", duelDraw:"¡Empate!", duelTimeUp:"Se acabó el tiempo", duelWinT:"¡Duelo ganado!", duelLoseT:"Duelo perdido", duelLede:(s,b,w)=>w?`Racha de ${s} · mejor ${b}. El siguiente rival será más duro.`:`Se acabó la racha. Mejor racha: ${b}.`,
   duelRoundBy:n=>`¡${n} gana la ronda!`, duelWinner:n=>`¡${n} gana el duelo!`,
   gotNew:"¡Nuevo aspecto!", gotWear:"Usar ya", gotLater:"Luego", bpOverClaim:n=>`Recoger premios del pase (${n})`, weeklyLeft:d=>`quedan ${d} d`,
+  adDouble:g=>`Ver un anuncio · monedas x2 (+${g})`, adGot:n=>`¡+${n} monedas del anuncio!`, adFail:"El anuncio no se reprodujo. Inténtalo más tarde.",
   weeklyShort:"Semanal", weeklyTag:d=>`Modo de la semana · quedan ${d} día${d>1?"s":""}`,
   bossBoardN:n=>`Puntos de jefe · ${n} jugadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`¡Mejor asaltante con ${n} puntos!`, bossName:"JEFE", bossKO:"¡K.O.! +30", bossDownFeed:(k,l)=>k?`¡${k} derribó al jefe! 👹 Llega el nv. ${l}`:`¡El jefe cayó! Llega el nv. ${l}`, bossDownT:"¡JEFE DERROTADO!", bossBack:l=>`Vuelve en nv. ${l}`, bossHitFeed:(k,h,m)=>`¡${k} golpeó al jefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`vuelve en ${s} s`,
   youZombie:"¡ERES UN ZOMBI!", youZombieSub:"Atrapa a los supervivientes antes de que acabe el tiempo", youBoss:"¡ERES EL JEFE!", youBossSub:"Todos van a por ti. Atrapa asaltantes para sumar puntos (+10)", youBossTag:"Jefe",
@@ -1137,6 +1142,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   duelRound:n=>`Rodada ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Rodada vencida!", duelRoundLose:"Rodada perdida", duelDraw:"Empate!", duelTimeUp:"Acabou o tempo", duelWinT:"Duelo vencido!", duelLoseT:"Duelo perdido", duelLede:(s,b,w)=>w?`Sequência de ${s} · melhor ${b}. O próximo rival será mais forte.`:`Sequência encerrada. Melhor: ${b}.`,
   duelRoundBy:n=>`${n} vence a rodada!`, duelWinner:n=>`${n} vence o duelo!`,
   gotNew:"Novo visual!", gotWear:"Usar agora", gotLater:"Depois", bpOverClaim:n=>`Pegar prêmios do passe (${n})`, weeklyLeft:d=>`faltam ${d} d`,
+  adDouble:g=>`Ver um anúncio · moedas x2 (+${g})`, adGot:n=>`+${n} moedas do anúncio!`, adFail:"O anúncio não rodou. Tente mais tarde.",
   weeklyShort:"Semanal", weeklyTag:d=>`Modo da semana · faltam ${d} dia${d>1?"s":""}`,
   bossBoardN:n=>`Pontos de chefe · ${n} jogadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`Melhor atacante com ${n} pontos!`, bossName:"CHEFE", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} derrubou o chefe! 👹 Vem aí o nv. ${l}`:`O chefe caiu! Vem aí o nv. ${l}`, bossDownT:"CHEFE DERROTADO!", bossBack:l=>`Ele volta no nv. ${l}`, bossHitFeed:(k,h,m)=>`${k} acertou o chefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`volta em ${s} s`,
   youZombie:"VOCÊ É UM ZUMBI!", youZombieSub:"Pegue os sobreviventes antes que o tempo acabe", youBoss:"VOCÊ É O CHEFE!", youBossSub:"Todos estão atrás de você. Pegue atacantes para ganhar pontos (+10)", youBossTag:"Chefe",
@@ -1254,6 +1260,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   duelRound:n=>`Manche ${n}`, duelVs:n=>`contre ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Manche gagnée !", duelRoundLose:"Manche perdue", duelDraw:"Égalité !", duelTimeUp:"Temps écoulé", duelWinT:"Duel gagné !", duelLoseT:"Duel perdu", duelLede:(s,b,w)=>w?`Série de ${s} · record ${b}. Le prochain adversaire sera plus coriace.`:`Série terminée. Record : ${b}.`,
   duelRoundBy:n=>`${n} remporte la manche !`, duelWinner:n=>`${n} remporte le duel !`,
   gotNew:"Nouvelle apparence !", gotWear:"Porter", gotLater:"Plus tard", bpOverClaim:n=>`Récupérer les récompenses du passe (${n})`, weeklyLeft:d=>`encore ${d} j`,
+  adDouble:g=>`Regarder une pub · pièces x2 (+${g})`, adGot:n=>`+${n} pièces grâce à la pub !`, adFail:"La pub ne s'est pas lancée. Réessaie plus tard.",
   weeklyShort:"Semaine", weeklyTag:d=>`Mode de la semaine · encore ${d} jour${d>1?"s":""}`,
   bossBoardN:n=>`Points boss · ${n} joueurs`, bossHitsN:n=>`${n} coups`, bossWin:n=>`Meilleur raider avec ${n} points !`, bossName:"BOSS", bossKO:"K.O. ! +30", bossDownFeed:(k,l)=>k?`${k} a terrassé le boss ! 👹 Niv. ${l} en approche`:`Le boss est tombé ! Niv. ${l} en approche`, bossDownT:"BOSS VAINCU !", bossBack:l=>`Il revient au niv. ${l}`, bossHitFeed:(k,h,m)=>`${k} a touché le boss ! ❤ ${h}/${m}`, bossLv:n=>`Niv. ${n}`, bossRespawn:s=>`revient dans ${s} s`,
   youZombie:"TU ES UN ZOMBIE !", youZombieSub:"Attrape les survivants avant la fin du temps", youBoss:"TU ES LE BOSS !", youBossSub:"Tout le monde te traque. Attrape des raiders pour marquer (+10)", youBossTag:"Boss",
@@ -1371,6 +1378,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   duelRound:n=>`Runde ${n}`, duelVs:n=>`gegen ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Runde gewonnen!", duelRoundLose:"Runde verloren", duelDraw:"Unentschieden!", duelTimeUp:"Zeit abgelaufen", duelWinT:"Duell gewonnen!", duelLoseT:"Duell verloren", duelLede:(s,b,w)=>w?`Serie ${s} · Bestwert ${b}. Der nächste Gegner wird härter.`:`Serie vorbei. Beste Serie: ${b}.`,
   duelRoundBy:n=>`${n} holt die Runde!`, duelWinner:n=>`${n} gewinnt das Duell!`,
   gotNew:"Neuer Skin!", gotWear:"Jetzt tragen", gotLater:"Später", bpOverClaim:n=>`Pass-Belohnungen abholen (${n})`, weeklyLeft:d=>`noch ${d} T.`,
+  adDouble:g=>`Werbung ansehen · Münzen x2 (+${g})`, adGot:n=>`+${n} Münzen durch die Werbung!`, adFail:"Die Werbung lief nicht. Versuch es später.",
   weeklyShort:"Woche", weeklyTag:d=>`Wochenmodus · noch ${d} Tag${d>1?"e":""}`,
   bossBoardN:n=>`Bosspunkte · ${n} Spieler`, bossHitsN:n=>`${n} Treffer`, bossWin:n=>`Bester Raider mit ${n} Punkten!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} hat den Boss besiegt! 👹 St. ${l} kommt`:`Der Boss ist gefallen! St. ${l} kommt`, bossDownT:"BOSS BESIEGT!", bossBack:l=>`Er kommt auf St. ${l} zurück`, bossHitFeed:(k,h,m)=>`${k} hat den Boss getroffen! ❤ ${h}/${m}`, bossLv:n=>`St. ${n}`, bossRespawn:s=>`zurück in ${s} s`,
   youZombie:"DU BIST EIN ZOMBIE!", youZombieSub:"Fang die Überlebenden, bevor die Zeit abläuft", youBoss:"DU BIST DER BOSS!", youBossSub:"Alle jagen dich. Fang Raider für Punkte (+10)", youBossTag:"Boss",
@@ -1488,6 +1496,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   duelRound:n=>`第 ${n} 局`, duelVs:n=>`对手 ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"本局获胜！", duelRoundLose:"本局失利", duelDraw:"平局！", duelTimeUp:"时间到", duelWinT:"决斗胜利！", duelLoseT:"决斗失败", duelLede:(s,b,w)=>w?`${s} 连胜 · 最佳 ${b}。下一个对手会更强。`:`连胜中断。最佳连胜：${b}。`,
   duelRoundBy:n=>`${n} 赢下本局！`, duelWinner:n=>`${n} 赢得决斗！`,
   gotNew:"新皮肤！", gotWear:"立即装备", gotLater:"稍后", bpOverClaim:n=>`领取通行证奖励（${n}）`, weeklyLeft:d=>`剩${d}天`,
+  adDouble:g=>`看广告 · 金币翻倍（+${g}）`, adGot:n=>`广告奖励 +${n} 金币！`, adFail:"广告没有播放，请稍后再试。",
   weeklyShort:"本周", weeklyTag:d=>`本周模式 · 还剩 ${d} 天`,
   bossBoardN:n=>`首领分 · ${n} 名玩家`, bossHitsN:n=>`命中 ${n} 次`, bossWin:n=>`以 ${n} 分成为最强讨伐者！`, bossName:"首领", bossKO:"击倒！+30", bossDownFeed:(k,l)=>k?`${k} 击倒了首领！👹 ${l} 级即将来袭`:`首领倒下了！${l} 级即将来袭`, bossDownT:"首领被击倒！", bossBack:l=>`将以 ${l} 级复活`, bossHitFeed:(k,h,m)=>`${k} 击中了首领！❤ ${h}/${m}`, bossLv:n=>`${n} 级`, bossRespawn:s=>`${s} 秒后复活`,
   youZombie:"你是僵尸！", youZombieSub:"在时间结束前抓住幸存者", youBoss:"你是首领！", youBossSub:"所有人都在追你。抓住讨伐者得分（每个 +10）", youBossTag:"首领",
@@ -1605,6 +1614,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   duelRound:n=>`ラウンド${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"ラウンド勝利！", duelRoundLose:"ラウンド敗北", duelDraw:"引き分け！", duelTimeUp:"時間切れ", duelWinT:"デュエル勝利！", duelLoseT:"デュエル敗北", duelLede:(s,b,w)=>w?`${s}連勝中 · 最高${b}連勝。次の相手はもっと強いよ。`:`連勝ストップ。最高記録：${b}連勝。`,
   duelRoundBy:n=>`${n}がラウンド獲得！`, duelWinner:n=>`${n}がデュエルに勝利！`,
   gotNew:"新しいスキン！", gotWear:"すぐ装備", gotLater:"あとで", bpOverClaim:n=>`パス報酬を受け取る（${n}）`, weeklyLeft:d=>`残り${d}日`,
+  adDouble:g=>`広告を見てコイン2倍（+${g}）`, adGot:n=>`広告で +${n} コイン！`, adFail:"広告を再生できませんでした。あとで試してね。",
   weeklyShort:"今週", weeklyTag:d=>`今週のモード · 残り${d}日`,
   bossBoardN:n=>`ボスポイント · ${n}人`, bossHitsN:n=>`${n}ヒット`, bossWin:n=>`${n}ポイントでトップレイダー！`, bossName:"ボス", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}がボスを倒した！👹 Lv.${l}が来る`:`ボスが倒れた！Lv.${l}が来る`, bossDownT:"ボス撃破！", bossBack:l=>`Lv.${l}で復活`, bossHitFeed:(k,h,m)=>`${k}がボスにヒット！❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}秒後に復活`,
   youZombie:"きみはゾンビ！", youZombieSub:"時間内に生存者をつかまえよう", youBoss:"きみがボス！", youBossSub:"全員がきみを狙ってる。レイダーを倒してポイント（+10）", youBossTag:"ボス",
@@ -1722,6 +1732,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   duelRound:n=>`${n}라운드`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"라운드 승리!", duelRoundLose:"라운드 패배", duelDraw:"무승부!", duelTimeUp:"시간 종료", duelWinT:"결투 승리!", duelLoseT:"결투 패배", duelLede:(s,b,w)=>w?`${s}연승 · 최고 ${b}연승. 다음 상대는 더 강해요.`:`연승이 끊겼어요. 최고 기록: ${b}연승.`,
   duelRoundBy:n=>`${n} 라운드 승리!`, duelWinner:n=>`${n} 결투 승리!`,
   gotNew:"새 스킨!", gotWear:"바로 착용", gotLater:"나중에", bpOverClaim:n=>`패스 보상 받기 (${n})`, weeklyLeft:d=>`${d}일 남음`,
+  adDouble:g=>`광고 보고 코인 2배 (+${g})`, adGot:n=>`광고 보상 +${n} 코인!`, adFail:"광고를 못 불러왔어요. 잠시 뒤에 다시 해보세요.",
   weeklyShort:"주간", weeklyTag:d=>`이번 주 모드 · ${d}일 남음`,
   bossBoardN:n=>`보스 점수 · ${n}명`, bossHitsN:n=>`${n}번 공격`, bossWin:n=>`${n}점으로 최고의 공격대원!`, bossName:"보스", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}이(가) 보스를 쓰러뜨렸어요! 👹 Lv.${l} 등장 예정`:`보스가 쓰러졌어요! Lv.${l} 등장 예정`, bossDownT:"보스 처치!", bossBack:l=>`Lv.${l}로 돌아와요`, bossHitFeed:(k,h,m)=>`${k} 보스 공격! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}초 후 부활`,
   youZombie:"넌 좀비야!", youZombieSub:"시간 안에 생존자를 잡아요", youBoss:"넌 보스야!", youBossSub:"모두가 너를 노려요. 공격대를 잡으면 +10점", youBossTag:"보스",
@@ -2650,6 +2661,17 @@ function closeBp(){ $('bpOv').hidden=true; $(bpBack).hidden=false; if(bpBack==='
 //   5 for playing + time (1 per 8 s, up to 30) + the land YOU took, measured against one player's fair share of
 //   the map so big maps and team modes pay the same (up to 40) + tails cut (4 each, up to 30) + a result bonus.
 // (Team land no longer counts as yours — that used to pay ~210 coins a game in Infection and Zombie.)
+/* ---------- ads: only through the CrazyGames SDK, and only once ADS_ON is flipped for Full Launch ---------- */
+const ADS_ON=false;
+const ADS={mid:0,games:0};
+const adSDK=()=>{ const S=window.__cgSDK; return (ADS_ON||/[?&]adtest=1/.test(location.search))&&S&&S.ad?S:null; };
+function showAd(kind,done,fail){ const S=adSDK(); if(!S){ if(fail) fail(); return; }
+  let over=false; const fin=ok=>{ if(over) return; over=true; adPlaying=false; hushApply(); if(paused&&ADS.paused){ paused=false; ADS.paused=false; } (ok?done:fail)&&(ok?done:fail)(); };
+  try{ S.ad.requestAd(kind,{ adStarted:()=>{ adPlaying=true; hushApply(); if(!mode.online&&!paused){ paused=true; ADS.paused=true; } },
+    adFinished:()=>fin(true), adError:()=>fin(false) }); }catch(e){ fin(false); } }
+// a short ad between games now and then (never mid-play): every 3rd restart, at most once per 3 minutes
+function againWithAd(go){ ADS.games++; if(!adSDK()||ADS.games<3||Date.now()-ADS.mid<180000){ go(); return; }
+  ADS.games=0; ADS.mid=Date.now(); showAd('midgame',go,go); }
 function payout(win,quit){
   if(!run||run.paid||spectating||mode.tutorial) return 0;
   run.paid=true; recordGame(!!win,!!quit);
@@ -2841,9 +2863,12 @@ function botBrain(){
 }
 /* ---------- sound effects (synthesized, no files) ---------- */
 let actx=null, master=null, sndCat='';
+let adPlaying=false, cgMuted=false; const hushed=()=>adPlaying||cgMuted;
+function hushApply(){ try{ if(master) master.gain.value=hushed()?0:volGain(); }catch(e){} }
+window.__cgMute=v=>{ cgMuted=!!v; hushApply(); };   // CrazyGames' own mute setting
 const volGain=()=>Math.pow(settings.vol/80,1.6);
 function audio(){
-  if(!settings.sound||settings.vol<=0) return null;
+  if(hushed()||!settings.sound||settings.vol<=0) return null;
   if(sndCat&&settings.snd[sndCat]===false) return null;
   try{ if(!actx){ actx=new (window.AudioContext||window.webkitAudioContext)(); master=actx.createGain(); master.connect(actx.destination); }
     if(actx.state==='suspended') actx.resume(); master.gain.value=volGain(); }catch(e){ return null; }
@@ -3877,6 +3902,8 @@ function showCard(o,delay=0){
   { const n=bpUnclaimed(), cb=$('overClaim'); cb.hidden=!(xp&&n); cb.disabled=false; cb.textContent=L.bpOverClaim(n);
     cb.onclick=()=>{ const k=bpClaimAll(); if(!k) return; SFX.ach(); cb.textContent=L.bpGotN(k); cb.disabled=true; paintCoins(); refreshRankUI(); }; }
   $('coinGain').hidden=!gain; if(gain) $('coinGain').innerHTML=COIN_ICO+L.coinsGain(gain,wallet.coins.toLocaleString(LANG));
+  { const ab=$('adDouble'); ab.hidden=!(gain>0&&adSDK()); ab.disabled=false; ab.textContent=L.adDouble(gain);
+    ab.onclick=()=>{ ab.disabled=true; showAd('rewarded',()=>{ addCoins(gain); SFX.ach(); ab.textContent=L.adGot(gain); $('coinGain').innerHTML=COIN_ICO+L.coinsGain(gain*2,wallet.coins.toLocaleString(LANG)); },()=>{ ab.disabled=false; toast(L.adFail); }); }; }
   if(o.again==='play'&&!spectating&&run&&run.flakes){ $('coinGain').hidden=false; $('coinGain').innerHTML=(gain?$('coinGain').innerHTML+'<br>':'')+L.flakeGain(run.flakes,winter.flakes); }
   $('stats').hidden=!o.stats;
   if(o.stats){ $('stBestLbl').textContent=mode.tron?L.wallLength:mode.teams||mode.infect?L.teamBest:L.bestShare;
@@ -4219,7 +4246,7 @@ paintWinter();
 // spaces in a nickname show as underscores, right as you type
 $('nameIn').addEventListener('input',e=>{ const el=e.target, v=el.value; if(!/\s/.test(v)) return; const pos=el.selectionStart; el.value=v.replace(/\s/g,'_'); try{ el.setSelectionRange(pos,pos); }catch(err){} });
 $('watchStartBtn').onclick=()=>startSpectate(true);
-$('againBtn').onclick=()=>againAction==='watch'?startSpectate(true):begin();
+$('againBtn').onclick=()=>againAction==='watch'?startSpectate(true):againWithAd(begin);
 $('skinBtn').onclick=toMenu;
 $('specPrev').onclick=()=>specCycle(-1); $('specNext').onclick=()=>specCycle(1);
 $('specAuto').onclick=specAuto; $('specMap').onclick=toggleMap; $('specExit').onclick=exitSpectate;
