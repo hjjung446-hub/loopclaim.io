@@ -2298,8 +2298,8 @@ async function postRank(){
   catch(e){ if(e&&(e.code==='invalid_argument'||e.code==='transform_error')) RK.canPost=false; }
 }
 // on our own site (and game portals) the rankings live on the game server: same shape as the Claude store above
-function lbServer(http,key){ const q={by:'season'};
-  const col={ doc:id=>({ set:async body=>{ const r=await fetch(http+'/lb',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({id,key},body))}); if(!r.ok) throw {code:r.status===403||r.status===400?'invalid_argument':'http'}; } }),
+function lbServer(http,key,myId){ const q={by:'season'};
+  const col={ doc:()=>({ set:async body=>{ const r=await fetch(http+'/lb',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({id:myId,key},body))}); if(!r.ok) throw {code:r.status===403||r.status===400?'invalid_argument':'http'}; } }),
     where:(f,op,v)=>{ q.by=f==='week'?'week':'season'; return col; }, orderBy:()=>col, limit:()=>col,
     onSnapshot:(cb,err)=>{ let stop=false; const by=q.by;
       const pull=async()=>{ try{ const r=await fetch(http+'/lb?by='+by,{cache:'no-store'}); if(!r.ok) throw 0; const rows=await r.json(); if(!stop) cb({metadata:{fromCache:false},docs:(Array.isArray(rows)?rows:[]).map(d=>({id:String(d.id),data:()=>d}))}); }
@@ -2311,8 +2311,11 @@ function lbServerInit(){ const b=netBase(); if(!b||!/^wss?:\/\//.test(b)) return
   let me=null; try{ me=JSON.parse(localStorage.getItem('ttang-lbid')||'null'); }catch(e){}
   const rid=n=>{ const a=new Uint8Array(n); crypto.getRandomValues(a); return Array.from(a,x=>'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[x%62]).join(''); };
   if(!me||!me.id||!me.key){ me={id:rid(16),key:rid(28)}; try{ localStorage.setItem('ttang-lbid',JSON.stringify(me)); }catch(e){} }
-  RK.db=lbServer(http,me.key); RK.uid=me.id; RK.ready=true;
-  if(rank.games>0&&(rank.posted!==rank.games||rank.postedName!==String(myName).slice(0,12))) postRank();
+  RK.db=lbServer(http,me.key,me.id); RK.uid='_'+me.id; RK.ready=true;
+  // the board shows a hash of each id (the real one is the secret half of our record): find ourselves by that hash
+  try{ crypto.subtle.digest('SHA-256',new TextEncoder().encode('lb:'+me.id)).then(h=>{ RK.uid=Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16); if(!$('rkOv').hidden&&RK.rows) rkRender(RK.rows); }).catch(()=>{}); }catch(e){}
+  // the server forgets the board when it's redeployed: post our record every time the game opens so it comes right back
+  if(rank.games>0) postRank();
   if(!$('rkOv').hidden) rkSub(); return true; }
 (async()=>{ try{
   if(!window.claude||typeof claude.use!=='function'){ setTimeout(()=>{ try{ lbServerInit(); }catch(e){} },0); return; }

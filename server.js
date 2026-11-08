@@ -44,14 +44,16 @@ const BOT_COLS=['#e8455a','#f2994a','#f2c94c','#6fcf97','#27ae60','#2d9cdb','#56
 
 /* ---------------- rankings ----------------
    Players post their Ranked numbers here; everyone reads the top 100 for this week / this season.
-   Kept in memory and saved to a file (LB_FILE). On Render's free plan the disk is wiped on every deploy,
-   so the board starts over then; the week and season reset on their own anyway. */
+   Kept in memory and saved to a file (LB_FILE). On Render's free plan that file is wiped on every deploy, so every
+   player's game posts its record again each time it opens: the board fills back up by itself as people come back.
+   Player ids are never shown (only a hash), so nobody can take over someone else's record after a wipe. */
 const LB_FILE=process.env.LB_FILE||path.join(__dirname,'lb.json');
 const LB=new Map();   // id -> record (with a hashed key so only its owner can update it)
 try{ const j=JSON.parse(fs.readFileSync(LB_FILE,'utf8')); for(const [k,v] of Object.entries(j)) LB.set(k,v); }catch(e){}
 let lbDirty=false; setInterval(()=>{ if(!lbDirty) return; lbDirty=false; try{ fs.writeFileSync(LB_FILE,JSON.stringify(Object.fromEntries(LB))); }catch(e){} },15000).unref();
 const LB_FRAMES=['gold','silver','bronze','rainbow','flame','ice','neon','champ','legend','diamond','immortal','cosmos'];
 const hashKey=k=>crypto.createHash('sha256').update(String(k)).digest('hex').slice(0,32);
+const pubId=id=>crypto.createHash('sha256').update('lb:'+id).digest('hex').slice(0,16);   // what others see; the real id stays secret
 const curSeason=()=>{ const d=new Date(); return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0'); };
 const curWeek=()=>{ const d=new Date(), t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())), day=t.getUTCDay()||7;
   t.setUTCDate(t.getUTCDate()+4-day); const y=t.getUTCFullYear(), w=Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7); return y+'-W'+String(w).padStart(2,'0'); };
@@ -69,7 +71,7 @@ function lbHttp(req,res,u){
   const H={'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'*','access-control-allow-headers':'content-type','access-control-allow-methods':'GET,POST,OPTIONS'};
   if(req.method==='OPTIONS'){ res.writeHead(204,H); return res.end(); }
   if(req.method==='GET'){ const q=new URL(req.url,'http://x').searchParams, week=q.get('by')==='week';
-    const rows=[]; for(const [id,v] of LB){ if(week?v.week===curWeek():v.season===curSeason()){ const {key,...r}=v; rows.push({id,...r}); } }
+    const rows=[]; for(const [id,v] of LB){ if(week?v.week===curWeek():v.season===curSeason()){ const {key,...r}=v; rows.push({...r,id:pubId(id)}); } }
     rows.sort((a,b)=>week?(b.weekRp-a.weekRp):(b.rp-a.rp)); res.writeHead(200,H); return res.end(JSON.stringify(rows.slice(0,100))); }
   if(req.method==='POST'){ const ip=String(req.headers['x-forwarded-for']||req.socket.remoteAddress||'').split(',')[0].trim();
     if(lbLimited(ip)){ res.writeHead(429,H); return res.end('{}'); }
