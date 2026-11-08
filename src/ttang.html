@@ -166,6 +166,19 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .bpAmt{display:flex;align-items:center;gap:3px}.bpAmt b{font-family:var(--display);font-weight:400;font-size:17px}.bpAmt .coin{width:16px;height:16px}
 .bpEmo{font-size:32px;line-height:1}
 .bpCv{position:static;width:58px;height:46px}
+.gotOv{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(20,24,40,.55);padding:16px}
+.gotCard{background:var(--card);color:var(--ink);border-radius:20px;padding:20px 22px 18px;display:grid;justify-items:center;gap:8px;width:min(300px,100%);box-shadow:0 10px 0 rgba(0,0,0,.18);animation:gotPop .35s cubic-bezier(.2,1.6,.4,1)}
+.gotCard small{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--gold-ink);background:rgba(242,183,5,.18);padding:3px 10px;border-radius:999px}
+.gotCard canvas{position:static;width:180px;height:144px;max-width:100%}
+.gotCard b{font-family:var(--display);font-weight:400;font-size:24px}
+.gotBtns{display:grid;gap:8px;width:100%}
+@keyframes gotPop{from{transform:scale(.7);opacity:0}}
+@media (prefers-reduced-motion:reduce){.gotCard{animation:none}}
+.bpClaimBtn{font:inherit;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(135deg,#ffd23f,#ffb020);color:#3a2700;box-shadow:0 2px 0 #c98a00}
+.bpClaimBtn:disabled{background:var(--ground);color:var(--muted);box-shadow:none;cursor:default}
+.modes .exBtn .wkTx{display:grid;justify-items:center;line-height:1.1;min-width:0}
+.modes .exBtn .wkTx>span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modes .exBtn .wkLeft{font-size:11px;font-weight:700;opacity:.8}
 .bpGain{margin:0;font-size:14px;font-weight:700;color:var(--me);background:var(--ground);border-radius:12px;padding:8px 12px}
 .rpShopBtn{grid-column:1/-1;font:inherit;display:flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:8px 12px;background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--line);margin-top:4px}
 .rpShopBtn span{flex:1;text-align:left;font-weight:700}.rpShopBtn b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--gold-ink)}
@@ -682,6 +695,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
   </div>
 </div>
 
+<div class="gotOv" id="gotOv" hidden role="dialog" aria-modal="true" aria-labelledby="gotTtl"><div class="gotCard"><small id="gotLbl">New skin!</small><canvas id="gotCv" width="120" height="96"></canvas><b id="gotTtl"></b><div class="gotBtns"><button class="btn" id="gotWear" type="button">Wear now</button><button class="btn ghost" id="gotLater" type="button">Later</button></div></div></div>
 <div class="overlay" id="overOv" hidden>
   <div class="card">
     <h1 id="overTitle">You're out!</h1>
@@ -693,7 +707,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
       <div><span>Survived</span><strong id="stTime">0s</strong></div>
     </div>
     <ol class="res" id="resList" hidden></ol>
-    <div class="rewards"><p class="coinGain" id="coinGain" hidden></p><p class="bpGain" id="bpGain" hidden></p></div>
+    <div class="rewards"><p class="coinGain" id="coinGain" hidden></p><p class="bpGain" id="bpGain" hidden></p><button class="bpClaimBtn" id="overClaim" type="button" hidden></button></div>
     <div class="btns">
       <button class="btn" id="againBtn" type="button">Play again</button>
       <button class="btn ghost" id="skinBtn" type="button">Change mode · skin</button>
@@ -854,6 +868,7 @@ gold:m=>`Gold is scattered across a ${m.N}×${m.N} map. Loop it into your land t
   pSeason:"Ranked this season", pNoGamesOther:"No recent games to show.", profileOf:n=>`View ${n}'s profile`,
   duelRound:n=>`Round ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Round won!", duelRoundLose:"Round lost", duelDraw:"Draw!", duelTimeUp:"Time's up", duelWinT:"Duel won!", duelLoseT:"Duel lost", duelLede:(s,b,w)=>w?`Win streak ${s} · best ${b}. The next opponent will be tougher.`:`Streak over. Best streak: ${b}.`,
   duelRoundBy:n=>`${n} takes the round!`, duelWinner:n=>`${n} wins the duel!`,
+  gotNew:"New skin!", gotWear:"Wear now", gotLater:"Later", bpOverClaim:n=>`Claim pass rewards (${n})`, weeklyLeft:d=>`${d}d left`,
   weeklyShort:"This week", weeklyTag:d=>`Weekly mode · ${d} day${d>1?"s":""} left`,
   bossBoardN:n=>`Boss points · ${n} players`, bossHitsN:n=>`${n} hits`, bossWin:n=>`Top raider with ${n} points!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} took the boss down! 👹 Lv.${l} incoming`:`The boss fell! Lv.${l} incoming`, bossDownT:"BOSS DOWN!", bossBack:l=>`It comes back at Lv.${l}`, bossHitFeed:(k,h,m)=>`${k} hit the boss! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`back in ${s}s`,
   youZombie:"YOU'RE A ZOMBIE!", youZombieSub:"Catch the survivors before time runs out", youBoss:"YOU'RE THE BOSS!", youBossSub:"Everyone is after you. Catch raiders for points (+10 each)", youBossTag:"Boss",
@@ -970,6 +985,7 @@ gold:m=>`Hay oro repartido por un mapa de ${m.N}×${m.N}. Rodéalo con tu territ
   pSeason:"Clasificatorias esta temporada", pNoGamesOther:"No hay partidas recientes.", profileOf:n=>`Ver el perfil de ${n}`,
   duelRound:n=>`Ronda ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"¡Ronda ganada!", duelRoundLose:"Ronda perdida", duelDraw:"¡Empate!", duelTimeUp:"Se acabó el tiempo", duelWinT:"¡Duelo ganado!", duelLoseT:"Duelo perdido", duelLede:(s,b,w)=>w?`Racha de ${s} · mejor ${b}. El siguiente rival será más duro.`:`Se acabó la racha. Mejor racha: ${b}.`,
   duelRoundBy:n=>`¡${n} gana la ronda!`, duelWinner:n=>`¡${n} gana el duelo!`,
+  gotNew:"¡Nuevo aspecto!", gotWear:"Usar ya", gotLater:"Luego", bpOverClaim:n=>`Recoger premios del pase (${n})`, weeklyLeft:d=>`quedan ${d} d`,
   weeklyShort:"Semanal", weeklyTag:d=>`Modo de la semana · quedan ${d} día${d>1?"s":""}`,
   bossBoardN:n=>`Puntos de jefe · ${n} jugadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`¡Mejor asaltante con ${n} puntos!`, bossName:"JEFE", bossKO:"¡K.O.! +30", bossDownFeed:(k,l)=>k?`¡${k} derribó al jefe! 👹 Llega el nv. ${l}`:`¡El jefe cayó! Llega el nv. ${l}`, bossDownT:"¡JEFE DERROTADO!", bossBack:l=>`Vuelve en nv. ${l}`, bossHitFeed:(k,h,m)=>`¡${k} golpeó al jefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`vuelve en ${s} s`,
   youZombie:"¡ERES UN ZOMBI!", youZombieSub:"Atrapa a los supervivientes antes de que acabe el tiempo", youBoss:"¡ERES EL JEFE!", youBossSub:"Todos van a por ti. Atrapa asaltantes para sumar puntos (+10)", youBossTag:"Jefe",
@@ -1086,6 +1102,7 @@ gold:m=>`Há ouro espalhado num mapa de ${m.N}×${m.N}. Cerque-o com seu territ�
   pSeason:"Ranqueadas nesta temporada", pNoGamesOther:"Sem partidas recentes.", profileOf:n=>`Ver o perfil de ${n}`,
   duelRound:n=>`Rodada ${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Rodada vencida!", duelRoundLose:"Rodada perdida", duelDraw:"Empate!", duelTimeUp:"Acabou o tempo", duelWinT:"Duelo vencido!", duelLoseT:"Duelo perdido", duelLede:(s,b,w)=>w?`Sequência de ${s} · melhor ${b}. O próximo rival será mais forte.`:`Sequência encerrada. Melhor: ${b}.`,
   duelRoundBy:n=>`${n} vence a rodada!`, duelWinner:n=>`${n} vence o duelo!`,
+  gotNew:"Novo visual!", gotWear:"Usar agora", gotLater:"Depois", bpOverClaim:n=>`Pegar prêmios do passe (${n})`, weeklyLeft:d=>`faltam ${d} d`,
   weeklyShort:"Semanal", weeklyTag:d=>`Modo da semana · faltam ${d} dia${d>1?"s":""}`,
   bossBoardN:n=>`Pontos de chefe · ${n} jogadores`, bossHitsN:n=>`${n} golpes`, bossWin:n=>`Melhor atacante com ${n} pontos!`, bossName:"CHEFE", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} derrubou o chefe! 👹 Vem aí o nv. ${l}`:`O chefe caiu! Vem aí o nv. ${l}`, bossDownT:"CHEFE DERROTADO!", bossBack:l=>`Ele volta no nv. ${l}`, bossHitFeed:(k,h,m)=>`${k} acertou o chefe! ❤ ${h}/${m}`, bossLv:n=>`Nv. ${n}`, bossRespawn:s=>`volta em ${s} s`,
   youZombie:"VOCÊ É UM ZUMBI!", youZombieSub:"Pegue os sobreviventes antes que o tempo acabe", youBoss:"VOCÊ É O CHEFE!", youBossSub:"Todos estão atrás de você. Pegue atacantes para ganhar pontos (+10)", youBossTag:"Chefe",
@@ -1202,6 +1219,7 @@ gold:m=>`De l'or est éparpillé sur une carte de ${m.N}×${m.N}. Encercle-le av
   pSeason:"Classées cette saison", pNoGamesOther:"Aucune partie récente.", profileOf:n=>`Voir le profil de ${n}`,
   duelRound:n=>`Manche ${n}`, duelVs:n=>`contre ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Manche gagnée !", duelRoundLose:"Manche perdue", duelDraw:"Égalité !", duelTimeUp:"Temps écoulé", duelWinT:"Duel gagné !", duelLoseT:"Duel perdu", duelLede:(s,b,w)=>w?`Série de ${s} · record ${b}. Le prochain adversaire sera plus coriace.`:`Série terminée. Record : ${b}.`,
   duelRoundBy:n=>`${n} remporte la manche !`, duelWinner:n=>`${n} remporte le duel !`,
+  gotNew:"Nouvelle apparence !", gotWear:"Porter", gotLater:"Plus tard", bpOverClaim:n=>`Récupérer les récompenses du passe (${n})`, weeklyLeft:d=>`encore ${d} j`,
   weeklyShort:"Semaine", weeklyTag:d=>`Mode de la semaine · encore ${d} jour${d>1?"s":""}`,
   bossBoardN:n=>`Points boss · ${n} joueurs`, bossHitsN:n=>`${n} coups`, bossWin:n=>`Meilleur raider avec ${n} points !`, bossName:"BOSS", bossKO:"K.O. ! +30", bossDownFeed:(k,l)=>k?`${k} a terrassé le boss ! 👹 Niv. ${l} en approche`:`Le boss est tombé ! Niv. ${l} en approche`, bossDownT:"BOSS VAINCU !", bossBack:l=>`Il revient au niv. ${l}`, bossHitFeed:(k,h,m)=>`${k} a touché le boss ! ❤ ${h}/${m}`, bossLv:n=>`Niv. ${n}`, bossRespawn:s=>`revient dans ${s} s`,
   youZombie:"TU ES UN ZOMBIE !", youZombieSub:"Attrape les survivants avant la fin du temps", youBoss:"TU ES LE BOSS !", youBossSub:"Tout le monde te traque. Attrape des raiders pour marquer (+10)", youBossTag:"Boss",
@@ -1318,6 +1336,7 @@ gold:m=>`Auf einer ${m.N}×${m.N}-Karte liegt Gold verstreut. Umschließe es mit
   pSeason:"Ranglistenspiele diese Saison", pNoGamesOther:"Keine letzten Spiele.", profileOf:n=>`Profil von ${n} ansehen`,
   duelRound:n=>`Runde ${n}`, duelVs:n=>`gegen ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"Runde gewonnen!", duelRoundLose:"Runde verloren", duelDraw:"Unentschieden!", duelTimeUp:"Zeit abgelaufen", duelWinT:"Duell gewonnen!", duelLoseT:"Duell verloren", duelLede:(s,b,w)=>w?`Serie ${s} · Bestwert ${b}. Der nächste Gegner wird härter.`:`Serie vorbei. Beste Serie: ${b}.`,
   duelRoundBy:n=>`${n} holt die Runde!`, duelWinner:n=>`${n} gewinnt das Duell!`,
+  gotNew:"Neuer Skin!", gotWear:"Jetzt tragen", gotLater:"Später", bpOverClaim:n=>`Pass-Belohnungen abholen (${n})`, weeklyLeft:d=>`noch ${d} T.`,
   weeklyShort:"Woche", weeklyTag:d=>`Wochenmodus · noch ${d} Tag${d>1?"e":""}`,
   bossBoardN:n=>`Bosspunkte · ${n} Spieler`, bossHitsN:n=>`${n} Treffer`, bossWin:n=>`Bester Raider mit ${n} Punkten!`, bossName:"BOSS", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k} hat den Boss besiegt! 👹 St. ${l} kommt`:`Der Boss ist gefallen! St. ${l} kommt`, bossDownT:"BOSS BESIEGT!", bossBack:l=>`Er kommt auf St. ${l} zurück`, bossHitFeed:(k,h,m)=>`${k} hat den Boss getroffen! ❤ ${h}/${m}`, bossLv:n=>`St. ${n}`, bossRespawn:s=>`zurück in ${s} s`,
   youZombie:"DU BIST EIN ZOMBIE!", youZombieSub:"Fang die Überlebenden, bevor die Zeit abläuft", youBoss:"DU BIST DER BOSS!", youBossSub:"Alle jagen dich. Fang Raider für Punkte (+10)", youBossTag:"Boss",
@@ -1434,6 +1453,7 @@ gold:m=>`${m.N}×${m.N} 的地图上散落着金币。用领地把金币圈进�
   pSeason:"本赛季排位", pNoGamesOther:"暂无最近对局。", profileOf:n=>`查看 ${n} 的资料`,
   duelRound:n=>`第 ${n} 局`, duelVs:n=>`对手 ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"本局获胜！", duelRoundLose:"本局失利", duelDraw:"平局！", duelTimeUp:"时间到", duelWinT:"决斗胜利！", duelLoseT:"决斗失败", duelLede:(s,b,w)=>w?`${s} 连胜 · 最佳 ${b}。下一个对手会更强。`:`连胜中断。最佳连胜：${b}。`,
   duelRoundBy:n=>`${n} 赢下本局！`, duelWinner:n=>`${n} 赢得决斗！`,
+  gotNew:"新皮肤！", gotWear:"立即装备", gotLater:"稍后", bpOverClaim:n=>`领取通行证奖励（${n}）`, weeklyLeft:d=>`剩${d}天`,
   weeklyShort:"本周", weeklyTag:d=>`本周模式 · 还剩 ${d} 天`,
   bossBoardN:n=>`首领分 · ${n} 名玩家`, bossHitsN:n=>`命中 ${n} 次`, bossWin:n=>`以 ${n} 分成为最强讨伐者！`, bossName:"首领", bossKO:"击倒！+30", bossDownFeed:(k,l)=>k?`${k} 击倒了首领！👹 ${l} 级即将来袭`:`首领倒下了！${l} 级即将来袭`, bossDownT:"首领被击倒！", bossBack:l=>`将以 ${l} 级复活`, bossHitFeed:(k,h,m)=>`${k} 击中了首领！❤ ${h}/${m}`, bossLv:n=>`${n} 级`, bossRespawn:s=>`${s} 秒后复活`,
   youZombie:"你是僵尸！", youZombieSub:"在时间结束前抓住幸存者", youBoss:"你是首领！", youBossSub:"所有人都在追你。抓住讨伐者得分（每个 +10）", youBossTag:"首领",
@@ -1550,6 +1570,7 @@ gold:m=>`${m.N}×${m.N}のマップに金貨が散らばっています。陣地
   pSeason:"今シーズンのランク戦", pNoGamesOther:"最近の試合はありません。", profileOf:n=>`${n}のプロフィールを見る`,
   duelRound:n=>`ラウンド${n}`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"ラウンド勝利！", duelRoundLose:"ラウンド敗北", duelDraw:"引き分け！", duelTimeUp:"時間切れ", duelWinT:"デュエル勝利！", duelLoseT:"デュエル敗北", duelLede:(s,b,w)=>w?`${s}連勝中 · 最高${b}連勝。次の相手はもっと強いよ。`:`連勝ストップ。最高記録：${b}連勝。`,
   duelRoundBy:n=>`${n}がラウンド獲得！`, duelWinner:n=>`${n}がデュエルに勝利！`,
+  gotNew:"新しいスキン！", gotWear:"すぐ装備", gotLater:"あとで", bpOverClaim:n=>`パス報酬を受け取る（${n}）`, weeklyLeft:d=>`残り${d}日`,
   weeklyShort:"今週", weeklyTag:d=>`今週のモード · 残り${d}日`,
   bossBoardN:n=>`ボスポイント · ${n}人`, bossHitsN:n=>`${n}ヒット`, bossWin:n=>`${n}ポイントでトップレイダー！`, bossName:"ボス", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}がボスを倒した！👹 Lv.${l}が来る`:`ボスが倒れた！Lv.${l}が来る`, bossDownT:"ボス撃破！", bossBack:l=>`Lv.${l}で復活`, bossHitFeed:(k,h,m)=>`${k}がボスにヒット！❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}秒後に復活`,
   youZombie:"きみはゾンビ！", youZombieSub:"時間内に生存者をつかまえよう", youBoss:"きみがボス！", youBossSub:"全員がきみを狙ってる。レイダーを倒してポイント（+10）", youBossTag:"ボス",
@@ -1666,6 +1687,7 @@ gold:m=>`${m.N}×${m.N} 맵에 금이 흩어져 있어요. 땅으로 감싸면 �
   pSeason:"이번 시즌 랭크전", pNoGamesOther:"최근 게임 기록이 없어요.", profileOf:n=>`${n} 프로필 보기`,
   duelRound:n=>`${n}라운드`, duelVs:n=>`vs ${n}`, duelScore:(a,b)=>`${a} : ${b}`, duelRoundWin:"라운드 승리!", duelRoundLose:"라운드 패배", duelDraw:"무승부!", duelTimeUp:"시간 종료", duelWinT:"결투 승리!", duelLoseT:"결투 패배", duelLede:(s,b,w)=>w?`${s}연승 · 최고 ${b}연승. 다음 상대는 더 강해요.`:`연승이 끊겼어요. 최고 기록: ${b}연승.`,
   duelRoundBy:n=>`${n} 라운드 승리!`, duelWinner:n=>`${n} 결투 승리!`,
+  gotNew:"새 스킨!", gotWear:"바로 착용", gotLater:"나중에", bpOverClaim:n=>`패스 보상 받기 (${n})`, weeklyLeft:d=>`${d}일 남음`,
   weeklyShort:"주간", weeklyTag:d=>`이번 주 모드 · ${d}일 남음`,
   bossBoardN:n=>`보스 점수 · ${n}명`, bossHitsN:n=>`${n}번 공격`, bossWin:n=>`${n}점으로 최고의 공격대원!`, bossName:"보스", bossKO:"K.O.! +30", bossDownFeed:(k,l)=>k?`${k}이(가) 보스를 쓰러뜨렸어요! 👹 Lv.${l} 등장 예정`:`보스가 쓰러졌어요! Lv.${l} 등장 예정`, bossDownT:"보스 처치!", bossBack:l=>`Lv.${l}로 돌아와요`, bossHitFeed:(k,h,m)=>`${k} 보스 공격! ❤ ${h}/${m}`, bossLv:n=>`Lv.${n}`, bossRespawn:s=>`${s}초 후 부활`,
   youZombie:"넌 좀비야!", youZombieSub:"시간 안에 생존자를 잡아요", youBoss:"넌 보스야!", youBossSub:"모두가 너를 노려요. 공격대를 잡으면 +10점", youBossTag:"보스",
@@ -2402,7 +2424,7 @@ function applyRank(place,n){
   let skins=[];
   // promotion coins every season (season peak); tier skins once ever (lifetime peak)
   if(after>(rank.speak||0)){ for(let k=(rank.speak||0)+1;k<=after;k++) reward+=k*60; rank.speak=after; addCoins(reward); }
-  if(after>rank.peak){ skins=SKINS.filter(k=>k.tier!=null&&k.tier>rank.peak&&k.tier<=after).map(k=>k.name); rank.peak=after; }
+  if(after>rank.peak){ const nw=SKINS.filter(k=>k.tier!=null&&k.tier>rank.peak&&k.tier<=after); skins=nw.map(k=>k.name); nw.forEach(gotSkin); rank.peak=after; }
   saveRank(); postRank(); return {before,after:rank.rp,d:rank.rp-before,ti,to:after,reward,skins}; }
 /* ---------- RP shop: every RP won in Ranked also lands in a bank you can spend; spending never lowers your rank ---------- */
 const TRAILS=[{id:'prism',pass:20,col:'#ff5a5a',col2:'#4d8dff',prism:true},{id:'sparkle',rpPrice:200,col:'#ffffff',col2:'#fff3a8'},{id:'fire',rpPrice:300,col:'#ff7a2f',col2:'#ffd23f'},{id:'bubble',rpPrice:250,col:'#9fe3ff',col2:'#ffffff'}];
@@ -2494,10 +2516,11 @@ function bpGive(r){ const own=rank.rOwned||(rank.rOwned=[]);
   if(r.t==='coins') addCoins(r.n);
   else if(r.t==='rp') rank.bank=(rank.bank||0)+r.n;
   else if(r.t==='trail'){ if(!own.includes('trail-'+r.id)) own.push('trail-'+r.id); }
-  else if(!own.includes(r.id)) own.push(r.id);
+  else if(!own.includes(r.id)){ own.push(r.id); if(r.t==='skin') gotSkin(SKINS.find(k=>k.id===r.id)); }
   saveRank(); }
 function bpClaim(track,lv){ const arr=track==='p'?pass.cp:pass.cf; if(arr.includes(lv)||lv>bpLevel()||(track==='p'&&!pass.premium)) return false;
   arr.push(lv); bpGive((track==='p'?BP.prem:BP.free)[lv-1]); savePass(); return true; }
+function bpUnclaimed(){ const lv=bpLevel(); let n=0; for(let i=1;i<=lv;i++){ if(!pass.cf.includes(i)) n++; if(pass.premium&&!pass.cp.includes(i)) n++; } return n; }
 function bpClaimAll(){ let n=0; for(let lv=1;lv<=bpLevel();lv++){ if(bpClaim('f',lv)) n++; if(pass.premium&&bpClaim('p',lv)) n++; } return n; }
 let bpNote=0;
 function bpCheckSeason(){ const cur=seasonKey(); if(!pass.season){ pass.season=cur; savePass(); return; } if(pass.season===cur) return;
@@ -2695,11 +2718,21 @@ function openProf(P,from,focusId){ profBack=from||'startOv'; profFocus=focusId||
 function closeProf(){ $('profOv').hidden=true; $(profBack).hidden=false; const f=$(profFocus)||document.querySelector(`[data-rk="${profFocus}"]`); if(f) f.focus(); }
 $('profOpen').onclick=()=>openProf(null,'startOv','profOpen'); $('profDone').onclick=closeProf;
 const rewardOf=id=>SKINS.find(k=>k.ach===id)||null;
+/* ---------- new skin popup: shown once you're out of a game, with a button to wear it ---------- */
+const gotQ=[];
+function gotSkin(sk){ if(!sk||gotQ.includes(sk)) return; gotQ.push(sk); gotFlush(); }
+function gotBusy(){ return !$('gotOv').hidden||![...document.querySelectorAll('.overlay')].some(o=>!o.hidden); }
+function gotFlush(){ if(!gotQ.length||gotBusy()) return; const sk=gotQ.shift();
+  $('gotLbl').textContent=L.gotNew; $('gotTtl').textContent=sk.name; $('gotWear').textContent=L.gotWear; $('gotLater').textContent=L.gotLater;
+  drawSkinPreview($('gotCv'),sk); $('gotOv').hidden=false; SFX.ach();
+  $('gotWear').onclick=()=>{ wearSkin(sk); buildSkins(); gotClose(); }; $('gotLater').onclick=gotClose; $('gotWear').focus(); }
+function gotClose(){ $('gotOv').hidden=true; setTimeout(gotFlush,250); }
+setInterval(gotFlush,600);
 function unlock(id){
   if(achState.done[id]) return; const a=ACH.find(x=>x.id===id); if(!a) return;
   if(mode&&mode.tutorial&&id!=='tutorial') return;
   achState.done[id]=Date.now(); saveAch(); addCoins(15); achToast(a); renderAch();
-  if(rewardOf(id)&&typeof buildSkins==='function') buildSkins();
+  if(rewardOf(id)&&typeof buildSkins==='function'){ buildSkins(); gotSkin(rewardOf(id)); }
 }
 function addStat(k,n=1){
   if(mode&&mode.tutorial) return;
@@ -3804,6 +3837,8 @@ function showCard(o,delay=0){
   const gain=o.again==='play'&&!spectating?payout(o.sfx==='win'):0;
   const xp=o.again==='play'&&!spectating?bpGain(o.sfx==='win'):null;
   $('bpGain').hidden=!xp; if(xp) $('bpGain').innerHTML=L.bpGain(xp.x,xp.lv);
+  { const n=bpUnclaimed(), cb=$('overClaim'); cb.hidden=!(xp&&n); cb.disabled=false; cb.textContent=L.bpOverClaim(n);
+    cb.onclick=()=>{ const k=bpClaimAll(); if(!k) return; SFX.ach(); cb.textContent=L.bpGotN(k); cb.disabled=true; paintCoins(); refreshRankUI(); }; }
   $('coinGain').hidden=!gain; if(gain) $('coinGain').innerHTML=COIN_ICO+L.coinsGain(gain,wallet.coins.toLocaleString(LANG));
   if(o.again==='play'&&!spectating&&run&&run.flakes){ $('coinGain').hidden=false; $('coinGain').innerHTML=(gain?$('coinGain').innerHTML+'<br>':'')+L.flakeGain(run.flakes,winter.flakes); }
   $('stats').hidden=!o.stats;
@@ -5288,7 +5323,7 @@ function buildModes(focusId){
   {
     ['normal','team','survival','infect','timed'].forEach(mk);
     const wk=weeklyMode(), ex=document.createElement('button'), on=modeKey===wk; ex.type='button'; ex.className='mode exBtn'; ex.id='mode-'+wk;
-    ex.innerHTML=`<b>${esc(L.weeklyShort)}</b><span>${esc(MODES[wk].name)}</span>`;
+    ex.innerHTML=`<b>${esc(L.weeklyShort)}</b><span class="wkTx"><span>${esc(MODES[wk].name)}</span><i class="wkLeft">${esc(L.weeklyLeft(weeklyDays()))}</i></span>`;
     ex.setAttribute('aria-pressed',String(on)); ex.setAttribute('aria-label',L.weeklyTag(weeklyDays())+' · '+MODES[wk].name);
     ex.onclick=()=>pick(wk);
     box.append(ex); mk('ranked');
