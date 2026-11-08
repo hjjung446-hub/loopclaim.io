@@ -67,7 +67,7 @@ function lbClean(b){   // only known fields, in range: the numbers come from the
 function lbPrune(){ if(LB.size<20000) return; const old=Date.now()-40*864e5; for(const [k,v] of LB) if(v.t<old) LB.delete(k); }
 const lbHits=new Map();   // ip -> [count, windowStart]
 function lbLimited(ip){ const now=Date.now(); let h=lbHits.get(ip); if(!h||now-h[1]>60000){ h=[0,now]; lbHits.set(ip,h); } return ++h[0]>30; }
-function lbHttp(req,res,u){
+function lbHttp(req,res){
   const H={'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'*','access-control-allow-headers':'content-type','access-control-allow-methods':'GET,POST,OPTIONS'};
   if(req.method==='OPTIONS'){ res.writeHead(204,H); return res.end(); }
   if(req.method==='GET'){ const q=new URL(req.url,'http://x').searchParams, week=q.get('by')==='week';
@@ -88,7 +88,7 @@ const PUB=path.join(__dirname,'public');
 const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon','.json':'application/json'};
 const server=http.createServer((req,res)=>{
   let u=decodeURIComponent((req.url||'/').split('?')[0]); if(u==='/') u='/index.html';
-  if(u==='/lb'){ lbHttp(req,res,u); return; }
+  if(u==='/lb'){ lbHttp(req,res); return; }
   if(u==='/healthz'){ res.writeHead(200,{'content-type':'text/plain','cache-control':'no-store','access-control-allow-origin':'*'}); res.end('ok'); return; }
   if(u==='/health'){ res.writeHead(200,{'content-type':'text/plain'}); return res.end('ok '+rooms.length+' rooms'); }
   const f=path.normalize(path.join(PUB,u)); if(!f.startsWith(PUB)){ res.writeHead(403); return res.end(); }

@@ -4009,7 +4009,7 @@ function netPlay(now){ const q=NET.q; if(!NET.buf) NET.buf=1;
   if(now-lastTick>=(NET.dur||TICK)){
     if(q.length){ lastTick=Math.max(lastTick+(NET.dur||TICK),now-TICK*.5); netApply(q.shift());
       const k=q.length-NET.buf; NET.dur=TICK*(k>=2?.88:k===1?.95:k<0?1.08:1); }
-    else { NET.playing=false; NET.under=(NET.under||0)+1; NET.underT=now;   // ran dry: hold a bit more from now on
+    else { NET.playing=false; NET.underT=now;   // ran dry: hold a bit more from now on
       if(NET.buf<3) { NET.buf++; netLeadUpdate(); } } }
   if(NET.buf>1&&now-(NET.underT||0)>20000){ NET.buf--; NET.underT=now; } }   // smooth for a while: tighten again
 function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; NET.host=null; try{ $('inviteBtn').hidden=true; const S=window.__cgSDK; if(S&&S.game&&S.game.leftRoom) S.game.leftRoom(); }catch(e){} if(ws) try{ ws.close(); }catch(e){} }
