@@ -22,6 +22,7 @@
 :root[data-theme="dark"] .topBtns .cnt,:root[data-theme="dark"] .dailyBtn.hasDot::after{box-shadow:0 0 0 2px var(--card)}
 [hidden]{display:none!important}
 html,body{height:100%;overflow:hidden}
+html,body{overscroll-behavior:none}
 body{background:var(--void);color:var(--ink);font-family:var(--body);touch-action:none;-webkit-user-select:none;user-select:none}
 canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .hud{position:fixed;pointer-events:none;z-index:2}
@@ -234,7 +235,6 @@ body.padOn .achToast{bottom:auto;top:calc(160px + env(safe-area-inset-top,0px))}
 .wbIco{font-size:24px}.wbTxt{display:flex;flex-direction:column;flex:1;min-width:0}.wbTxt b{font-size:15px}.wbTxt small{font-size:12px;opacity:.92}
 .wbNum{font-weight:700;font-size:15px;background:rgba(255,255,255,.22);padding:4px 10px;border-radius:999px;white-space:nowrap}
 .flakeTag{background:#2a6fd6!important;color:#fff!important}
-  background:rgba(255,255,255,.92);box-shadow:0 3px 0 rgba(27,32,51,.15);color:#1f3a6b;font:inherit;font-size:14px;cursor:pointer;touch-action:manipulation}
 .dpad{position:fixed;z-index:3;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:4px;touch-action:none;user-select:none;-webkit-user-select:none}
 .tools[hidden]~.dpad{display:none!important}
 @media (max-width:640px){.dpad{bottom:calc(150px + env(safe-area-inset-bottom,0px));grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,50px)}}
@@ -4206,7 +4206,7 @@ let ts=null;
 addEventListener('touchstart',e=>{const t=e.touches[0];ts={x:t.clientX,y:t.clientY};},{passive:true});
 addEventListener('touchmove',e=>{
   if(!ts) return; const t=e.touches[0],dx=t.clientX-ts.x,dy=t.clientY-ts.y;
-  if(Math.hypot(dx,dy)<22) return;
+  if(Math.hypot(dx,dy)<18) return;   // a short flick is enough
   push(Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0)); ts={x:t.clientX,y:t.clientY};
 },{passive:true});
 addEventListener('touchend',()=>ts=null);
