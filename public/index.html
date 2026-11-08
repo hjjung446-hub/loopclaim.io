@@ -4201,7 +4201,8 @@ function netApply(m){
     for(const p of players) p.hillFrac=p.alive?(cnt.get(p.team)||0)/(Z*Z):0; }
   if(mode.gold&&me&&me.gold>=100) unlock('miner');
   if(me&&me.alive&&run) run.best=Math.max(run.best||0,me.area);
-  if(me&&me.alive&&!NET.over){ me.sx=me.x; me.sy=me.y; me.sdir=me.dir; me.srvTrail=me.trailCells; netPredict(true); } else if(me&&me.alive){ me.sx=null; } else if(me){ me.sx=null; NET.pend=[]; }
+  if(me&&me.alive&&!NET.over){ me.sx=me.x; me.sy=me.y; me.sdir=me.dir; me.srvTrail=me.trailCells; netPredict(true); }
+  if(me&&me.alive&&!NET.over&&!spectating){ try{ checkLive(); }catch(e){} }   // badges that watch your game as it goes (tail length, share, survival…) count online too else if(me&&me.alive){ me.sx=null; } else if(me){ me.sx=null; NET.pend=[]; }
   if(t0-NET.pingT>2000){ NET.pingT=t0; netSend({t:'ping',c:t0}); }
   updateHud(); }
 function toMenu(){ cgGame('gameplayStop'); paintWinter(); cardSeq++; feedMute=false; paintNetRow();
