@@ -179,7 +179,6 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 @keyframes gotPop{from{transform:scale(.7);opacity:0}}
 @media (prefers-reduced-motion:reduce){.gotCard{animation:none}}
 .bpClaimBtn{font:inherit;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(135deg,#ffd23f,#ffb020);color:#3a2700;box-shadow:0 2px 0 #c98a00}
-.invChip{font:inherit;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;border:2px solid var(--me);cursor:pointer;background:transparent;color:var(--me)}
 .adBtn{font:inherit;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(135deg,#7b5cff,#3d6bff);color:#fff;box-shadow:0 2px 0 #2c3fa8}
 .adBtn:disabled{background:var(--ground);color:var(--muted);box-shadow:none;cursor:default}
 .bpClaimBtn:disabled{background:var(--ground);color:var(--muted);box-shadow:none;cursor:default}
@@ -576,6 +575,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
     </div>
     <div class="btns">
       <button class="btn" id="startBtn" type="button">Play</button>
+      <button class="btn ghost" id="inviteStart" type="button" hidden>Invite a friend</button>
       <p class="firstHint" id="firstHint" hidden></p>
       <button class="btn ghost" id="watchStartBtn" type="button">Watch AI play</button>
     </div>
@@ -705,7 +705,7 @@ kbd{font-family:var(--body);font-size:11px;background:var(--ground);border-radiu
       <div><span>Survived</span><strong id="stTime">0s</strong></div>
     </div>
     <ol class="res" id="resList" hidden></ol>
-    <div class="rewards"><p class="coinGain" id="coinGain" hidden></p><p class="bpGain" id="bpGain" hidden></p><button class="bpClaimBtn" id="overClaim" type="button" hidden></button><button class="adBtn" id="adDouble" type="button" hidden></button><button class="invChip" id="overInvite" type="button" hidden></button></div>
+    <div class="rewards"><p class="coinGain" id="coinGain" hidden></p><p class="bpGain" id="bpGain" hidden></p><button class="bpClaimBtn" id="overClaim" type="button" hidden></button><button class="adBtn" id="adDouble" type="button" hidden></button></div>
     <div class="btns">
       <button class="btn" id="againBtn" type="button">Play again</button>
       <button class="btn ghost" id="skinBtn" type="button">Change mode · skin</button>
@@ -3990,13 +3990,14 @@ function netPlay(now){ const q=NET.q; if(!NET.buf) NET.buf=1;
     else { NET.playing=false; NET.under=(NET.under||0)+1; NET.underT=now;   // ran dry: hold a bit more from now on
       if(NET.buf<3) { NET.buf++; netLeadUpdate(); } } }
   if(NET.buf>1&&now-(NET.underT||0)>20000){ NET.buf--; NET.underT=now; } }   // smooth for a while: tighten again
-function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; try{ $('inviteBtn').hidden=true; $('overInvite').hidden=true; const S=window.__cgSDK; if(S&&S.game&&S.game.leftRoom) S.game.leftRoom(); }catch(e){} if(ws) try{ ws.close(); }catch(e){} }
+function netClose(){ const ws=NET.ws; NET.ws=null; NET.state='off'; NET.q=[]; try{ $('inviteBtn').hidden=true; const S=window.__cgSDK; if(S&&S.game&&S.game.leftRoom) S.game.leftRoom(); }catch(e){} if(ws) try{ ws.close(); }catch(e){} }
 function netSkinId(){ return skin===PHOTO_SKIN||!skin?'basic':skin.id; }
 const ONLINE_MODES=['normal','timed','ranked','team','survival','infect','zombie','gold','hill','duel','boss'];
 let netWant=true; try{ netWant=localStorage.getItem('ttang-net')!=='off'; }catch(e){}
 const netCan=k=>netWant&&ONLINE_MODES.includes(k)&&!!netURL();
 // the Online / Offline switch on the menu (only where a server exists)
 function paintNetRow(){ const row=$('netRow'); if(!row) return; const has=!NET.noServer&&!!netURL(); row.hidden=!has;
+  { const ib=$('inviteStart'); if(ib){ ib.textContent=L.inviteFriend; ib.hidden=!(has&&netWant&&ONLINE_MODES.includes(modeKey)); } }
   $('net-on').setAttribute('aria-pressed',String(netWant)); $('net-off').setAttribute('aria-pressed',String(!netWant)); }
 for(const v of [true,false]) $(v?'net-on':'net-off').onclick=()=>{ netWant=v; try{ localStorage.setItem('ttang-net',v?'on':'off'); }catch(e){} paintNetRow(); try{ $('modeDesc').textContent=descOf(modeKey); }catch(e){} };
 paintNetRow();
@@ -4042,11 +4043,11 @@ function inviteLink(){ const p=inviteParams(), S=window.__cgSDK;
   if(S&&S.game&&S.game.inviteLink){ try{ return S.game.inviteLink(p); }catch(e){} }
   const u=new URL(location.href); u.search=''; u.hash=''; for(const k in p) if(p[k]) u.searchParams.set(k,p[k]); return u.toString(); }
 function paintInvite(){ const b=$('inviteBtn'); if(!b) return; b.textContent=L.invite; b.hidden=!(mode&&mode.online&&NET.state==='on'&&NET.room);
-  { const o=$('overInvite'); if(o){ o.textContent=L.inviteFriend; o.hidden=b.hidden; } }
+  if(NET.wantInvite&&!b.hidden){ NET.wantInvite=false; copyInvite(); }
   const S=window.__cgSDK; if(S&&S.game&&S.game.updateRoom){ try{ if(!b.hidden) S.game.updateRoom({roomId:modeKey+'-'+NET.room,isJoinable:true,inviteParams:inviteParams()}); }catch(e){} } }
-const copyInvite=async e=>{ e.stopPropagation(); const link=inviteLink();
+const copyInvite=async e=>{ if(e) e.stopPropagation(); const link=inviteLink();
   try{ await navigator.clipboard.writeText(link); toast(L.inviteCopied); }catch(err){ toast(L.inviteManual+' '+link); } };
-$('inviteBtn').onclick=copyInvite; $('overInvite').onclick=copyInvite;
+$('inviteBtn').onclick=copyInvite;
 // arriving from an invite (a ?room= link, or CrazyGames' invite / instant multiplayer): go straight into that room
 function joinInvite(p){ if(!p||!p.room) return; const k=String(p.mode||'normal'); if(!ONLINE_MODES.includes(k)||!MODES[k]) return;
   const room=parseInt(p.room,10); if(!(room>0)) return;
@@ -4260,6 +4261,8 @@ $('tutSkip').onclick=()=>{ $('tools').hidden=true; $('meBox').hidden=true; toMen
 paintTutBtn();
 
 $('startBtn').onclick=begin;
+// Invite a friend (menu): play this mode online, and copy the room's invite link the moment we're in it
+$('inviteStart').onclick=()=>{ NET.wantInvite=true; netWant=true; if(!settings.tutSeen){ settings.tutSeen=true; saveSettings(); } begin(); };
 paintWinter();
 // spaces in a nickname show as underscores, right as you type
 $('nameIn').addEventListener('input',e=>{ const el=e.target, v=el.value; if(!/\s/.test(v)) return; const pos=el.selectionStart; el.value=v.replace(/\s/g,'_'); try{ el.setSelectionRange(pos,pos); }catch(err){} });
@@ -5391,7 +5394,7 @@ const modeDescOf=k=>(k===weeklyMode()?L.weeklyTag(weeklyDays())+' · ':'')+descO
 function buildModes(focusId){
   const box=$('modes'); box.innerHTML='';
   const pick=k=>{ if(k!==modeKey) setup(k); try{localStorage.setItem('ttang-mode',k);}catch(e){}
-    buildModes('mode-'+k); $('modeDesc').textContent=modeDescOf(k); $('teamRow').hidden=k!=='team'; $('sizeRow').hidden=k==='ranked'||k==='duel'||k==='online'; paintRankBox(); };
+    buildModes('mode-'+k); $('modeDesc').textContent=modeDescOf(k); try{ paintNetRow(); }catch(e){} $('teamRow').hidden=k!=='team'; $('sizeRow').hidden=k==='ranked'||k==='duel'||k==='online'; paintRankBox(); };
   const mk=k=>{ if(!MODES[k]||MODES[k].hidden) return; const b=document.createElement('button'); b.type='button'; b.className='mode'; b.id='mode-'+k;
     if(k==='ranked') b.innerHTML=tierBadge(tierOf(rank.rp),20)+`<span>${MODES[k].name}</span>`;
     else b.textContent=MODES[k].name;
@@ -5559,7 +5562,7 @@ addEventListener('pointerdown',()=>{ if(settings.sound) audio(); });
 checkSeason(); bpCheckSeason(); dailyRoll(); paintDailyDot();
 // a new day can start while the page stays open
 setInterval(()=>{ if(daily&&daily.day!==dayKey()){ dailyRoll(); paintDailyDot(); if(!$('dailyOv').hidden) buildDaily(); } },60000);
-buildSkins(); paintSkinCur(); buildModes(); renderAch(); paintCoins();
+buildSkins(); paintSkinCur(); buildModes(); renderAch(); paintCoins(); try{ paintNetRow(); }catch(e){}
 // opened from a friend's invite link (?room=…&mode=…): straight into their room (CrazyGames passes these through its SDK instead)
 try{ const q=new URLSearchParams(location.search); if(q.get('room')&&!/crazygames/.test(location.host)){ const p={room:q.get('room'),mode:q.get('mode'),big:q.get('big'),teams:q.get('teams')};
   for(const k of ['room','mode','big','teams']) q.delete(k); history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
